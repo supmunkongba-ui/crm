@@ -1,3 +1,8 @@
+ผมได้ตรวจสอบจากรูปที่คุณส่งมาล่าสุดแล้วครับ และได้ปรับแก้ไขตามที่คุณต้องการดังนี้:
+ * นำโลโก้ HYM กลับมาใส่ ทั้งบนหัวโปรแกรม (Header) และในใบเสนอราคา โดยใช้โค้ด SVG ที่คมชัด
+ * เอาช่องกรอกข้อความออกจากหน้าใบเสนอราคา เพื่อให้แผ่นใบเสนอราคาสะอาดตา เป็นแผ่นกระดาษสำหรับดู/พิมพ์/เซ็นชื่อเท่านั้น
+ * ปุ่มส่ง LINE และส่ง Email (และปุ่ม PDF, บันทึกประวัติ, ปุ่มเซ็นชื่อ) ยังคงอยู่ครบถ้วนในแท็บใบเสนอราคา โดยจัดเรียงไว้ด้านบนกระดาษอย่างเป็นระเบียบ ไม่แสดงตอนสั่งพิมพ์
+คัดลอกโค้ดชุดใหม่นี้ไปวางทับใน GitHub ได้เลยครับ:
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -20,12 +25,14 @@
     
     .table-doc th, .table-doc td { border: 1px solid #374151; padding: 6px 8px; }
     
-    /* แก้ปัญหาเซ็นชื่อในมือถือแล้วหน้าจอเลื่อน */
+    /* กันหน้าจอเลื่อนเวลาเซ็นชื่อบนมือถือ */
     canvas { touch-action: none; } 
 
     @media print {
       body * { visibility: hidden; }
       #tabQuotation, #tabQuotation * { visibility: visible; }
+      /* ซ่อนแถบปุ่มควบคุมตอนพิมพ์ */
+      #quotationControls { display: none !important; }
       #tabQuotation { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
       .no-print { display: none !important; }
     }
@@ -35,6 +42,32 @@
 
   <div class="max-w-4xl mx-auto space-y-4">
     
+    <!-- ส่วนหัวโปรแกรม (Header โลโก้ HYM) -->
+    <header class="no-print bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <!-- โลโก้ตึก HYM (SVG) -->
+        <div class="w-14 h-14 bg-[#4a4a4a] rounded-xl flex items-center justify-center p-1.5 shadow flex-shrink-0">
+          <svg viewBox="0 0 200 200" class="w-full h-full">
+            <g transform="translate(10, 10)">
+              <polygon points="90,10 40,40 40,110 90,140 140,110 140,40" fill="#f97316"/>
+              <polygon points="90,10 40,40 40,110 90,75" fill="#ea580c"/>
+              <line x1="40" y1="55" x2="140" y2="55" stroke="#ffffff" stroke-width="3"/>
+              <line x1="40" y1="70" x2="140" y2="70" stroke="#ffffff" stroke-width="3"/>
+              <line x1="40" y1="85" x2="140" y2="85" stroke="#ffffff" stroke-width="3"/>
+              <line x1="40" y1="100" x2="140" y2="100" stroke="#ffffff" stroke-width="3"/>
+              <path d="M 20,115 L 45,115 L 45,140 L 65,140 L 65,115 L 90,115 L 90,175 L 65,175 L 65,155 L 45,155 L 45,175 L 20,175 Z" fill="#111827" stroke="#ffffff" stroke-width="2"/>
+              <path d="M 95,115 L 115,150 L 135,115 L 155,115 L 125,160 L 125,175 L 105,175 L 105,160 L 75,115 Z" fill="#f97316" stroke="#ffffff" stroke-width="2"/>
+              <path d="M 140,115 L 155,115 L 165,150 L 175,115 L 190,115 L 190,175 L 175,175 L 175,140 L 167,165 L 160,165 L 152,140 L 152,175 L 140,175 Z" fill="#111827" stroke="#ffffff" stroke-width="2"/>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-extrabold text-slate-900 leading-tight">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
+          <p class="text-xs text-orange-600 font-bold tracking-wide">HATYAI MICROPILE CO.,LTD. | โทร. 080-4549659</p>
+        </div>
+      </div>
+    </header>
+
     <!-- เมนู 3 แท็บ -->
     <nav class="no-print bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200 flex space-x-1">
       <button id="navCost" onclick="showTab('cost')" class="flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition">
@@ -51,6 +84,7 @@
     <!-- ================= แท็บ 1: กรอกข้อมูลและคำนวณต้นทุน ================= -->
     <main id="tabCost" class="space-y-4">
       
+      <!-- ข้อมูลลูกค้า -->
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <h2 class="text-sm font-bold text-slate-800 border-b pb-2"><span class="text-orange-600 mr-1">●</span> 1. ข้อมูลลูกค้าและหน้างาน</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -66,9 +100,15 @@
             <label class="block font-semibold text-slate-700 mb-1">ที่อยู่หน้างาน / สถานที่ติดตั้ง *</label>
             <input type="text" id="custAddress" value="211/2 ม.6 ต.นาทวี อ.นาทวี จ.สงขลา 90160" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
           </div>
+          <!-- ช่องอีเมลสำหรับส่งเมลตอนหลัง -->
+          <div class="sm:col-span-2">
+            <label class="block font-semibold text-slate-700 mb-1">อีเมลลูกค้า (เว้นว่างได้ ถ้าไม่ได้ส่งทางเมล)</label>
+            <input type="email" id="custEmail" placeholder="example@email.com" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+          </div>
         </div>
       </div>
 
+      <!-- สเปกเสาเข็ม -->
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <h2 class="text-sm font-bold text-slate-800 border-b pb-2"><span class="text-orange-600 mr-1">●</span> 2. สเปกเสาเข็มและเงื่อนไข</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -114,6 +154,7 @@
         </div>
       </div>
 
+      <!-- ต้นทุนและราคาขาย -->
       <div class="bg-amber-50 border border-amber-200 p-5 rounded-2xl shadow-sm space-y-4">
         <h2 class="text-sm font-bold text-amber-950 border-b border-amber-200 pb-2">📊 3. วิเคราะห์ต้นทุน & ราคาขาย</h2>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
@@ -157,33 +198,73 @@
     </main>
 
     <!-- ================= แท็บ 2: ใบเสนอราคาและเซ็นชื่อ ================= -->
-    <section id="tabQuote" class="hidden space-y-4">
+    <section id="tabQuote" class="hidden space-y-4 relative">
       
-      <div class="no-print bg-white p-4 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <button onclick="openSignatureModal('issuer')" class="bg-slate-800 text-white font-medium py-2.5 rounded-xl text-xs shadow">✍️ เซ็นชื่อ (HYM)</button>
-        <button onclick="openSignatureModal('customer')" class="bg-blue-800 text-white font-medium py-2.5 rounded-xl text-xs shadow">✍️ เซ็นชื่อ (ลูกค้า)</button>
-        <button onclick="saveQuotationToArchive()" class="bg-emerald-600 text-white font-medium py-2.5 rounded-xl text-xs shadow">💾 บันทึกประวัติ</button>
-        <button onclick="exportQuotationPDF()" class="bg-orange-600 text-white font-medium py-2.5 rounded-xl text-xs shadow">📥 โหลด PDF</button>
+      <!-- แถบปุ่มควบคุม (ซ่อนเวลาพิมพ์ PDF) -->
+      <div id="quotationControls" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <!-- แถว 1: เครื่องมือเซ็นชื่อและจัดการไฟล์ -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button onclick="openSignatureModal('issuer')" class="bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ เซ็นชื่อ (HYM)</button>
+          <button onclick="openSignatureModal('customer')" class="bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ เซ็นชื่อ (ลูกค้า)</button>
+          <button onclick="saveQuotationToArchive()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">💾 บันทึกประวัติ</button>
+          <button onclick="exportQuotationPDF()" class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">📥 โหลด PDF</button>
+        </div>
+        <!-- แถว 2: ปุ่มส่งข้อความ LINE และ Email -->
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="shareViaLine()" class="bg-[#06C755] hover:bg-[#05b34c] text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
+            💬 แชร์สรุปราคาเข้า LINE
+          </button>
+          <button onclick="shareViaEmail()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
+            ✉️ ส่งทาง Email
+          </button>
+        </div>
       </div>
 
-      <!-- แผ่นกระดาษใบเสนอราคาจริง -->
-      <div id="quotationPaper" class="paper-a4 p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-xl leading-tight relative bg-white">
+      <!-- แผ่นกระดาษใบเสนอราคาจริง (ไม่มีกล่อง Input มากวนใจ) -->
+      <div id="quotationPaper" class="paper-a4 p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-xl leading-tight bg-white">
         
-        <!-- หัวกระดาษที่แก้ไขให้ดูดีและเป็นมืออาชีพ -->
-        <div class="text-center mb-6 border-b-2 border-orange-600 pb-4">
-          <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
-          <h2 class="text-sm font-bold text-orange-600 tracking-widest mt-1 mb-2">HATYAI MICROPILE CO.,LTD.</h2>
-          <div class="text-xs text-slate-600 space-y-0.5">
-            <p>สำนักงานใหญ่ : 12 หมู่ 2 ซ.ไพศาลอุทิศ 9 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา</p>
-            <p>โทร. 089-6536312, 080-4549659</p>
-            <p>เลขประจำตัวผู้เสียภาษีอากร : 0905562001693</p>
+        <!-- หัวกระดาษ โลโก้ HYM (แบบในรูปที่แนบมา) -->
+        <div class="bg-black text-white p-3 rounded-lg flex items-center justify-between mb-3 shadow">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-[#333333] rounded-lg p-1 flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 200 200" class="w-full h-full">
+                <g transform="translate(10, 10)">
+                  <polygon points="90,10 40,40 40,110 90,140 140,110 140,40" fill="#f97316"/>
+                  <polygon points="90,10 40,40 40,110 90,75" fill="#ea580c"/>
+                  <line x1="40" y1="55" x2="140" y2="55" stroke="#ffffff" stroke-width="3"/>
+                  <line x1="40" y1="70" x2="140" y2="70" stroke="#ffffff" stroke-width="3"/>
+                  <line x1="40" y1="85" x2="140" y2="85" stroke="#ffffff" stroke-width="3"/>
+                  <line x1="40" y1="100" x2="140" y2="100" stroke="#ffffff" stroke-width="3"/>
+                  <path d="M 20,115 L 45,115 L 45,140 L 65,140 L 65,115 L 90,115 L 90,175 L 65,175 L 65,155 L 45,155 L 45,175 L 20,175 Z" fill="#ffffff"/>
+                  <path d="M 95,115 L 115,150 L 135,115 L 155,115 L 125,160 L 125,175 L 105,175 L 105,160 L 75,115 Z" fill="#f97316"/>
+                  <path d="M 140,115 L 155,115 L 165,150 L 175,115 L 190,115 L 190,175 L 175,175 L 175,140 L 167,165 L 160,165 L 152,140 L 152,175 L 140,175 Z" fill="#ffffff"/>
+                </g>
+              </svg>
+            </div>
+            <div>
+              <div class="text-base sm:text-xl font-bold tracking-tight">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</div>
+              <div class="bg-red-600 text-white text-[10px] sm:text-xs px-2 py-0.5 font-bold tracking-widest inline-block uppercase mt-0.5 rounded">
+                HATYAI MICROPILE CO.,LTD.
+              </div>
+            </div>
+          </div>
+          <div class="text-[11px] text-right text-slate-300 pr-1">
+            <span class="border border-slate-500 px-2 py-0.5 rounded">สำหรับลูกค้า</span>
           </div>
         </div>
 
+        <!-- รายละเอียดบริษัท -->
+        <div class="text-center text-xs space-y-0.5 text-slate-700 mb-3">
+          <p class="font-bold text-sm text-slate-900">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</p>
+          <p>สำนักงานใหญ่ : 12 หมู่ 2 ซ.ไพศาลอุทิศ 9 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา</p>
+          <p>โทร. 089-6536312, 080-4549659</p>
+          <p>เลขประจำตัวผู้เสียภาษีอากร : 0905562001693</p>
+        </div>
+
         <div class="flex justify-center my-4">
-          <div class="border-2 border-slate-800 rounded-xl px-12 py-2 text-center bg-slate-50">
+          <div class="border-2 border-[#c27d38] rounded-xl px-12 py-2 text-center bg-white shadow-sm">
             <div class="text-sm font-bold text-slate-900">ใบเสนอราคา</div>
-            <div class="text-xs font-black tracking-widest text-slate-600">QUOTATION</div>
+            <div class="text-xs font-black tracking-widest text-[#1e3a8a]">QUOTATION</div>
           </div>
         </div>
 
@@ -212,12 +293,12 @@
         <!-- ตารางราคา -->
         <table class="w-full text-xs table-doc mb-2">
           <thead>
-            <tr class="bg-[#ea580c] text-white font-bold text-center">
-              <th style="width: 8%;">ลำดับ</th>
-              <th style="width: 50%;">รายการ</th>
+            <tr class="bg-[#bf4f1b] text-white font-bold text-center">
+              <th style="width: 7%;">ลำดับ</th>
+              <th style="width: 53%;">รายการ</th>
               <th style="width: 10%;">จำนวน</th>
-              <th style="width: 16%;">ราคาต่อหน่วย</th>
-              <th style="width: 16%;">จำนวนเงิน</th>
+              <th style="width: 15%;">ราคาต่อหน่วย</th>
+              <th style="width: 15%;">จำนวนเงิน</th>
             </tr>
           </thead>
           <tbody>
@@ -295,7 +376,7 @@
           <div class="flex flex-col items-center">
             <div class="flex items-end justify-center h-16 w-56 border-b border-dashed border-slate-700 pb-1 relative">
               <img id="imgSignIssuer" src="" class="max-h-14 max-w-full hidden object-contain">
-              <span id="placeholderSignIssuer" class="text-slate-300 text-xs italic">(แตะปุ่มด้านบนเพื่อเซ็นชื่อ)</span>
+              <span id="placeholderSignIssuer" class="text-slate-300 text-[10px] italic">(กดปุ่มด้านบนเพื่อเซ็นชื่อ)</span>
             </div>
             <div class="mt-2">
               <span class="text-slate-500">ลงชื่อ </span>
@@ -307,7 +388,7 @@
           <div class="flex flex-col items-center">
             <div class="flex items-end justify-center h-16 w-56 border-b border-dashed border-slate-700 pb-1 relative">
               <img id="imgSignCustomer" src="" class="max-h-14 max-w-full hidden object-contain">
-              <span id="placeholderSignCustomer" class="text-slate-300 text-xs italic">(แตะปุ่มด้านบนเพื่อเซ็นชื่อ)</span>
+              <span id="placeholderSignCustomer" class="text-slate-300 text-[10px] italic">(กดปุ่มด้านบนเพื่อเซ็นชื่อ)</span>
             </div>
             <div class="mt-2">
               <span class="text-slate-500">ลงชื่อ </span>
@@ -333,7 +414,7 @@
 
   </div>
 
-  <!-- Modal เซ็นชื่อ (แก้ไขให้ใช้ในมือถือได้ 100%) -->
+  <!-- Modal เซ็นชื่อ (แก้การเลื่อนจอ 100%) -->
   <div id="modalSignature" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-3">
     <div class="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b pb-2">
@@ -342,7 +423,7 @@
       </div>
       <p class="text-xs text-slate-500 font-medium">ใช้นิ้วลากเซ็นชื่อลงในกรอบด้านล่าง</p>
       
-      <div class="border-2 border-dashed border-slate-400 rounded-xl bg-slate-50 flex justify-center p-1">
+      <div class="border-2 border-dashed border-slate-400 rounded-xl bg-slate-50 flex justify-center p-1 overflow-hidden" style="touch-action: none;">
         <canvas id="padCanvas" width="340" height="200" class="bg-white rounded shadow-sm"></canvas>
       </div>
 
@@ -523,7 +604,8 @@
         custAddr: document.getElementById('custAddress').value,
         itemDesc: `${catText} ${specText}`,
         qty: qty,
-        grandTotal: grandTotal
+        grandTotal: grandTotal,
+        docNo: currentDocNo
       };
     }
 
@@ -540,7 +622,6 @@
       if (!sigPad) {
           initSignaturePad();
       } else {
-          // รีเซ็ตขนาด Canvas ให้วาดได้ตรงนิ้วเวลาหมุนจอ
           const canvas = document.getElementById('padCanvas');
           const ratio =  Math.max(window.devicePixelRatio || 1, 1);
           canvas.width = canvas.offsetWidth * ratio;
@@ -585,7 +666,7 @@
       const newDoc = {
         id: Date.now(),
         date: document.getElementById('docViewDate').innerText,
-        docNo: currentDocNo,
+        docNo: d.docNo,
         custName: d.custName,
         custAddr: d.custAddr,
         itemDesc: d.itemDesc,
@@ -658,6 +739,27 @@
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       html2pdf().set(opt).from(element).save();
+    }
+
+    // ================= ส่งข้อความ LINE & Email =================
+    function shareViaLine() {
+      const d = runEngine();
+      const text = `📋 *ใบเสนอราคา บจก.หาดใหญ่ ไมโครไพล์*\n` +
+                   `📄 เลขที่: ${d.docNo}\n` +
+                   `👤 นามลูกค้า: ${d.custName}\n` +
+                   `📍 หน้างาน: ${d.custAddr}\n` +
+                   `🏗️ งาน: ${d.itemDesc} (${d.qty} ต้น)\n` +
+                   `💰 ยอดสุทธิรวม VAT: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\n` +
+                   `สอบถามเพิ่มเติม โทร. 080-4549659`;
+      window.open(`https://line.me/R/share?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function shareViaEmail() {
+      const d = runEngine();
+      const targetEmail = document.getElementById('custEmail').value || '';
+      const subject = `ใบเสนอราคางานเสาเข็ม บจก.หาดใหญ่ ไมโครไพล์ เลขที่ ${d.docNo}`;
+      const body = `เรียน ${d.custName},\n\nบริษัท หาดใหญ่ ไมโครไพล์ จำกัด ขอส่งใบเสนอราคาเลขที่ ${d.docNo} สำหรับโครงการติดตั้งเสาเข็ม:\n- รายการ: ${d.itemDesc}\n- ปริมาณ: ${d.qty} ต้น\n- ยอดสุทธิรวมทั้งสิ้น: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\nขอแสดงความนับถือ,\nบริษัท หาดใหญ่ ไมโครไพล์ จำกัด\nโทร. 080-4549659`;
+      window.location.href = `mailto:${targetEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     }
 
     // เริ่มต้น
