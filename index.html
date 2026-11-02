@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบคำนวณและประวัติลูกค้า - หาดใหญ่ไมโครไพล์</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- โหลดไลบรารีแปลงหน้าเว็บเป็น PDF อัตโนมัติ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #quotation-view, #quotation-view * { visibility: visible; }
+      #quotation-view { position: absolute; left: 0; top: 0; width: 100%; border: none; box-shadow: none; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 p-3 sm:p-5">
+
+  <div class="max-w-xl mx-auto space-y-4">
+    
+    <!-- เมนูแท็บสลับหน้าจอ (ซ่อนเวลา Print) -->
+    <div class="no-print flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
+      <button id="tabCalcBtn" onclick="switchTab('calc')" class="flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-red-600 text-white transition">
+        ➕ ออกใบเสนอราคา
+      </button>
+      <button id="tabHistoryBtn" onclick="switchTab('history')" class="flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 transition">
+        📋 ประวัติลูกค้า (<span id="historyCount">0</span>)
+      </button>
+    </div>
+
+    <!-- แท็บที่ 1: ฟอร์มคำนวณ & บันทึก -->
+    <div id="tabCalc" class="space-y-4">
+      <div class="no-print bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <div class="border-b pb-2">
+          <h1 class="text-lg font-bold text-red-600">หาดใหญ่ไมโครไพล์ จำกัด</h1>
+          <p class="text-xs text-slate-500">บันทึกข้อมูล คำนวณราคา โหลด PDF และส่งต่อลูกค้า</p>
+        </div>
+
+        <!-- รายละเอียดลูกค้า -->
+        <div class="space-y-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อ-สกุล ลูกค้า / ผู้รับเหมา *</label>
+            <input type="text" id="custName" placeholder="เช่น คุณสมชาย บุญมี" class="w-full border rounded-lg p-2.5 text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-red-500">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">เบอร์โทรศัพท์ *</label>
+              <input type="tel" id="custPhone" placeholder="08x-xxx-xxxx" class="w-full border rounded-lg p-2.5 text-sm bg-slate-50 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">LINE ID</label>
+              <input type="text" id="custLine" placeholder="ไอดีไลน์" class="w-full border rounded-lg p-2.5 text-sm bg-slate-50 outline-none">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">อีเมลลูกค้า (เพื่อส่งใบเสนอราคา)</label>
+              <input type="email" id="custEmail" placeholder="client@example.com" class="w-full border rounded-lg p-2.5 text-sm bg-slate-50 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">สถานที่หน้างาน / ที่อยู่โครงการ</label>
+              <input type="text" id="custAddress" placeholder="เช่น ซอย 4 คลองแห..." class="w-full border rounded-lg p-2.5 text-sm bg-slate-50 outline-none">
+            </div>
+          </div>
+        </div>
+
+        <!-- รายการเสาเข็ม 5 ชนิด -->
+        <div class="pt-2 border-t space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">ประเภทบริการเสาเข็ม</label>
+            <select id="pileType" onchange="calculatePrice()" class="w-full border rounded-lg p-2.5 text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-red-500 font-medium text-slate-700">
+              <option value="micropile_i" data-price="750">1. เสาเข็มไมโครไพล์ ไอ (I-Micropile)</option>
+              <option value="spun_pile" data-price="950">2. เสาเข็มสปัน (Spun Pile)</option>
+              <option value="hydraulic" data-price="1200">3. เข็มกดไฮดรอลิค (ไร้แรงสั่นสะเทือน)</option>
+              <option value="screw_pile" data-price="1100">4. เข็มสกรูไพล์ (งานโครงสร้างเบา)</option>
+              <option value="underpinning" data-price="25000">5. ฐานเข็มกดแก้ทรุด (คิดเป็นฐาน/จุด)</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1" id="lblQty">จำนวนต้น (หลุม)</label>
+              <input type="number" id="qty" value="4" min="1" oninput="calculatePrice()" class="w-full border rounded-lg p-2.5 text-sm bg-slate-50">
+            </div>
+            <div id="boxDepth">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">ความลึก (เมตร/ต้น)</label>
+              <input type="number" id="depth" value="18" min="1" oninput="calculatePrice()" class="w-full border rounded-lg p-2.5 text-sm bg-slate-50">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">ระยะทางหน้างานจาก อ.หาดใหญ่ (กม.)</label>
+            <input type="number" id="distance" value="15" min="0" oninput="calculatePrice()" class="w-full border rounded-lg p-2.5 text-sm bg-slate-50">
+          </div>
+        </div>
+
+        <!-- แถบปุ่มสั่งการหลัก -->
+        <div class="pt-2 grid grid-cols-2 gap-2">
+          <button onclick="saveCustomerData()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-xl text-xs sm:text-sm shadow-sm transition">
+            💾 บันทึกประวัติลูกค้า
+          </button>
+          <button onclick="downloadPDF()" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 rounded-xl text-xs sm:text-sm shadow-sm transition">
+            📥 ดาวน์โหลดไฟล์ PDF
+          </button>
+        </div>
+
+        <!-- แถบปุ่มส่งต่อ LINE & อีเมล -->
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="sendLineShare()" class="bg-[#06C755] hover:bg-[#05b34c] text-white font-medium py-2 rounded-xl text-xs sm:text-sm shadow-sm transition flex items-center justify-center space-x-1">
+            <span>💬 ส่งข้อมูลเข้า LINE</span>
+          </button>
+          <button onclick="sendEmailQuotation()" class="bg-sky-600 hover:bg-sky-700 text-white font-medium py-2 rounded-xl text-xs sm:text-sm shadow-sm transition flex items-center justify-center space-x-1">
+            <span>✉️ ส่งเข้าอีเมลลูกค้า</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- กล่องพรีวิวใบเสนอราคา (ใช้แปลงเป็น PDF) -->
+      <div id="quotation-view" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 text-sm space-y-3">
+        <div class="flex justify-between items-start border-b pb-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h2>
+            <p class="text-xs text-slate-500">โทร: 080-454-9659 | hatyaimicropile.com</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded">ใบเสนอราคา</span>
+            <p class="text-[11px] text-slate-400 mt-1" id="docDate"></p>
+            <p class="text-[10px] text-slate-400" id="docNumber">เลขที่: HMI-2026-001</p>
+          </div>
+        </div>
+
+        <div class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-lg space-y-1">
+          <p><strong>ชื่อลูกค้า:</strong> <span id="outCustName">-</span></p>
+          <p><strong>เบอร์โทร:</strong> <span id="outCustPhone">-</span> | <strong>LINE:</strong> <span id="outCustLine">-</span> | <strong>Email:</strong> <span id="outCustEmail">-</span></p>
+          <p><strong>สถานที่หน้างาน:</strong> <span id="outCustAddress">-</span></p>
+        </div>
+
+        <table class="w-full text-xs text-left">
+          <thead>
+            <tr class="border-b bg-slate-50 text-slate-600">
+              <th class="py-2 px-1">รายการ</th>
+              <th class="py-2 text-right">จำนวน</th>
+              <th class="py-2 text-right">รวมเงิน (บาท)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr>
+              <td class="py-2 px-1" id="outServiceDesc">-</td>
+              <td class="py-2 text-right" id="outServiceUnits">-</td>
+              <td class="py-2 text-right font-medium" id="outServiceTotal">0</td>
+            </tr>
+            <tr>
+              <td class="py-2 px-1">ค่าขนส่งและเครื่องจักรเข้าพื้นที่</td>
+              <td class="py-2 text-right" id="outDistance">1 เที่ยว</td>
+              <td class="py-2 text-right font-medium" id="outTransportTotal">0</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="border-t-2 font-bold text-slate-900">
+              <td colspan="2" class="py-2 px-1 text-sm">ยอดรวมทั้งสิ้น (สุทธิ)</td>
+              <td class="py-2 text-right text-base text-red-600" id="outGrandTotal">0 บาท</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div class="text-[11px] text-slate-400 border-t pt-2 space-y-0.5">
+          <p>• ยืนราคา 15 วัน นับจากวันที่ออกเอกสาร</p>
+          <p>• คิดค่าความยาวเสาเข็มตามจำนวนความลึกจริงหน้างาน (Actual Depth)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- แท็บที่ 2: ประวัติลูกค้าที่ผ่านมา -->
+    <div id="tabHistory" class="hidden space-y-3">
+      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-sm font-bold text-slate-800">ประวัติลูกค้าทั้งหมดในเครื่อง</h2>
+          <button onclick="clearAllData()" class="text-[11px] text-red-500 hover:underline">ล้างข้อมูลทั้งหมด</button>
+        </div>
+        <div id="historyList" class="space-y-3 text-xs">
+          <!-- ข้อมูลประวัติจะแสดงตรงนี้ผ่าน JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      if(tab === 'calc') {
+        document.getElementById('tabCalc').classList.remove('hidden');
+        document.getElementById('tabHistory').classList.add('hidden');
+        document.getElementById('tabCalcBtn').className = "flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-red-600 text-white transition";
+        document.getElementById('tabHistoryBtn').className = "flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 transition";
+      } else {
+        document.getElementById('tabCalc').classList.add('hidden');
+        document.getElementById('tabHistory').classList.remove('hidden');
+        document.getElementById('tabCalcBtn').className = "flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 transition";
+        document.getElementById('tabHistoryBtn').className = "flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-red-600 text-white transition";
+        renderHistory();
+      }
+    }
+
+    function calculatePrice() {
+      const name = document.getElementById('custName').value || 'ลูกค้าทั่วไป';
+      const phone = document.getElementById('custPhone').value || '-';
+      const line = document.getElementById('custLine').value || '-';
+      const email = document.getElementById('custEmail').value || '-';
+      const address = document.getElementById('custAddress').value || '-';
+
+      const pileSelect = document.getElementById('pileType');
+      const pileCode = pileSelect.value;
+      const pileTitle = pileSelect.options[pileSelect.selectedIndex].text;
+      const basePrice = parseFloat(pileSelect.options[pileSelect.selectedIndex].getAttribute('data-price'));
+
+      const qty = parseFloat(document.getElementById('qty').value) || 0;
+      const depth = parseFloat(document.getElementById('depth').value) || 0;
+      const distance = parseFloat(document.getElementById('distance').value) || 0;
+
+      let serviceTotal = 0;
+      let unitsText = '';
+
+      if (pileCode === 'underpinning') {
+        serviceTotal = qty * basePrice;
+        unitsText = `${qty} ฐาน`;
+        document.getElementById('boxDepth').style.display = 'none';
+        document.getElementById('lblQty').innerText = 'จำนวนจุดแก้ทรุด (ฐาน)';
+      } else {
+        document.getElementById('boxDepth').style.display = 'block';
+        document.getElementById('lblQty').innerText = 'จำนวนต้น (หลุม)';
+        const totalMeters = qty * depth;
+        serviceTotal = totalMeters * basePrice;
+        unitsText = `${totalMeters} ม. (${qty} ต้น)`;
+      }
+
+      let transportTotal = 1500;
+      if (distance > 20) {
+        transportTotal += (distance - 20) * 35;
+      }
+
+      const grandTotal = serviceTotal + transportTotal;
+
+      document.getElementById('outCustName').innerText = name;
+      document.getElementById('outCustPhone').innerText = phone;
+      document.getElementById('outCustLine').innerText = line;
+      document.getElementById('outCustEmail').innerText = email;
+      document.getElementById('outCustAddress').innerText = address;
+      document.getElementById('outServiceDesc').innerText = pileTitle;
+      document.getElementById('outServiceUnits').innerText = unitsText;
+      document.getElementById('outServiceTotal').innerText = serviceTotal.toLocaleString('th-TH');
+      document.getElementById('outDistance').innerText = `${distance} กม.`;
+      document.getElementById('outTransportTotal').innerText = transportTotal.toLocaleString('th-TH');
+      document.getElementById('outGrandTotal').innerText = grandTotal.toLocaleString('th-TH') + ' บาท';
+
+      return { name, phone, line, email, address, pileCode, pileTitle, qty, depth, distance, grandTotal };
+    }
+
+    // ฟังก์ชันสร้างและดาวน์โหลดไฟล์ PDF โดยตรง
+    function downloadPDF() {
+      const data = calculatePrice();
+      const element = document.getElementById('quotation-view');
+      const opt = {
+        margin:       10,
+        filename:     `ใบเสนอราคา_${data.name}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
+    // ฟังก์ชันแชร์ข้อความและสรุปราคาเข้า LINE
+    function sendLineShare() {
+      const data = calculatePrice();
+      const message = `📋 *ใบเสนอราคา: บจก. หาดใหญ่ไมโครไพล์*\n` +
+                      `👤 ลูกค้า: ${data.name}\n` +
+                      `📞 โทร: ${data.phone}\n` +
+                      `📍 สถานที่: ${data.address}\n` +
+                      `🏗️ งาน: ${data.pileTitle}\n` +
+                      `💰 ยอดรวมสุทธิ: ${data.grandTotal.toLocaleString('th-TH')} บาท\n\n` +
+                      `*ยืนยันราคาภายใน 15 วัน*`;
+      const lineUrl = `https://line.me/R/share?text=${encodeURIComponent(message)}`;
+      window.open(lineUrl, '_blank');
+    }
+
+    // ฟังก์ชันส่งเข้า Email (เปิดแอป Mail ของมือถือ)
+    function sendEmailQuotation() {
+      const data = calculatePrice();
+      const targetEmail = data.email !== '-' ? data.email : '';
+      const subject = `ใบเสนอราคางานเสาเข็ม - บริษัท หาดใหญ่ ไมโครไพล์ จำกัด (${data.name})`;
+      const body = `เรียน คุณ ${data.name},\n\n` +
+                   `บริษัท หาดใหญ่ ไมโครไพล์ จำกัด ขอส่งสรุปใบเสนอราคาดังนี้:\n\n` +
+                   `- รายการบริการ: ${data.pileTitle}\n` +
+                   `- ปริมาณงาน: ${data.qty} ต้น (ความลึก ${data.depth} ม.)\n` +
+                   `- สถานที่ติดตั้ง: ${data.address}\n` +
+                   `- ยอดรวมสุทธิ: ${data.grandTotal.toLocaleString('th-TH')} บาท\n\n` +
+                   `เงื่อนไข: ยืนราคา 15 วัน นับจากวันที่ออกเอกสาร\n\n` +
+                   `ขอแสดงความนับถือ,\n` +
+                   `บริษัท หาดใหญ่ ไมโครไพล์ จำกัด\n` +
+                   `โทร: 080-454-9659\n` +
+                   `เว็บไซต์: hatyaimicropile.com`;
+
+      const mailtoUrl = `mailto:${targetEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoUrl;
+    }
+
+    function saveCustomerData() {
+      const data = calculatePrice();
+      if (!data.name || data.name === 'ลูกค้าทั่วไป') {
+        alert('กรุณากรอกชื่อลูกค้าก่อนบันทึกครับ');
+        return;
+      }
+
+      const history = JSON.parse(localStorage.getItem('hmi_customers') || '[]');
+      const newEntry = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString('th-TH'),
+        ...data
+      };
+
+      history.unshift(newEntry);
+      localStorage.setItem('hmi_customers', JSON.stringify(history));
+      updateCount();
+      alert('บันทึกข้อมูลและใบเสนอราคาเรียบร้อยแล้ว!');
+    }
+
+    function renderHistory() {
+      const history = JSON.parse(localStorage.getItem('hmi_customers') || '[]');
+      const container = document.getElementById('historyList');
+
+      if (history.length === 0) {
+        container.innerHTML = '<p class="text-center text-slate-400 py-6">ยังไม่มีประวัติลูกค้าที่บันทึกไว้</p>';
+        return;
+      }
+
+      container.innerHTML = history.map(item => `
+        <div class="border rounded-xl p-3 bg-slate-50 space-y-1 relative">
+          <div class="flex justify-between items-start">
+            <span class="font-bold text-slate-800 text-sm">${item.name}</span>
+            <span class="text-[10px] text-slate-400">${item.date}</span>
+          </div>
+          <p class="text-slate-600">📞 ${item.phone} ${item.line !== '-' ? '| LINE: ' + item.line : ''} ${item.email && item.email !== '-' ? '| ✉️ ' + item.email : ''}</p>
+          <p class="text-slate-600">📍 ${item.address}</p>
+          <p class="text-red-600 font-medium">${item.pileTitle}</p>
+          <div class="flex justify-between items-center pt-2 border-t mt-2">
+            <span class="font-bold text-slate-900">ยอดรวม: ${item.grandTotal.toLocaleString('th-TH')} บาท</span>
+            <div class="space-x-2">
+              <button onclick="loadCustomer(${item.id})" class="bg-red-50 text-red-600 px-2.5 py-1 rounded-lg text-xs font-medium">ดึงข้อมูล</button>
+              <button onclick="deleteCustomer(${item.id})" class="text-slate-400 hover:text-red-500 text-xs">ลบ</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function loadCustomer(id) {
+      const history = JSON.parse(localStorage.getItem('hmi_customers') || '[]');
+      const item = history.find(c => c.id === id);
+      if (!item) return;
+
+      document.getElementById('custName').value = item.name;
+      document.getElementById('custPhone').value = item.phone === '-' ? '' : item.phone;
+      document.getElementById('custLine').value = item.line === '-' ? '' : item.line;
+      document.getElementById('custEmail').value = item.email === '-' ? '' : (item.email || '');
+      document.getElementById('custAddress').value = item.address === '-' ? '' : item.address;
+      document.getElementById('pileType').value = item.pileCode;
+      document.getElementById('qty').value = item.qty;
+      document.getElementById('depth').value = item.depth;
+      document.getElementById('distance').value = item.distance;
+
+      switchTab('calc');
+      calculatePrice();
+    }
+
+    function deleteCustomer(id) {
+      if (confirm('ต้องการลบประวัติลูกค้ารายนี้หรือไม่?')) {
+        let history = JSON.parse(localStorage.getItem('hmi_customers') || '[]');
+        history = history.filter(c => c.id !== id);
+        localStorage.setItem('hmi_customers', JSON.stringify(history));
+        renderHistory();
+        updateCount();
+      }
+    }
+
+    function clearAllData() {
+      if (confirm('คุณต้องการลบประวัติลูกค้าทั้งหมดใช่หรือไม่?')) {
+        localStorage.removeItem('hmi_customers');
+        renderHistory();
+        updateCount();
+      }
+    }
+
+    function updateCount() {
+      const history = JSON.parse(localStorage.getItem('hmi_customers') || '[]');
+      document.getElementById('historyCount').innerText = history.length;
+    }
+
+    // เริ่มต้นระบบ
+    const now = new Date();
+    document.getElementById('docDate').innerText = 'วันที่: ' + now.toLocaleDateString('th-TH');
+    document.getElementById('docNumber').innerText = 'เลขที่: HMI-' + now.getFullYear() + (now.getMonth() + 1).toString().padStart(2, '0') + '-' + Math.floor(100 + Math.random() * 900);
+    calculatePrice();
+    updateCount();
+  </script>
+</body>
+</html>
