@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบคำนวณและออกใบเสนอราคา - หาดใหญ่ไมโครไพล์</title>
+  <title>ระบบคำนวณต้นทุนและออกใบเสนอราคา - หาดใหญ่ไมโครไพล์</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- ไลบรารีแปลงหน้าเอกสารเป็น PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -40,7 +40,7 @@
     <!-- เมนูแท็บสลับหน้าจอ (ซ่อนเวลา Print) -->
     <div class="no-print flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
       <button id="tabCalcBtn" onclick="switchTab('calc')" class="flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-red-600 text-white transition">
-        ➕ คำนวณราคา & ออกใบเสนอราคา
+        ➕ วิเคราะห์ต้นทุน & ใบเสนอราคา
       </button>
       <button id="tabHistoryBtn" onclick="switchTab('history')" class="flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-600 transition">
         📋 ประวัติลูกค้า (<span id="historyCount">0</span>)
@@ -55,11 +55,12 @@
         <div class="border-b pb-2 flex justify-between items-center">
           <div>
             <h1 class="text-base sm:text-lg font-bold text-red-600">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
-            <p class="text-xs text-slate-500">กรอกข้อมูลลูกค้าและสเปกเข็มเพื่อออกเอกสารทางการ</p>
+            <p class="text-xs text-slate-500">ระบบวิเคราะห์ต้นทุนภายใน (Internal Cost) และสร้างใบเสนอราคา</p>
           </div>
           <span class="text-xs bg-red-50 text-red-700 px-2 py-1 rounded font-medium border border-red-200">แบบฟอร์มมาตรฐาน HYM</span>
         </div>
 
+        <!-- 1. ข้อมูลลูกค้า -->
         <div class="space-y-3">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -93,37 +94,86 @@
           </div>
         </div>
 
-        <!-- รายการเสาเข็มและเงื่อนไขราคา -->
+        <!-- 2. พารามิเตอร์งานเสาเข็ม (5 ชนิด) -->
         <div class="pt-3 border-t space-y-3">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">ประเภทบริการเสาเข็ม (5 ชนิด)</label>
-              <select id="pileType" onchange="calculatePrice()" class="w-full border rounded-lg p-2 text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-red-500 font-medium">
-                <option value="micropile_i" data-name="เสาเข็ม ไมโครไพล์ I 0.22x0.22 ม." data-unitprice="8500">1. เสาเข็มไมโครไพล์ ไอ (I-Micropile)</option>
-                <option value="spun_pile" data-name="เสาเข็มสปัน ไมโครไพล์ (Spun Micro Pile)" data-unitprice="9800">2. เสาเข็มสปัน (Spun Pile)</option>
-                <option value="hydraulic" data-name="เสาเข็มกดระบบไฮดรอลิค ไร้แรงสั่นสะเทือน" data-unitprice="12500">3. เข็มกดไฮดรอลิค (Hydraulic Jacked Pile)</option>
-                <option value="screw_pile" data-name="เสาเข็มเหล็กสกรูไพล์ นวัตกรรมติดตั้งเร็ว" data-unitprice="7500">4. เข็มสกรูไพล์ (Screw Pile)</option>
-                <option value="underpinning" data-name="งานเสริมฐานราก ฐานเข็มกดแก้อาคารทรุด" data-unitprice="25000">5. ฐานเข็มกดแก้ทรุด (Underpinning)</option>
+              <select id="pileType" onchange="applyPileDefaults()" class="w-full border rounded-lg p-2 text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-red-500 font-medium">
+                <option value="micropile_i" data-name="เสาเข็ม ไมโครไพล์ I 0.22x0.22 ม." data-unitprice="8500" data-costpile="3800">1. เสาเข็มไมโครไพล์ ไอ (I-Micropile)</option>
+                <option value="spun_pile" data-name="เสาเข็มสปัน ไมโครไพล์ (Spun Micro Pile)" data-unitprice="9800" data-costpile="4800">2. เสาเข็มสปัน (Spun Pile)</option>
+                <option value="hydraulic" data-name="เสาเข็มกดระบบไฮดรอลิค ไร้แรงสั่นสะเทือน" data-unitprice="12500" data-costpile="6500">3. เข็มกดไฮดรอลิค (Hydraulic Jacked Pile)</option>
+                <option value="screw_pile" data-name="เสาเข็มเหล็กสกรูไพล์ นวัตกรรมติดตั้งเร็ว" data-unitprice="7500" data-costpile="3600">4. เข็มสกรูไพล์ (Screw Pile)</option>
+                <option value="underpinning" data-name="งานเสริมฐานราก ฐานเข็มกดแก้อาคารทรุด" data-unitprice="25000" data-costpile="12000">5. ฐานเข็มกดแก้ทรุด (Underpinning)</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">ความยาวกำหนดต่อต้น (เมตร)</label>
-              <input type="text" id="pileLengthDesc" value="9.0 ม. เสริมพิเศษคอร่า" oninput="calculatePrice()" class="w-full border rounded-lg p-2 text-sm bg-slate-50">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">ความยาวกำหนดต่อต้น (สเปก)</label>
+              <input type="text" id="pileLengthDesc" value="9.0 ม. เสริมพิเศษคอร่า" oninput="calculateAll()" class="w-full border rounded-lg p-2 text-sm bg-slate-50">
             </div>
           </div>
 
           <div class="grid grid-cols-3 gap-2">
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">จำนวนต้น/ฐาน</label>
-              <input type="number" id="qty" value="8" min="1" oninput="calculatePrice()" class="w-full border rounded-lg p-2 text-sm bg-slate-50 font-bold text-center">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">จำนวนต้น / ฐาน</label>
+              <input type="number" id="qty" value="8" min="1" oninput="calculateAll()" class="w-full border rounded-lg p-2 text-sm bg-slate-50 font-bold text-center">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">ราคาต่อหน่วย (บาท)</label>
-              <input type="number" id="unitPriceInput" value="8500" min="0" oninput="calculatePrice()" class="w-full border rounded-lg p-2 text-sm bg-slate-50 font-bold text-right text-red-600">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">ราคาเสนอขาย/ต้น (บาท)</label>
+              <input type="number" id="unitPriceInput" value="8500" min="0" oninput="calculateAll()" class="w-full border rounded-lg p-2 text-sm bg-slate-50 font-bold text-right text-red-600">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">ค่าย้ายเครื่องจักรฯ (บาท)</label>
-              <input type="number" id="transportCost" value="6000" min="0" oninput="calculatePrice()" class="w-full border rounded-lg p-2 text-sm bg-slate-50 font-bold text-right">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">ระยะทางจาก อ.หาดใหญ่ (กม.)</label>
+              <input type="number" id="distance" value="45" min="0" oninput="calculateAll()" class="w-full border rounded-lg p-2 text-sm bg-slate-50 font-bold text-right">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. ส่วนคำนวณต้นทุนภายใน (Internal Cost Engine) -->
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 sm:p-4 space-y-3">
+          <div class="flex justify-between items-center border-b border-amber-200 pb-2">
+            <h3 class="text-xs sm:text-sm font-bold text-amber-900 flex items-center gap-1.5">
+              <span>⚙️ วิเคราะห์ต้นทุนจริงภายใน (Internal Cost Breakdown)</span>
+            </h3>
+            <span class="text-[11px] text-amber-800 font-medium">คำนวณกำไรขั้นต้นอัตโนมัติ</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+            <div>
+              <label class="block font-semibold text-amber-900 mb-1">ต้นทุนตัวเข็ม/ต้น (บ.)</label>
+              <input type="number" id="costPileUnit" value="3800" oninput="calculateAll()" class="w-full border rounded-lg p-1.5 bg-white text-right font-medium">
+            </div>
+            <div>
+              <label class="block font-semibold text-amber-900 mb-1">เพลท+ลวดเชื่อม/ต้น (บ.)</label>
+              <input type="number" id="costPlateUnit" value="450" oninput="calculateAll()" class="w-full border rounded-lg p-1.5 bg-white text-right font-medium">
+            </div>
+            <div>
+              <label class="block font-semibold text-amber-900 mb-1">ค่าแรงช่าง/วัน (บ.)</label>
+              <input type="number" id="costLaborPerDay" value="2500" oninput="calculateAll()" class="w-full border rounded-lg p-1.5 bg-white text-right font-medium">
+            </div>
+            <div>
+              <label class="block font-semibold text-amber-900 mb-1">จำนวนวันทำงานจริง (วัน)</label>
+              <input type="number" id="workDays" value="3" oninput="calculateAll()" class="w-full border rounded-lg p-1.5 bg-white text-right font-medium">
+            </div>
+          </div>
+
+          <!-- ตารางสรุปต้นทุน vs กำไร -->
+          <div class="bg-white rounded-lg p-3 border border-amber-200 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-center">
+            <div class="border-r border-slate-100 pr-1">
+              <span class="text-slate-500 block text-[11px]">ต้นทุนวัสดุ+อุปกรณ์</span>
+              <span class="font-bold text-slate-800" id="costSummaryMaterial">0 บาท</span>
+            </div>
+            <div class="border-r border-slate-100 pr-1">
+              <span class="text-slate-500 block text-[11px]">ต้นทุนค่าแรง+ขนส่ง</span>
+              <span class="font-bold text-slate-800" id="costSummaryLaborTrans">0 บาท</span>
+            </div>
+            <div class="border-r border-slate-100 pr-1 bg-red-50 rounded p-1">
+              <span class="text-red-700 block text-[11px] font-bold">ต้นทุนรวมทั้งหมด</span>
+              <span class="font-bold text-red-600 text-sm" id="costSummaryTotal">0 บาท</span>
+            </div>
+            <div class="bg-emerald-50 rounded p-1">
+              <span class="text-emerald-700 block text-[11px] font-bold">กำไรขั้นต้น (GP)</span>
+              <span class="font-bold text-emerald-600 text-sm" id="costSummaryProfit">0 บาท (0%)</span>
             </div>
           </div>
         </div>
@@ -151,7 +201,6 @@
         <!-- แถบหัวเอกสาร โลโก้แบรนด์ ดำ-แดง (ตามรูปเป๊ะ) -->
         <div class="bg-black text-white p-3 rounded-lg flex items-center justify-between mb-4 shadow">
           <div class="flex items-center space-x-3">
-            <!-- สัญลักษณ์ตึก HM สีแดงขาว -->
             <div class="flex items-end">
               <div class="bg-red-600 text-white font-black text-2xl px-1.5 py-0.5 rounded-l tracking-tighter border-r border-white">H</div>
               <div class="bg-white text-black font-black text-2xl px-1.5 py-0.5 rounded-r tracking-tighter">M</div>
@@ -299,7 +348,6 @@
         <div class="grid grid-cols-2 gap-8 pt-6 text-xs text-center">
           <div class="flex flex-col items-center">
             <div class="flex items-end justify-center h-10 w-48 border-b border-dotted border-slate-700 pb-1 relative">
-              <!-- รูปจำลองลายเซ็นสีน้ำเงิน -->
               <span class="text-blue-700 font-serif italic text-lg absolute bottom-0 font-bold select-none" style="transform: rotate(-3deg);">
                 Romme...
               </span>
@@ -399,8 +447,19 @@
       return `(${thaiText})`;
     }
 
-    // ฟังก์ชันคำนวณราคาและอัปเดตใบเสนอราคา
-    function calculatePrice() {
+    // กำหนดค่าตั้งต้นของต้นทุนเมื่อเปลี่ยนชนิดเข็ม
+    function applyPileDefaults() {
+      const pileSelect = document.getElementById('pileType');
+      const unitPrice = pileSelect.options[pileSelect.selectedIndex].getAttribute('data-unitprice');
+      const costPile = pileSelect.options[pileSelect.selectedIndex].getAttribute('data-costpile');
+      
+      document.getElementById('unitPriceInput').value = unitPrice;
+      document.getElementById('costPileUnit').value = costPile;
+      calculateAll();
+    }
+
+    // ฟังก์ชันคำนวณทั้งหมด (ต้นทุนจริง + ราคาเสนอขาย)
+    function calculateAll() {
       const custName = document.getElementById('custName').value || 'บริษัท นาวี กรีน เอนเนอร์ยี จำกัด';
       const custAddress = document.getElementById('custAddress').value || '211/2 ม.6 ต.นาทวี อ.นาทวี จ.สงขลา 90160';
       const custTaxId = document.getElementById('custTaxId').value || '0 9055 69005 84 8';
@@ -414,9 +473,28 @@
 
       const qty = parseFloat(document.getElementById('qty').value) || 0;
       const unitPrice = parseFloat(document.getElementById('unitPriceInput').value) || 0;
-      const transportCost = parseFloat(document.getElementById('transportCost').value) || 0;
+      const distance = parseFloat(document.getElementById('distance').value) || 0;
 
-      // คำนวณยอดเงิน
+      // 1. คำนวณค่าขนส่ง/ย้ายเครื่องจักร (ให้ลูกค้า)
+      let transportCost = 4500;
+      if (distance > 20) {
+        transportCost += (distance - 20) * 60; // นอกเขต 20 กม.
+      }
+      document.getElementById('outTransportUnitPrice').innerText = transportCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('outTransportTotal').innerText = transportCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      // 2. คำนวณต้นทุนจริงภายใน (Internal Cost)
+      const costPileUnit = parseFloat(document.getElementById('costPileUnit').value) || 0;
+      const costPlateUnit = parseFloat(document.getElementById('costPlateUnit').value) || 0;
+      const costLaborPerDay = parseFloat(document.getElementById('costLaborPerDay').value) || 0;
+      const workDays = parseFloat(document.getElementById('workDays').value) || 1;
+
+      const materialCost = qty * (costPileUnit + costPlateUnit);
+      const laborCost = costLaborPerDay * workDays;
+      const actualTransportCost = 2000 + (distance * 25); // ต้นทุนค่าน้ำมันและคนขับจริง
+      const totalCost = materialCost + laborCost + actualTransportCost;
+
+      // 3. คำนวณราคาขายและภาษี
       const itemTotal = qty * unitPrice;
       const subTotal = itemTotal + transportCost;
       const vat7 = subTotal * 0.07;
@@ -425,7 +503,17 @@
       const deposit60 = grandTotal * 0.60;
       const complete40 = grandTotal * 0.40;
 
-      // อัปเดตลงเอกสาร
+      // คำนวณกำไรขั้นต้น (ไม่รวม vat)
+      const grossProfit = subTotal - totalCost;
+      const marginPercent = subTotal > 0 ? ((grossProfit / subTotal) * 100).toFixed(1) : 0;
+
+      // อัปเดตกล่องวิเคราะห์ต้นทุน
+      document.getElementById('costSummaryMaterial').innerText = materialCost.toLocaleString('th-TH') + ' บ.';
+      document.getElementById('costSummaryLaborTrans').innerText = (laborCost + actualTransportCost).toLocaleString('th-TH') + ' บ.';
+      document.getElementById('costSummaryTotal').innerText = totalCost.toLocaleString('th-TH') + ' บ.';
+      document.getElementById('costSummaryProfit').innerText = `${grossProfit.toLocaleString('th-TH')} บ. (${marginPercent}%)`;
+
+      // อัปเดตลงเอกสารใบเสนอราคา
       document.getElementById('outCustName').innerText = custName;
       document.getElementById('outCustAddress').innerText = custAddress;
       document.getElementById('outCustTaxId').innerText = custTaxId;
@@ -434,9 +522,6 @@
       document.getElementById('outItemQty').innerText = qty;
       document.getElementById('outItemUnitPrice').innerText = unitPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       document.getElementById('outItemTotal').innerText = itemTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-      document.getElementById('outTransportUnitPrice').innerText = transportCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      document.getElementById('outTransportTotal').innerText = transportCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
       document.getElementById('outDeposit60').innerText = deposit60.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       document.getElementById('outComplete40').innerText = complete40.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -447,12 +532,12 @@
 
       document.getElementById('outThaiBahtText').innerText = arabicToThaiBaht(grandTotal);
 
-      return { custName, custAddress, custTaxId, custPhone, custLine, custEmail, pileItemName, qty, unitPrice, grandTotal };
+      return { custName, custAddress, custTaxId, custPhone, custLine, custEmail, pileItemName, qty, unitPrice, totalCost, grossProfit, grandTotal };
     }
 
     // ดาวน์โหลด PDF
     function downloadPDF() {
-      const data = calculatePrice();
+      const data = calculateAll();
       const element = document.getElementById('quotation-view');
       const opt = {
         margin:       [8, 8, 8, 8],
@@ -466,7 +551,7 @@
 
     // แชร์เข้า LINE
     function sendLineShare() {
-      const data = calculatePrice();
+      const data = calculateAll();
       const message = `📋 *ใบเสนอราคา บจก.หาดใหญ่ ไมโครไพล์*\n` +
                       `👤 ลูกค้า: ${data.custName}\n` +
                       `📍 หน้างาน: ${data.custAddress}\n` +
@@ -480,7 +565,7 @@
 
     // ส่งอีเมล
     function sendEmailQuotation() {
-      const data = calculatePrice();
+      const data = calculateAll();
       const targetEmail = data.custEmail !== '-' ? data.custEmail : '';
       const subject = `ใบเสนอราคางานเสาเข็ม บจก.หาดใหญ่ ไมโครไพล์ (${data.custName})`;
       const body = `เรียน ${data.custName},\n\n` +
@@ -495,7 +580,7 @@
 
     // บันทึกประวัติ
     function saveCustomerData() {
-      const data = calculatePrice();
+      const data = calculateAll();
       const history = JSON.parse(localStorage.getItem('hmi_quotes') || '[]');
       const newEntry = {
         id: Date.now(),
@@ -505,7 +590,7 @@
       history.unshift(newEntry);
       localStorage.setItem('hmi_quotes', JSON.stringify(history));
       updateCount();
-      alert('บันทึกข้อมูลใบเสนอราคาเรียบร้อยแล้ว!');
+      alert('บันทึกข้อมูลใบเสนอราคาและต้นทุนเรียบร้อยแล้ว!');
     }
 
     function renderHistory() {
@@ -523,8 +608,9 @@
           </div>
           <p class="text-slate-600">📍 ${item.custAddress}</p>
           <p class="text-red-600 font-medium">${item.pileItemName} (${item.qty} ต้น)</p>
+          <div class="text-[11px] text-slate-500">ต้นทุนรวม: ${item.totalCost.toLocaleString('th-TH')} บ. | กำไร (GP): ${item.grossProfit.toLocaleString('th-TH')} บ.</div>
           <div class="flex justify-between items-center pt-2 border-t mt-1">
-            <span class="font-bold text-slate-900">รวมสุทธิ: ${item.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท</span>
+            <span class="font-bold text-slate-900">ยอดเสนอราคา: ${item.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท</span>
             <button onclick="deleteCustomer(${item.id})" class="text-slate-400 hover:text-red-500 text-xs">ลบ</button>
           </div>
         </div>
@@ -554,20 +640,13 @@
       document.getElementById('historyCount').innerText = history.length;
     }
 
-    // เปลี่ยนราคาตั้งต้นเมื่อเลือกประเภทเข็ม
-    document.getElementById('pileType').addEventListener('change', function() {
-      const price = this.options[this.selectedIndex].getAttribute('data-unitprice');
-      document.getElementById('unitPriceInput').value = price;
-      calculatePrice();
-    });
-
     // กำหนดวันที่และเลขที่อัตโนมัติ
     const now = new Date();
     const thaiYearShort = (now.getFullYear() + 543).toString().slice(-2);
     document.getElementById('outDocDate').innerText = `${now.getDate()}/${now.getMonth() + 1}/${thaiYearShort}`;
     document.getElementById('outDocNo').innerText = 'HYM/' + Math.floor(100 + Math.random() * 900);
 
-    calculatePrice();
+    calculateAll();
     updateCount();
   </script>
 </body>
