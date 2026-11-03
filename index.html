@@ -20,13 +20,11 @@
     
     .table-doc th, .table-doc td { border: 1px solid #374151; padding: 6px 8px; }
     
-    /* กันหน้าจอเลื่อนเวลาเซ็นชื่อบนมือถือ */
     canvas { touch-action: none; } 
 
     @media print {
       body * { visibility: hidden; }
       #tabQuotation, #tabQuotation * { visibility: visible; }
-      /* ซ่อนแถบปุ่มควบคุมตอนพิมพ์ */
       #quotationControls { display: none !important; }
       #tabQuotation { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
       .no-print { display: none !important; }
@@ -40,7 +38,6 @@
     <!-- ส่วนหัวโปรแกรม (Header โลโก้ HYM) -->
     <header class="no-print bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <!-- โลโก้ตึก HYM (SVG) -->
         <div class="w-14 h-14 bg-[#4a4a4a] rounded-xl flex items-center justify-center p-1.5 shadow flex-shrink-0">
           <svg viewBox="0 0 200 200" class="w-full h-full">
             <g transform="translate(10, 10)">
@@ -85,17 +82,16 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
             <label class="block font-semibold text-slate-700 mb-1">นามลูกค้า / ผู้สั่งจ้าง *</label>
-            <input type="text" id="custName" value="บริษัท นาวี กรีน เอนเนอร์ยี จำกัด" class="w-full border rounded-xl p-2.5 bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-orange-500 font-bold">
+            <input type="text" id="custName" placeholder="เช่น บริษัท นาวี กรีน เอนเนอร์ยี จำกัด" class="w-full border rounded-xl p-2.5 bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-orange-500 font-bold">
           </div>
           <div>
             <label class="block font-semibold text-slate-700 mb-1">เลขประจำตัวผู้เสียภาษี</label>
-            <input type="text" id="custTaxId" value="0 9055 69005 84 8" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none font-mono">
+            <input type="text" id="custTaxId" placeholder="เช่น 0 9055 69005 84 8" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none font-mono">
           </div>
           <div class="sm:col-span-2">
             <label class="block font-semibold text-slate-700 mb-1">ที่อยู่หน้างาน / สถานที่ติดตั้ง *</label>
-            <input type="text" id="custAddress" value="211/2 ม.6 ต.นาทวี อ.นาทวี จ.สงขลา 90160" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+            <input type="text" id="custAddress" placeholder="เช่น 211/2 ม.6 ต.นาทวี อ.นาทวี จ.สงขลา 90160" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
           </div>
-          <!-- ช่องอีเมลสำหรับส่งเมลตอนหลัง -->
           <div class="sm:col-span-2">
             <label class="block font-semibold text-slate-700 mb-1">อีเมลลูกค้า (เว้นว่างได้ ถ้าไม่ได้ส่งทางเมล)</label>
             <input type="email" id="custEmail" placeholder="example@email.com" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
@@ -124,11 +120,11 @@
           <div class="sm:col-span-2 grid grid-cols-3 gap-2">
             <div>
               <label class="block font-semibold text-slate-700 mb-1">จำนวน (ต้น)</label>
-              <input type="number" id="costQty" value="8" min="1" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 font-bold text-center">
+              <input type="number" id="costQty" placeholder="8" min="1" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 font-bold text-center">
             </div>
             <div class="col-span-2">
               <label class="block font-semibold text-slate-700 mb-1">ความยาวเฉลี่ย (แสดงในเอกสาร)</label>
-              <input type="text" id="costSubDetail" value="9.0 ม. เสริมพิเศษคอร่า" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+              <input type="text" id="costSubDetail" placeholder="เช่น 9.0 ม. เสริมพิเศษคอร่า" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
             </div>
           </div>
           
@@ -155,30 +151,30 @@
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
           <div>
             <label class="block font-semibold text-amber-900 mb-1">ระยะทาง (กม.)</label>
-            <input type="number" id="costDistance" value="45" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-center font-bold">
+            <input type="number" id="costDistance" placeholder="45" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-center font-bold">
           </div>
           <div>
             <label class="block font-semibold text-amber-900 mb-1">ต้นทุนเข็ม/ต้น (บ.)</label>
-            <input type="number" id="unitCostPile" value="3800" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right">
+            <input type="number" id="unitCostPile" placeholder="3800" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right">
           </div>
           <div>
             <label class="block font-semibold text-amber-900 mb-1">เพลท+เชื่อม/ต้น</label>
-            <input type="number" id="unitCostPlate" value="450" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right">
+            <input type="number" id="unitCostPlate" placeholder="450" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right">
           </div>
           <div>
-            <label class="block font-semibold text-amber-900 mb-1">ค่าแรง+เครื่องจักรเหมา</label>
-            <input type="number" id="unitCostLaborDay" value="7500" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right">
+            <label class="block font-semibold text-amber-900 mb-1">ค่าแรงเครื่องจักร</label>
+            <input type="number" id="unitCostLaborDay" placeholder="7500" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right">
           </div>
         </div>
         
         <div class="bg-white p-4 rounded-xl border border-amber-200 grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">ราคาเสนอขาย/ต้น (บาท) *</label>
-            <input type="number" id="costSellingUnitPrice" value="8500" oninput="runEngine()" class="w-full border-2 border-orange-500 rounded-xl p-2 text-base font-bold text-right text-orange-600 bg-orange-50 outline-none">
+            <input type="number" id="costSellingUnitPrice" placeholder="8500" oninput="runEngine()" class="w-full border-2 border-orange-500 rounded-xl p-2 text-base font-bold text-right text-orange-600 bg-orange-50 outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">ค่าย้ายเครื่องจักร (เสนอขาย)</label>
-            <input type="number" id="costSellingTransport" value="6000" oninput="runEngine()" class="w-full border rounded-xl p-2 text-sm font-bold text-right text-slate-800 bg-slate-50 outline-none">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">ค่าย้ายเครื่องจักรเสนอขาย (บ.)</label>
+            <input type="number" id="costSellingTransport" placeholder="6000" oninput="runEngine()" class="w-full border rounded-xl p-2 text-sm font-bold text-right text-slate-800 bg-slate-50 outline-none">
           </div>
           <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl text-center">
             <span class="text-[11px] text-emerald-800 block font-medium">กำไรขั้นต้น (GP)</span>
@@ -187,38 +183,32 @@
         </div>
       </div>
 
-      <button onclick="showTab('quote')" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 rounded-xl shadow transition text-sm">
-        ดูใบเสนอราคา & เซ็นชื่อ →
+      <button onclick="openPreviewModal()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3.5 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
+        <span>👀 ดูตัวอย่างใบเสนอราคา</span>
       </button>
     </main>
 
     <!-- ================= แท็บ 2: ใบเสนอราคาและเซ็นชื่อ ================= -->
     <section id="tabQuote" class="hidden space-y-4 relative">
       
-      <!-- แถบปุ่มควบคุม (ซ่อนเวลาพิมพ์ PDF) -->
+      <!-- แถบปุ่มควบคุม -->
       <div id="quotationControls" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-        <!-- แถว 1: เครื่องมือเซ็นชื่อและจัดการไฟล์ -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <button onclick="openSignatureModal('issuer')" class="bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ เซ็นชื่อ (HYM)</button>
           <button onclick="openSignatureModal('customer')" class="bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ เซ็นชื่อ (ลูกค้า)</button>
           <button onclick="saveQuotationToArchive()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">💾 บันทึกประวัติ</button>
           <button onclick="exportQuotationPDF()" class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">📥 โหลด PDF</button>
         </div>
-        <!-- แถว 2: ปุ่มส่งข้อความ LINE และ Email -->
         <div class="grid grid-cols-2 gap-2">
-          <button onclick="shareViaLine()" class="bg-[#06C755] hover:bg-[#05b34c] text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
-            💬 แชร์สรุปราคาเข้า LINE
-          </button>
-          <button onclick="shareViaEmail()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
-            ✉️ ส่งทาง Email
-          </button>
+          <button onclick="shareViaLine()" class="bg-[#06C755] hover:bg-[#05b34c] text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">💬 แชร์เข้า LINE</button>
+          <button onclick="shareViaEmail()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">✉️ ส่ง Email</button>
         </div>
       </div>
 
-      <!-- แผ่นกระดาษใบเสนอราคาจริง (ไม่มีกล่อง Input มากวนใจ) -->
+      <!-- แผ่นกระดาษใบเสนอราคาจริง -->
       <div id="quotationPaper" class="paper-a4 p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-xl leading-tight bg-white">
         
-        <!-- หัวกระดาษ โลโก้ HYM (แบบในรูปที่แนบมา) -->
+        <!-- หัวกระดาษ โลโก้ HYM -->
         <div class="bg-black text-white p-3 rounded-lg flex items-center justify-between mb-3 shadow">
           <div class="flex items-center space-x-3">
             <div class="w-12 h-12 bg-[#333333] rounded-lg p-1 flex items-center justify-center flex-shrink-0">
@@ -409,7 +399,37 @@
 
   </div>
 
-  <!-- Modal เซ็นชื่อ (แก้การเลื่อนจอ 100%) -->
+  <!-- Modal ดูตัวอย่างใบเสนอราคา (Live Preview Modal) -->
+  <div id="modalPreview" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-3 overflow-y-auto">
+    <div class="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl my-4">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-slate-900">👀 ดูตัวอย่างตัวเลขที่จะส่ง</h3>
+        <button onclick="closePreviewModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+      </div>
+      
+      <div class="space-y-2 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
+        <div class="flex justify-between"><span class="text-slate-500">ลูกค้า:</span><span class="font-bold" id="pvName">-</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">รายการ:</span><span class="font-bold text-right" id="pvDesc">-</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">จำนวน:</span><span class="font-bold text-orange-600" id="pvQty">-</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">ราคา/ต้น:</span><span class="font-bold" id="pvUnit">-</span></div>
+        <div class="border-t pt-2 mt-2 flex justify-between">
+          <span class="text-slate-500">ยอดรวม (ก่อน VAT):</span><span class="font-bold" id="pvSub">-</span>
+        </div>
+        <div class="flex justify-between"><span class="text-slate-500">VAT 7%:</span><span class="font-bold" id="pvVat">-</span></div>
+        <div class="border-t pt-2 mt-2 flex justify-between items-center">
+          <span class="text-slate-700 font-bold">ยอดสุทธิรวมทั้งสิ้น:</span>
+          <span class="font-black text-blue-700 text-sm" id="pvGrand">-</span>
+        </div>
+      </div>
+
+      <div class="flex justify-between gap-2 pt-2">
+        <button onclick="closePreviewModal()" class="flex-1 py-2.5 border-2 border-slate-200 rounded-xl text-xs text-slate-600 font-bold bg-white hover:bg-slate-50">กลับไปแก้ไข</button>
+        <button onclick="confirmPreviewAndGoQuote()" class="flex-1 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow">✔ ยืนยันข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal เซ็นชื่อ -->
   <div id="modalSignature" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-3">
     <div class="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b pb-2">
@@ -426,7 +446,7 @@
         <button onclick="clearPad()" class="px-5 py-2.5 border-2 border-slate-200 rounded-xl text-xs text-slate-600 font-bold bg-white hover:bg-slate-50">ล้างเส้นใหม่</button>
         <div class="flex gap-2">
           <button onclick="closeSignatureModal()" class="px-5 py-2.5 border-2 border-slate-200 rounded-xl text-xs text-slate-600 font-bold bg-white hover:bg-slate-50">ยกเลิก</button>
-          <button onclick="savePadSignature()" class="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow">✔ บันทึกลายเซ็น</button>
+          <button onclick="savePadSignature()" class="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow">✔ บันทึก</button>
         </div>
       </div>
     </div>
@@ -563,18 +583,20 @@
       const gpPct = quotationSubtotal > 0 ? ((gp / quotationSubtotal) * 100).toFixed(1) : 0;
       document.getElementById('costGrossProfitDisplay').innerText = `${gp.toLocaleString('th-TH')} บ. (${gpPct}%)`;
 
-      document.getElementById('docViewCustName').innerText = document.getElementById('custName').value;
-      document.getElementById('docViewSignCustName').innerText = `(${document.getElementById('custName').value})`;
-      document.getElementById('docViewCustTax').innerText = document.getElementById('custTaxId').value;
-      document.getElementById('docViewCustAddr').innerText = document.getElementById('custAddress').value;
+      const custName = document.getElementById('custName').value || 'บริษัท นาวี กรีน เอนเนอร์ยี จำกัด';
+      document.getElementById('docViewCustName').innerText = custName;
+      document.getElementById('docViewSignCustName').innerText = `(${custName})`;
+      document.getElementById('docViewCustTax').innerText = document.getElementById('custTaxId').value || '0 9055 69005 84 8';
+      document.getElementById('docViewCustAddr').innerText = document.getElementById('custAddress').value || '211/2 ม.6 ต.นาทวี อ.นาทวี จ.สงขลา 90160';
 
       const catSelect = document.getElementById('costCategory');
       const catText = catSelect.options[catSelect.selectedIndex].text.split('. ')[1];
       const specSelect = document.getElementById('costSizeSpec');
       const specText = specSelect.options[specSelect.selectedIndex] ? specSelect.options[specSelect.selectedIndex].text : '';
-      const subDetail = document.getElementById('costSubDetail').value;
+      const subDetail = document.getElementById('costSubDetail').value || '9.0 ม. เสริมพิเศษคอร่า';
+      const fullItemDesc = `${catText} ${specText} ${subDetail}`;
 
-      document.getElementById('docViewItemName').innerText = `${catText} ${specText} ${subDetail}`;
+      document.getElementById('docViewItemName').innerText = fullItemDesc;
       document.getElementById('docViewItemQty').innerText = qty;
       document.getElementById('docViewItemUnit').innerText = sellUnit.toLocaleString('en-US', { minimumFractionDigits: 2 });
       document.getElementById('docViewItemTotal').innerText = itemSubtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
@@ -588,20 +610,45 @@
       document.getElementById('docViewDepVal').innerText = (grandTotal * (depPct / 100)).toLocaleString('en-US', { minimumFractionDigits: 2 });
       document.getElementById('docViewCompVal').innerText = (grandTotal * (compPct / 100)).toLocaleString('en-US', { minimumFractionDigits: 2 });
 
-      document.getElementById('docViewExcessCondition').innerText = `- ${document.getElementById('excessCondition').value}`;
+      document.getElementById('docViewExcessCondition').innerText = `- ${document.getElementById('excessCondition').value || 'ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม.'}`;
       document.getElementById('docViewSubTotal').innerText = quotationSubtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
       document.getElementById('docViewVat').innerText = vat7.toLocaleString('en-US', { minimumFractionDigits: 2 });
       document.getElementById('docViewGrandTotal').innerText = grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
       document.getElementById('docViewThaiBaht').innerText = arabicToThaiBaht(grandTotal);
 
       return {
-        custName: document.getElementById('custName').value,
-        custAddr: document.getElementById('custAddress').value,
-        itemDesc: `${catText} ${specText}`,
+        custName: custName,
+        custAddr: document.getElementById('custAddress').value || '211/2 ม.6 ต.นาทวี อ.นาทวี จ.สงขลา 90160',
+        itemDesc: fullItemDesc,
         qty: qty,
+        unitSell: sellUnit,
+        subTotal: quotationSubtotal,
+        vat: vat7,
         grandTotal: grandTotal,
         docNo: currentDocNo
       };
+    }
+
+    // ================= ระบบ Preview Modal =================
+    function openPreviewModal() {
+      const data = runEngine();
+      document.getElementById('pvName').innerText = data.custName;
+      document.getElementById('pvDesc').innerText = data.itemDesc;
+      document.getElementById('pvQty').innerText = `${data.qty} ต้น`;
+      document.getElementById('pvUnit').innerText = `${data.unitSell.toLocaleString('th-TH')} บ.`;
+      document.getElementById('pvSub').innerText = `${data.subTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.`;
+      document.getElementById('pvVat').innerText = `${data.vat.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.`;
+      document.getElementById('pvGrand').innerText = `${data.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท`;
+      document.getElementById('modalPreview').classList.remove('hidden');
+    }
+
+    function closePreviewModal() {
+      document.getElementById('modalPreview').classList.add('hidden');
+    }
+
+    function confirmPreviewAndGoQuote() {
+      closePreviewModal();
+      showTab('quote');
     }
 
     // ================= ระบบเซ็นชื่อ =================
@@ -769,4 +816,3 @@
   </script>
 </body>
 </html>
-
