@@ -1,1 +1,816 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ระบบคำนวณต้นทุนและใบเสนอราคา - หาดใหญ่ไมโครไพล์</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Sarabun', sans-serif; }
+    
+    .paper-a4 {
+      width: 100%; max-width: 800px; margin: 0 auto;
+      background: #ffffff; color: #111827; box-sizing: border-box;
+    }
+    
+    canvas { touch-action: none; } 
+
+    @media print {
+      body * { visibility: hidden; }
+      #tabQuotation, #tabQuotation * { visibility: visible; }
+      #quotationControls { display: none !important; }
+      #tabQuotation { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 p-2 sm:p-5">
+
+  <div class="max-w-4xl mx-auto space-y-4">
+    
+    <!-- ส่วนหัวโปรแกรม (Header โลโก้ HYM) -->
+    <header class="no-print bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-14 h-14 bg-[#4a4a4a] rounded-xl flex items-center justify-center p-1.5 shadow flex-shrink-0">
+          <svg viewBox="0 0 200 200" class="w-full h-full">
+            <g transform="translate(10, 10)">
+              <polygon points="90,10 40,40 40,110 90,140 140,110 140,40" fill="#f97316"/>
+              <polygon points="90,10 40,40 40,110 90,75" fill="#ea580c"/>
+              <line x1="40" y1="55" x2="140" y2="55" stroke="#ffffff" stroke-width="3"/>
+              <line x1="40" y1="70" x2="140" y2="70" stroke="#ffffff" stroke-width="3"/>
+              <line x1="40" y1="85" x2="140" y2="85" stroke="#ffffff" stroke-width="3"/>
+              <line x1="40" y1="100" x2="140" y2="100" stroke="#ffffff" stroke-width="3"/>
+              <path d="M 20,115 L 45,115 L 45,140 L 65,140 L 65,115 L 90,115 L 90,175 L 65,175 L 65,155 L 45,155 L 45,175 L 20,175 Z" fill="#111827" stroke="#ffffff" stroke-width="2"/>
+              <path d="M 95,115 L 115,150 L 135,115 L 155,115 L 125,160 L 125,175 L 105,175 L 105,160 L 75,115 Z" fill="#f97316" stroke="#ffffff" stroke-width="2"/>
+              <path d="M 140,115 L 155,115 L 165,150 L 175,115 L 190,115 L 190,175 L 175,175 L 175,140 L 167,165 L 160,165 L 152,140 L 152,175 L 140,175 Z" fill="#111827" stroke="#ffffff" stroke-width="2"/>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-extrabold text-slate-900 leading-tight">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
+          <p class="text-xs text-orange-600 font-bold tracking-wide">HATYAI MICROPILE CO.,LTD. | โทร. 080-4549659</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- เมนู 3 แท็บ -->
+    <nav class="no-print bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200 flex space-x-1">
+      <button id="navCost" onclick="showTab('cost')" class="flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition">
+        ⚙️ 1. กรอกข้อมูล & ต้นทุน
+      </button>
+      <button id="navQuote" onclick="showTab('quote')" class="flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition">
+        📄 2. ดูเอกสาร & เซ็นชื่อ
+      </button>
+      <button id="navArchive" onclick="showTab('archive')" class="flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition">
+        📋 3. ประวัติ (<span id="archiveCount">0</span>)
+      </button>
+    </nav>
+
+    <!-- ================= แท็บ 1: กรอกข้อมูลและคำนวณต้นทุน ================= -->
+    <main id="tabCost" class="space-y-4">
+      
+      <!-- ข้อมูลลูกค้า -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <h2 class="text-sm font-bold text-slate-800 border-b pb-2"><span class="text-orange-600 mr-1">●</span> 1. ข้อมูลลูกค้าและหน้างาน</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">นามลูกค้า / ผู้สั่งจ้าง *</label>
+            <input type="text" id="custName" placeholder="เช่น บริษัท นาวี กรีน เอนเนอร์ยี จำกัด" class="w-full border rounded-xl p-2.5 bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-orange-500 font-bold">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">เลขประจำตัวผู้เสียภาษี</label>
+            <input type="text" id="custTaxId" placeholder="เช่น 0 9055 69005 84 8" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none font-mono">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block font-semibold text-slate-700 mb-1">ที่อยู่หน้างาน / สถานที่ติดตั้ง *</label>
+            <input type="text" id="custAddress" placeholder="เช่น 211/2 ม.6 ต.นาทวี อ.นาทวี จ.สงขลา 90160" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block font-semibold text-slate-700 mb-1">อีเมลลูกค้า (เว้นว่างได้ ถ้าไม่ได้ส่งทางเมล)</label>
+            <input type="email" id="custEmail" placeholder="example@email.com" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- สเปกเสาเข็ม -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <h2 class="text-sm font-bold text-slate-800 border-b pb-2"><span class="text-orange-600 mr-1">●</span> 2. สเปกเสาเข็มและเงื่อนไข</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ชนิดเสาเข็ม</label>
+            <select id="costCategory" onchange="onCategorySelectChange()" class="w-full border rounded-xl p-2.5 bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-orange-500">
+              <option value="micropile_i">1. เสาเข็มไมโครไพล์ ไอ (I-Micropile)</option>
+              <option value="spun_pile">2. เสาเข็มสปัน ไมโครไพล์ (Spun Pile)</option>
+              <option value="hydraulic">3. เข็มกดระบบไฮดรอลิค</option>
+              <option value="screw_pile">4. เสาเข็มเหล็กสกรูไพล์</option>
+              <option value="underpinning">5. ฐานเข็มกดแก้อาคารทรุด</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ขนาดหน้าตัด / รับน้ำหนัก</label>
+            <select id="costSizeSpec" onchange="onSpecSelectChange()" class="w-full border rounded-xl p-2.5 bg-slate-50 font-medium outline-none focus:ring-2 focus:ring-orange-500"></select>
+          </div>
+          <div class="sm:col-span-2 grid grid-cols-3 gap-2">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">จำนวน (ต้น)</label>
+              <input type="number" id="costQty" placeholder="8" min="1" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 font-bold text-center">
+            </div>
+            <div class="col-span-2">
+              <label class="block font-semibold text-slate-700 mb-1">ความยาวเฉลี่ย (แสดงในเอกสาร)</label>
+              <input type="text" id="costSubDetail" placeholder="เช่น 9.0 ม. เสริมพิเศษคอร่า" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+            </div>
+          </div>
+          
+          <div class="sm:col-span-2 grid grid-cols-2 gap-2 mt-2 pt-3 border-t">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">งวด 1: มัดจำ (%)</label>
+              <input type="number" id="depositPct" value="60" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-slate-50 text-center font-bold">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">งวด 2: ตอกเสร็จ (%)</label>
+              <input type="number" id="completePct" value="40" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-slate-50 text-center font-bold">
+            </div>
+            <div class="col-span-2">
+              <label class="block font-semibold text-slate-700 mb-1">เงื่อนไขความยาวเกิน</label>
+              <input type="text" id="excessCondition" value="ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม." oninput="runEngine()" class="w-full border rounded-xl p-2 bg-slate-50 text-red-600 font-medium">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ต้นทุนและราคาขาย -->
+      <div class="bg-amber-50 border border-amber-200 p-5 rounded-2xl shadow-sm space-y-4">
+        <h2 class="text-sm font-bold text-amber-950 border-b border-amber-200 pb-2">📊 3. วิเคราะห์ต้นทุน & ราคาขาย</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+          <div>
+            <label class="block font-semibold text-amber-900 mb-1">ระยะทาง (กม.)</label>
+            <input type="number" id="costDistance" placeholder="45" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-center font-bold">
+          </div>
+          <div>
+            <label class="block font-semibold text-amber-900 mb-1">ต้นทุนเข็ม/ต้น (บ.)</label>
+            <input type="number" id="unitCostPile" placeholder="3800" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right">
+          </div>
+          <div>
+            <label class="block font-semibold text-amber-900 mb-1">เพลท+เชื่อม/ต้น</label>
+            <input type="number" id="unitCostPlate" placeholder="450" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right">
+          </div>
+          <div>
+            <label class="block font-semibold text-amber-900 mb-1">ค่าแรงเครื่องจักร</label>
+            <input type="number" id="unitCostLaborDay" placeholder="7500" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right">
+          </div>
+        </div>
+        
+        <div class="bg-white p-4 rounded-xl border border-amber-200 grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">ราคาเสนอขาย/ต้น (บาท) *</label>
+            <input type="number" id="costSellingUnitPrice" placeholder="8500" oninput="runEngine()" class="w-full border-2 border-orange-500 rounded-xl p-2 text-base font-bold text-right text-orange-600 bg-orange-50 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">ค่าย้ายเครื่องจักรเสนอขาย (บ.)</label>
+            <input type="number" id="costSellingTransport" placeholder="6000" oninput="runEngine()" class="w-full border rounded-xl p-2 text-sm font-bold text-right text-slate-800 bg-slate-50 outline-none">
+          </div>
+          <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl text-center">
+            <span class="text-[11px] text-emerald-800 block font-medium">กำไรขั้นต้น (GP)</span>
+            <span class="text-base font-extrabold text-emerald-600" id="costGrossProfitDisplay">0 บาท</span>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="openPreviewModal()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3.5 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
+        <span>👀 ดูตัวอย่างใบเสนอราคา</span>
+      </button>
+    </main>
+
+    <!-- ================= แท็บ 2: ใบเสนอราคาและเซ็นชื่อ ================= -->
+    <section id="tabQuote" class="hidden space-y-4 relative">
+      
+      <!-- แถบปุ่มควบคุม (ซ่อนเวลาพิมพ์ PDF) -->
+      <div id="quotationControls" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button onclick="openSignatureModal('issuer')" class="bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ เซ็น (HYM)</button>
+          <button onclick="openSignatureModal('customer')" class="bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ เซ็น (ลูกค้า)</button>
+          <button onclick="saveQuotationToArchive()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">💾 บันทึกประวัติ</button>
+          <button onclick="exportQuotationPDF()" class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">📥 โหลด PDF</button>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="shareViaLine()" class="bg-[#06C755] hover:bg-[#05b34c] text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">💬 แชร์เข้า LINE</button>
+          <button onclick="shareViaEmail()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">✉️ ส่ง Email</button>
+        </div>
+      </div>
+
+      <!-- แผ่นกระดาษใบเสนอราคาจริง (A4 แบบไร้เส้นตารางทึบ) -->
+      <div id="quotationPaper" class="paper-a4 p-6 sm:p-10 border border-slate-300 rounded-2xl shadow-xl leading-relaxed bg-white text-slate-800">
+        
+        <!-- หัวกระดาษ โลโก้ HYM -->
+        <div class="flex items-center justify-between border-b-2 border-slate-200 pb-5 mb-5">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-[#333333] rounded-xl p-1.5 flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 200 200" class="w-full h-full">
+                <g transform="translate(10, 10)">
+                  <polygon points="90,10 40,40 40,110 90,140 140,110 140,40" fill="#f97316"/>
+                  <polygon points="90,10 40,40 40,110 90,75" fill="#ea580c"/>
+                  <line x1="40" y1="55" x2="140" y2="55" stroke="#ffffff" stroke-width="3"/>
+                  <line x1="40" y1="70" x2="140" y2="70" stroke="#ffffff" stroke-width="3"/>
+                  <line x1="40" y1="85" x2="140" y2="85" stroke="#ffffff" stroke-width="3"/>
+                  <line x1="40" y1="100" x2="140" y2="100" stroke="#ffffff" stroke-width="3"/>
+                  <path d="M 20,115 L 45,115 L 45,140 L 65,140 L 65,115 L 90,115 L 90,175 L 65,175 L 65,155 L 45,155 L 45,175 L 20,175 Z" fill="#ffffff"/>
+                  <path d="M 95,115 L 115,150 L 135,115 L 155,115 L 125,160 L 125,175 L 105,175 L 105,160 L 75,115 Z" fill="#f97316"/>
+                  <path d="M 140,115 L 155,115 L 165,150 L 175,115 L 190,115 L 190,175 L 175,175 L 175,140 L 167,165 L 160,165 L 152,140 L 152,175 L 140,175 Z" fill="#ffffff"/>
+                </g>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
+              <p class="text-xs font-bold text-orange-600 tracking-widest uppercase mt-0.5">HATYAI MICROPILE CO.,LTD.</p>
+            </div>
+          </div>
+          <div class="text-right text-[11px] text-slate-500 space-y-0.5">
+            <p>12 หมู่ 2 ซ.ไพศาลอุทิศ 9 ต.ควนลัง</p>
+            <p>อ.หาดใหญ่ จ.สงขลา 90110</p>
+            <p>โทร. 089-6536312, 080-4549659</p>
+            <p>เลขผู้เสียภาษี : 0905562001693</p>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-end mb-6">
+          <div class="bg-orange-50 border border-orange-200 text-orange-800 px-6 py-2 rounded-lg inline-block">
+            <h2 class="text-base font-bold">ใบเสนอราคา</h2>
+            <p class="text-[10px] font-black tracking-widest opacity-80 uppercase">Quotation</p>
+          </div>
+          <div class="text-xs text-right space-y-1 bg-slate-50 p-2.5 rounded-lg border border-slate-100 min-w-[150px]">
+            <div class="flex justify-between"><span class="font-bold text-slate-600">เลขที่ :</span> <span class="font-bold text-slate-900" id="docViewNo">HYM/134</span></div>
+            <div class="flex justify-between"><span class="font-bold text-slate-600">วันที่ :</span> <span class="font-medium text-slate-900" id="docViewDate">26/10/69</span></div>
+          </div>
+        </div>
+
+        <!-- ข้อมูลลูกค้าในเอกสาร -->
+        <div class="mb-6 text-xs flex justify-between">
+          <div class="space-y-2 w-full">
+            <div class="grid grid-cols-[100px_1fr] gap-2">
+              <div class="font-bold text-slate-600">นามลูกค้า :</div>
+              <div class="font-bold text-slate-900 text-sm" id="docViewCustName">-</div>
+            </div>
+            <div class="grid grid-cols-[100px_1fr] gap-2">
+              <div class="font-bold text-slate-600">ที่อยู่หน้างาน :</div>
+              <div class="text-slate-800 leading-relaxed" id="docViewCustAddr">-</div>
+            </div>
+            <div class="grid grid-cols-[100px_1fr] gap-2 items-center">
+              <div class="font-bold text-slate-600">เลขผู้เสียภาษี :</div>
+              <div class="flex items-center gap-4">
+                <span class="font-mono text-slate-900 font-bold" id="docViewCustTax">-</span>
+                <label class="flex items-center space-x-1"><input type="checkbox" checked disabled class="accent-slate-400"> <span class="text-slate-500">สำนักงานใหญ่</span></label>
+                <label class="flex items-center space-x-1"><input type="checkbox" disabled> <span class="text-slate-500">สาขา..........</span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ตารางราคา แบบ Clean Design (ไม่มีกรอบตารางทึบ) -->
+        <div class="mb-6">
+          <div class="grid grid-cols-[10%_46%_12%_16%_16%] gap-2 bg-orange-50/70 border-y border-orange-200 py-2 px-2 text-[11px] font-bold text-orange-900 text-center uppercase tracking-wide">
+            <div>ลำดับ</div>
+            <div class="text-left pl-2">รายการ</div>
+            <div>จำนวน</div>
+            <div class="text-right">ราคา/หน่วย</div>
+            <div class="text-right">จำนวนเงิน</div>
+          </div>
+          
+          <div class="text-xs divide-y divide-slate-100">
+            <!-- Item 1 -->
+            <div class="grid grid-cols-[10%_46%_12%_16%_16%] gap-2 py-3 px-2 items-center">
+              <div class="text-center font-medium text-slate-500">1</div>
+              <div id="docViewItemName" class="font-bold text-slate-800 pl-2 pr-2">-</div>
+              <div class="text-center font-bold text-slate-900" id="docViewItemQty">0</div>
+              <div class="text-right font-mono" id="docViewItemUnit">0.00</div>
+              <div class="text-right font-mono font-bold text-slate-900" id="docViewItemTotal">0.00</div>
+            </div>
+            <!-- Item 2 -->
+            <div class="grid grid-cols-[10%_46%_12%_16%_16%] gap-2 py-3 px-2 items-center">
+              <div class="text-center font-medium text-slate-500">2</div>
+              <div class="font-bold text-slate-800 pl-2 pr-2">ค่าย้าย เครื่องจักรและอุปกรณ์</div>
+              <div class="text-center font-bold text-slate-900">1</div>
+              <div class="text-right font-mono" id="docViewTransUnit">0.00</div>
+              <div class="text-right font-mono font-bold text-slate-900" id="docViewTransTotal">0.00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ส่วนสรุปยอดและเงื่อนไข (แบ่ง 2 ฝั่ง ซ้าย/ขวา) -->
+        <div class="flex justify-between items-start gap-6 mb-8 border-t-2 border-slate-200 pt-4">
+          
+          <!-- ฝั่งซ้าย: เงื่อนไขการชำระเงิน และหมายเหตุ -->
+          <div class="w-7/12 space-y-4">
+            <div>
+              <div class="text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> เงื่อนไขการแบ่งชำระเงิน</div>
+              <div class="bg-slate-50 border border-slate-100 p-2.5 rounded-lg space-y-1.5 text-[11px]">
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-600">งวดที่ 1 (ตกลงมัดจำ) <span class="font-bold text-slate-900" id="docViewDepPct">60%</span></span>
+                  <span class="font-mono font-bold text-slate-900" id="docViewDepVal">0.00</span>
+                </div>
+                <div class="flex justify-between items-center border-t border-slate-200 pt-1.5">
+                  <span class="text-slate-600">งวดที่ 2 (งานเสร็จสิ้น) <span class="font-bold text-slate-900" id="docViewCompPct">40%</span></span>
+                  <span class="font-mono font-bold text-slate-900" id="docViewCompVal">0.00</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span> เงื่อนไขหน้างาน</div>
+              <div class="text-[10px] text-slate-600 space-y-0.5 leading-relaxed pl-3 border-l-2 border-slate-200">
+                <p>- พื้นที่หน้างานต้องปรับให้พร้อมทำงาน และลำเลียงวัสดุเข้าได้</p>
+                <p>- หลังจากชำระมัดจำ 5-7 วัน ทีมงานเตรียมเข้าพื้นที่หน้างาน</p>
+                <p>- ผู้ว่าจ้างจัดเตรียมกระแสไฟฟ้าและน้ำประปาไว้ให้พร้อมใช้งาน</p>
+                <p class="text-red-600 font-bold mt-1" id="docViewExcessCondition">- ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม.</p>
+              </div>
+            </div>
+            
+            <div class="bg-slate-50 p-2 rounded flex items-center gap-2 mt-4 text-[11px]">
+              <span class="font-bold text-slate-700">ตัวอักษร:</span>
+              <span class="text-slate-800 italic" id="docViewThaiBaht">(ศูนย์บาทถ้วน)</span>
+            </div>
+          </div>
+
+          <!-- ฝั่งขวา: สรุปยอดเงิน -->
+          <div class="w-5/12 bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-slate-600">รวมเป็นเงิน</span>
+                <span class="font-mono font-bold text-slate-900" id="docViewSubTotal">0.00</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-slate-600">ภาษีมูลค่าเพิ่ม (7%)</span>
+                <span class="font-mono font-bold text-slate-900" id="docViewVat">0.00</span>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t-2 border-slate-200 flex justify-between items-end">
+              <span class="text-xs font-black text-slate-900">ยอดสุทธิรวมทั้งสิ้น</span>
+              <span class="text-base font-mono font-extrabold text-blue-700" id="docViewGrandTotal">0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ลายเซ็น ปรับสมดุลซ้ายขวา -->
+        <div class="grid grid-cols-2 gap-10 pt-4 text-xs text-center px-4">
+          <div class="flex flex-col items-center">
+            <div class="flex items-end justify-center h-16 w-56 border-b border-dashed border-slate-400 pb-1 relative">
+              <img id="imgSignIssuer" src="" class="max-h-14 max-w-full hidden object-contain">
+              <span id="placeholderSignIssuer" class="text-slate-300 text-[10px] italic">(แตะปุ่มด้านบนเพื่อเซ็นชื่อ)</span>
+            </div>
+            <div class="mt-2">
+              <span class="text-slate-500">ลงชื่อ </span>
+              <span class="font-bold text-slate-800">ผู้เสนอราคา</span>
+            </div>
+            <div class="text-[11px] text-slate-600 mt-1">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</div>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div class="flex items-end justify-center h-16 w-56 border-b border-dashed border-slate-400 pb-1 relative">
+              <img id="imgSignCustomer" src="" class="max-h-14 max-w-full hidden object-contain">
+              <span id="placeholderSignCustomer" class="text-slate-300 text-[10px] italic">(แตะปุ่มด้านบนเพื่อเซ็นชื่อ)</span>
+            </div>
+            <div class="mt-2">
+              <span class="text-slate-500">ลงชื่อ </span>
+              <span class="font-bold text-slate-800">ผู้สั่งจ้าง</span>
+            </div>
+            <div class="text-[11px] text-slate-600 mt-1 font-medium" id="docViewSignCustName">(........................................................)</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= แท็บ 3: ประวัติ ================= -->
+    <section id="tabArchive" class="hidden no-print space-y-3">
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-sm font-bold text-slate-800">ประวัติใบเสนอราคาและลูกค้า</h2>
+          <button onclick="clearAllArchiveData()" class="text-xs text-red-500 hover:underline font-bold">ล้างประวัติทั้งหมด</button>
+        </div>
+        <div id="archiveRenderContainer" class="space-y-3 text-xs"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Modal ดูตัวอย่างใบเสนอราคา (Live Preview Modal) -->
+  <div id="modalPreview" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-3 overflow-y-auto">
+    <div class="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl my-4">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-slate-900">👀 ดูตัวอย่างตัวเลขที่จะส่ง</h3>
+        <button onclick="closePreviewModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+      </div>
+      
+      <div class="space-y-2 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
+        <div class="flex justify-between"><span class="text-slate-500">ลูกค้า:</span><span class="font-bold" id="pvName">-</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">รายการ:</span><span class="font-bold text-right" id="pvDesc">-</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">จำนวน:</span><span class="font-bold text-orange-600" id="pvQty">-</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">ราคา/ต้น:</span><span class="font-bold" id="pvUnit">-</span></div>
+        <div class="border-t pt-2 mt-2 flex justify-between">
+          <span class="text-slate-500">ยอดรวม (ก่อน VAT):</span><span class="font-bold" id="pvSub">-</span>
+        </div>
+        <div class="flex justify-between"><span class="text-slate-500">VAT 7%:</span><span class="font-bold" id="pvVat">-</span></div>
+        <div class="border-t pt-2 mt-2 flex justify-between items-center">
+          <span class="text-slate-700 font-bold">ยอดสุทธิรวมทั้งสิ้น:</span>
+          <span class="font-black text-blue-700 text-sm" id="pvGrand">-</span>
+        </div>
+      </div>
+
+      <div class="flex justify-between gap-2 pt-2">
+        <button onclick="closePreviewModal()" class="flex-1 py-2.5 border-2 border-slate-200 rounded-xl text-xs text-slate-600 font-bold bg-white hover:bg-slate-50">กลับไปแก้ไข</button>
+        <button onclick="confirmPreviewAndGoQuote()" class="flex-1 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow">✔ ยืนยันข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal เซ็นชื่อ -->
+  <div id="modalSignature" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-3">
+    <div class="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-slate-900" id="signatureModalTitle">ลงลายมือชื่อ</h3>
+        <button onclick="closeSignatureModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slate-500 font-medium">ใช้นิ้วลากเซ็นชื่อลงในกรอบด้านล่าง</p>
+      
+      <div class="border-2 border-dashed border-slate-400 rounded-xl bg-slate-50 flex justify-center p-1 overflow-hidden" style="touch-action: none;">
+        <canvas id="padCanvas" width="340" height="200" class="bg-white rounded shadow-sm"></canvas>
+      </div>
+
+      <div class="flex justify-between gap-2 pt-3">
+        <button onclick="clearPad()" class="px-5 py-2.5 border-2 border-slate-200 rounded-xl text-xs text-slate-600 font-bold bg-white hover:bg-slate-50">ล้างเส้นใหม่</button>
+        <div class="flex gap-2">
+          <button onclick="closeSignatureModal()" class="px-5 py-2.5 border-2 border-slate-200 rounded-xl text-xs text-slate-600 font-bold bg-white hover:bg-slate-50">ยกเลิก</button>
+          <button onclick="savePadSignature()" class="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow">✔ บันทึก</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PILE_DATABASE = {
+      micropile_i: [
+        { label: 'ขนาด I-18 (รับน้ำหนักปลอดภัย 10-15 ตัน)', price: 7500, cost: 3400 },
+        { label: 'ขนาด I-22 (รับน้ำหนักปลอดภัย 15-20 ตัน)', price: 8500, cost: 3800 },
+        { label: 'ขนาด I-26 (รับน้ำหนักปลอดภัย 25-30 ตัน)', price: 9500, cost: 4400 }
+      ],
+      spun_pile: [
+        { label: 'ขนาด Dia 20 ซม. (รับน้ำหนัก 20-25 ตัน)', price: 9500, cost: 4500 },
+        { label: 'ขนาด Dia 25 ซม. (รับน้ำหนัก 25-35 ตัน)', price: 10500, cost: 5200 },
+        { label: 'ขนาด Dia 30 ซม. (รับน้ำหนัก 30-35 ตัน)', price: 12000, cost: 6000 }
+      ],
+      hydraulic: [
+        { label: 'เข็มเหล็กกดไฮดรอลิค ไร้แรงสั่นสะเทือน (15-25 ตัน)', price: 12500, cost: 6500 },
+        { label: 'เข็มคอนกรีตกดไฮดรอลิค (20-30 ตัน)', price: 13500, cost: 7000 }
+      ],
+      screw_pile: [
+        { label: 'สกรูไพล์เหล็กกัลวาไนซ์ โครงสร้างเบา (5-10 ตัน)', price: 7500, cost: 3600 },
+        { label: 'สกรูไพล์ขนาดกลาง สำหรับต่อเติมบ้าน (10-15 ตัน)', price: 8500, cost: 4200 }
+      ],
+      underpinning: [
+        { label: 'ฐานเข็มกดซ่อมบ้านทรุด พร้อม Bracket รัดคาน', price: 25000, cost: 12000 },
+        { label: 'งานยกปรับระดับโครงสร้างอาคารทรุด (เฉพาะจุด)', price: 32000, cost: 16000 }
+      ]
+    };
+
+    let sigPad = null;
+    let currentSignRole = 'issuer';
+    let currentDocNo = 'HYM/134';
+
+    function showTab(tabName) {
+      document.getElementById('tabCost').classList.add('hidden');
+      document.getElementById('tabQuote').classList.add('hidden');
+      document.getElementById('tabArchive').classList.add('hidden');
+
+      ['Cost', 'Quote', 'Archive'].forEach(t => {
+        document.getElementById('nav' + t).className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5';
+      });
+
+      if (tabName === 'cost') {
+        document.getElementById('tabCost').classList.remove('hidden');
+        document.getElementById('navCost').className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition flex items-center justify-center gap-1.5';
+      } else if (tabName === 'quote') {
+        runEngine(); 
+        document.getElementById('tabQuote').classList.remove('hidden');
+        document.getElementById('navQuote').className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition flex items-center justify-center gap-1.5';
+      } else if (tabName === 'archive') {
+        renderArchiveList();
+        document.getElementById('tabArchive').classList.remove('hidden');
+        document.getElementById('navArchive').className = 'flex-1 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition flex items-center justify-center gap-1.5';
+      }
+    }
+
+    function onCategorySelectChange() {
+      const cat = document.getElementById('costCategory').value;
+      const specSelect = document.getElementById('costSizeSpec');
+      specSelect.innerHTML = '';
+      PILE_DATABASE[cat].forEach((item, index) => {
+        const opt = document.createElement('option');
+        opt.value = index;
+        opt.innerText = item.label;
+        opt.setAttribute('data-price', item.price);
+        opt.setAttribute('data-cost', item.cost);
+        specSelect.appendChild(opt);
+      });
+      onSpecSelectChange();
+    }
+
+    function onSpecSelectChange() {
+      const specSelect = document.getElementById('costSizeSpec');
+      const cur = specSelect.options[specSelect.selectedIndex];
+      if (cur) {
+        document.getElementById('costSellingUnitPrice').value = cur.getAttribute('data-price');
+        document.getElementById('unitCostPile').value = cur.getAttribute('data-cost');
+      }
+      runEngine();
+    }
+
+    function arabicToThaiBaht(num) {
+      if (!num || isNaN(num)) return "ศูนย์บาทถ้วน";
+      const numbers = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
+      const units = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
+      num = parseFloat(num).toFixed(2);
+      let [integerPart, decimalPart] = num.split(".");
+      let thaiText = "";
+      let intLen = integerPart.length;
+      for (let i = 0; i < intLen; i++) {
+        let digit = parseInt(integerPart.charAt(i));
+        let pos = intLen - i - 1;
+        if (digit !== 0) {
+          if (pos === 1 && digit === 1) { thaiText += "สิบ"; } 
+          else if (pos === 1 && digit === 2) { thaiText += "ยี่สิบ"; } 
+          else if (pos === 0 && digit === 1 && intLen > 1) { thaiText += "เอ็ด"; } 
+          else { thaiText += numbers[digit] + units[pos]; }
+        }
+      }
+      thaiText += "บาท";
+      if (decimalPart === "00") { thaiText += "ถ้วน"; } 
+      else {
+        let d1 = parseInt(decimalPart.charAt(0));
+        let d2 = parseInt(decimalPart.charAt(1));
+        if (d1 !== 0) { thaiText += (d1 === 1 ? "สิบ" : (d1 === 2 ? "ยี่สิบ" : numbers[d1] + "สิบ")); }
+        if (d2 !== 0) { thaiText += (d2 === 1 && d1 !== 0 ? "เอ็ด" : numbers[d2]); }
+        thaiText += "สตางค์";
+      }
+      return `(${thaiText})`;
+    }
+
+    function runEngine() {
+      const qty = parseFloat(document.getElementById('costQty').value) || 0;
+      const distance = parseFloat(document.getElementById('costDistance').value) || 0;
+      const unitPile = parseFloat(document.getElementById('unitCostPile').value) || 0;
+      const unitPlate = parseFloat(document.getElementById('unitCostPlate').value) || 0;
+      const laborDay = parseFloat(document.getElementById('unitCostLaborDay').value) || 0;
+
+      const matCost = qty * (unitPile + unitPlate);
+      const laborCost = laborDay; 
+      const transCost = 2000 + (distance * 25);
+      const totalCost = matCost + laborCost + transCost;
+
+      const sellUnit = parseFloat(document.getElementById('costSellingUnitPrice').value) || 0;
+      const sellTrans = parseFloat(document.getElementById('costSellingTransport').value) || 0;
+      const itemSubtotal = qty * sellUnit;
+      const quotationSubtotal = itemSubtotal + sellTrans;
+      const vat7 = quotationSubtotal * 0.07;
+      const grandTotal = quotationSubtotal + vat7;
+
+      const gp = quotationSubtotal - totalCost;
+      const gpPct = quotationSubtotal > 0 ? ((gp / quotationSubtotal) * 100).toFixed(1) : 0;
+      document.getElementById('costGrossProfitDisplay').innerText = `${gp.toLocaleString('th-TH')} บ. (${gpPct}%)`;
+
+      const custName = document.getElementById('custName').value || '-';
+      document.getElementById('docViewCustName').innerText = custName;
+      document.getElementById('docViewSignCustName').innerText = `(${custName})`;
+      document.getElementById('docViewCustTax').innerText = document.getElementById('custTaxId').value || '-';
+      document.getElementById('docViewCustAddr').innerText = document.getElementById('custAddress').value || '-';
+
+      const catSelect = document.getElementById('costCategory');
+      const catText = catSelect.options[catSelect.selectedIndex].text.split('. ')[1];
+      const specSelect = document.getElementById('costSizeSpec');
+      const specText = specSelect.options[specSelect.selectedIndex] ? specSelect.options[specSelect.selectedIndex].text : '';
+      const subDetail = document.getElementById('costSubDetail').value || '9.0 ม. เสริมพิเศษคอร่า';
+      const fullItemDesc = `${catText} ${specText} ${subDetail}`;
+
+      document.getElementById('docViewItemName').innerText = fullItemDesc;
+      document.getElementById('docViewItemQty').innerText = qty;
+      document.getElementById('docViewItemUnit').innerText = sellUnit.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('docViewItemTotal').innerText = itemSubtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('docViewTransUnit').innerText = sellTrans.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('docViewTransTotal').innerText = sellTrans.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+      const depPct = parseFloat(document.getElementById('depositPct').value) || 60;
+      const compPct = parseFloat(document.getElementById('completePct').value) || 40;
+      document.getElementById('docViewDepPct').innerText = `${depPct}%`;
+      document.getElementById('docViewCompPct').innerText = `${compPct}%`;
+      document.getElementById('docViewDepVal').innerText = (grandTotal * (depPct / 100)).toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('docViewCompVal').innerText = (grandTotal * (compPct / 100)).toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+      document.getElementById('docViewExcessCondition').innerText = `- ${document.getElementById('excessCondition').value || 'ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม.'}`;
+      document.getElementById('docViewSubTotal').innerText = quotationSubtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('docViewVat').innerText = vat7.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('docViewGrandTotal').innerText = grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('docViewThaiBaht').innerText = arabicToThaiBaht(grandTotal);
+
+      return {
+        custName: custName,
+        custAddr: document.getElementById('custAddress').value || '-',
+        itemDesc: fullItemDesc,
+        qty: qty,
+        unitSell: sellUnit,
+        subTotal: quotationSubtotal,
+        vat: vat7,
+        grandTotal: grandTotal,
+        docNo: currentDocNo
+      };
+    }
+
+    // ================= ระบบ Preview Modal =================
+    function openPreviewModal() {
+      const data = runEngine();
+      document.getElementById('pvName').innerText = data.custName;
+      document.getElementById('pvDesc').innerText = data.itemDesc;
+      document.getElementById('pvQty').innerText = `${data.qty} ต้น`;
+      document.getElementById('pvUnit').innerText = `${data.unitSell.toLocaleString('th-TH')} บ.`;
+      document.getElementById('pvSub').innerText = `${data.subTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.`;
+      document.getElementById('pvVat').innerText = `${data.vat.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.`;
+      document.getElementById('pvGrand').innerText = `${data.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท`;
+      document.getElementById('modalPreview').classList.remove('hidden');
+    }
+
+    function closePreviewModal() {
+      document.getElementById('modalPreview').classList.add('hidden');
+    }
+
+    function confirmPreviewAndGoQuote() {
+      closePreviewModal();
+      showTab('quote');
+    }
+
+    // ================= ระบบเซ็นชื่อ =================
+    function initSignaturePad() {
+      const canvas = document.getElementById('padCanvas');
+      sigPad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)', penColor: 'rgb(15, 23, 42)' });
+    }
+
+    function openSignatureModal(role) {
+      currentSignRole = role;
+      document.getElementById('signatureModalTitle').innerText = role === 'issuer' ? 'ลงลายมือชื่อ (บจก.หาดใหญ่ ไมโครไพล์)' : 'ลงลายมือชื่อ (ผู้สั่งจ้าง / ลูกค้า)';
+      document.getElementById('modalSignature').classList.remove('hidden');
+      if (!sigPad) {
+          initSignaturePad();
+      } else {
+          const canvas = document.getElementById('padCanvas');
+          const ratio =  Math.max(window.devicePixelRatio || 1, 1);
+          canvas.width = canvas.offsetWidth * ratio;
+          canvas.height = canvas.offsetHeight * ratio;
+          canvas.getContext("2d").scale(ratio, ratio);
+      }
+      sigPad.clear();
+    }
+
+    function closeSignatureModal() {
+      document.getElementById('modalSignature').classList.add('hidden');
+    }
+
+    function clearPad() {
+      if (sigPad) sigPad.clear();
+    }
+
+    function savePadSignature() {
+      if (sigPad.isEmpty()) {
+        alert('กรุณาใช้นิ้วเซ็นชื่อในกรอบก่อนกดบันทึกครับ');
+        return;
+      }
+      const dataUrl = sigPad.toDataURL('image/png');
+      if (currentSignRole === 'issuer') {
+        const img = document.getElementById('imgSignIssuer');
+        img.src = dataUrl;
+        img.classList.remove('hidden');
+        document.getElementById('placeholderSignIssuer').classList.add('hidden');
+      } else {
+        const img = document.getElementById('imgSignCustomer');
+        img.src = dataUrl;
+        img.classList.remove('hidden');
+        document.getElementById('placeholderSignCustomer').classList.add('hidden');
+      }
+      closeSignatureModal();
+    }
+
+    // ================= การเซฟและประวัติ =================
+    function saveQuotationToArchive() {
+      const d = runEngine();
+      const archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
+      const newDoc = {
+        id: Date.now(),
+        date: document.getElementById('docViewDate').innerText,
+        docNo: d.docNo,
+        custName: d.custName,
+        custAddr: d.custAddr,
+        itemDesc: d.itemDesc,
+        qty: d.qty,
+        grandTotal: d.grandTotal
+      };
+      archive.unshift(newDoc);
+      localStorage.setItem('hym_archive_docs', JSON.stringify(archive));
+      updateArchiveCount();
+      alert('บันทึกเอกสารลงประวัติเรียบร้อยแล้ว!');
+    }
+
+    function renderArchiveList() {
+      const archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
+      const container = document.getElementById('archiveRenderContainer');
+      if (archive.length === 0) {
+        container.innerHTML = '<p class="text-center text-slate-400 py-8 font-medium">ยังไม่มีประวัติใบเสนอราคา</p>';
+        return;
+      }
+      container.innerHTML = archive.map(item => `
+        <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-2 shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="font-extrabold text-slate-900 text-sm">${item.custName}</span>
+              <span class="text-[11px] text-orange-600 font-bold ml-2">(${item.docNo})</span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-medium">${item.date}</span>
+          </div>
+          <p class="text-slate-600 text-xs">📍 ${item.custAddr}</p>
+          <p class="text-slate-700 font-medium text-xs">🏗️ ${item.itemDesc} (${item.qty} ต้น)</p>
+          <div class="flex justify-between items-center pt-3 border-t border-slate-200 mt-2">
+            <span class="font-bold text-blue-900">ยอดรวม: ${item.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.</span>
+            <button onclick="deleteArchiveItem(${item.id})" class="bg-red-50 text-red-600 hover:bg-red-100 font-bold text-xs px-3 py-1.5 rounded-lg transition">ลบ</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function deleteArchiveItem(id) {
+      if (confirm('ยืนยันลบใบเสนอราคานี้ออกจากเครื่อง?')) {
+        let archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
+        archive = archive.filter(x => x.id !== id);
+        localStorage.setItem('hym_archive_docs', JSON.stringify(archive));
+        renderArchiveList();
+        updateArchiveCount();
+      }
+    }
+
+    function clearAllArchiveData() {
+      if (confirm('คำเตือน: คุณต้องการล้างประวัติทั้งหมดใช่หรือไม่?')) {
+        localStorage.removeItem('hym_archive_docs');
+        renderArchiveList();
+        updateArchiveCount();
+      }
+    }
+
+    function updateArchiveCount() {
+      const archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
+      document.getElementById('archiveCount').innerText = archive.length;
+    }
+
+    function exportQuotationPDF() {
+      const element = document.getElementById('quotationPaper');
+      const name = document.getElementById('custName').value || 'Customer';
+      const opt = {
+        margin:       [6, 6, 6, 6],
+        filename:     `ใบเสนอราคา_HYM_${name}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
+    // ================= ส่งข้อความ LINE & Email =================
+    function shareViaLine() {
+      const d = runEngine();
+      const text = `📋 *ใบเสนอราคา บจก.หาดใหญ่ ไมโครไพล์*\n` +
+                   `📄 เลขที่: ${d.docNo}\n` +
+                   `👤 นามลูกค้า: ${d.custName}\n` +
+                   `📍 หน้างาน: ${d.custAddr}\n` +
+                   `🏗️ งาน: ${d.itemDesc} (${d.qty} ต้น)\n` +
+                   `💰 ยอดสุทธิรวม VAT: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\n` +
+                   `สอบถามเพิ่มเติม โทร. 080-4549659`;
+      window.open(`https://line.me/R/share?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function shareViaEmail() {
+      const d = runEngine();
+      const targetEmail = document.getElementById('custEmail').value || '';
+      const subject = `ใบเสนอราคางานเสาเข็ม บจก.หาดใหญ่ ไมโครไพล์ เลขที่ ${d.docNo}`;
+      const body = `เรียน ${d.custName},\n\nบริษัท หาดใหญ่ ไมโครไพล์ จำกัด ขอส่งใบเสนอราคาเลขที่ ${d.docNo} สำหรับโครงการติดตั้งเสาเข็ม:\n- รายการ: ${d.itemDesc}\n- ปริมาณ: ${d.qty} ต้น\n- ยอดสุทธิรวมทั้งสิ้น: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\nขอแสดงความนับถือ,\nบริษัท หาดใหญ่ ไมโครไพล์ จำกัด\nโทร. 080-4549659`;
+      window.location.href = `mailto:${targetEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    // เริ่มต้น
+    onCategorySelectChange();
+    const today = new Date();
+    const thaiYrShort = (today.getFullYear() + 543).toString().slice(-2);
+    document.getElementById('docViewDate').innerText = `${today.getDate()}/${today.getMonth() + 1}/${thaiYrShort}`;
+    currentDocNo = 'HYM/' + Math.floor(100 + Math.random() * 900);
+    document.getElementById('docViewNo').innerText = currentDocNo;
+    updateArchiveCount();
+    runEngine();
+  </script>
+</body>
+</html>
 
