@@ -36,20 +36,9 @@
     <!-- ส่วนหัวโปรแกรม (Header โลโก้ HYM) -->
     <header class="no-print bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <div class="w-14 h-14 bg-[#4a4a4a] rounded-xl flex items-center justify-center p-1.5 shadow flex-shrink-0">
-          <svg viewBox="0 0 200 200" class="w-full h-full">
-            <g transform="translate(10, 10)">
-              <polygon points="90,10 40,40 40,110 90,140 140,110 140,40" fill="#f97316"/>
-              <polygon points="90,10 40,40 40,110 90,75" fill="#ea580c"/>
-              <line x1="40" y1="55" x2="140" y2="55" stroke="#ffffff" stroke-width="3"/>
-              <line x1="40" y1="70" x2="140" y2="70" stroke="#ffffff" stroke-width="3"/>
-              <line x1="40" y1="85" x2="140" y2="85" stroke="#ffffff" stroke-width="3"/>
-              <line x1="40" y1="100" x2="140" y2="100" stroke="#ffffff" stroke-width="3"/>
-              <path d="M 20,115 L 45,115 L 45,140 L 65,140 L 65,115 L 90,115 L 90,175 L 65,175 L 65,155 L 45,155 L 45,175 L 20,175 Z" fill="#111827" stroke="#ffffff" stroke-width="2"/>
-              <path d="M 95,115 L 115,150 L 135,115 L 155,115 L 125,160 L 125,175 L 105,175 L 105,160 L 75,115 Z" fill="#f97316" stroke="#ffffff" stroke-width="2"/>
-              <path d="M 140,115 L 155,115 L 165,150 L 175,115 L 190,115 L 190,175 L 175,175 L 175,140 L 167,165 L 160,165 L 152,140 L 152,175 L 140,175 Z" fill="#111827" stroke="#ffffff" stroke-width="2"/>
-            </g>
-          </svg>
+        <!-- โลโก้หน้าจอใช้งาน -->
+        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1 shadow flex-shrink-0">
+             <img src="image_3.png" alt="โลโก้ หาดใหญ่ ไมโครไพล์" class="w-full h-full object-contain rounded-lg">
         </div>
         <div>
           <h1 class="text-base sm:text-lg font-extrabold text-slate-900 leading-tight">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
@@ -74,6 +63,21 @@
     <!-- ================= แท็บ 1: กรอกข้อมูลและคำนวณต้นทุน ================= -->
     <main id="tabCost" class="space-y-4">
       
+      <!-- ข้อมูลผู้เสนอราคา (เซลล์) -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <h2 class="text-sm font-bold text-slate-800 border-b pb-2"><span class="text-blue-600 mr-1">●</span> ข้อมูลพนักงานขาย</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ชื่อผู้เสนอราคา (เซลล์)</label>
+            <input type="text" id="salesName" placeholder="เช่น คุณสมชาย นามสกุล" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์พนักงาน</label>
+            <input type="text" id="salesPhone" placeholder="08X-XXX-XXXX" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+          </div>
+        </div>
+      </div>
+
       <!-- ข้อมูลลูกค้า -->
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <h2 class="text-sm font-bold text-slate-800 border-b pb-2"><span class="text-orange-600 mr-1">●</span> 1. ข้อมูลลูกค้าและหน้างาน</h2>
@@ -191,11 +195,14 @@
       
       <!-- แถบปุ่มควบคุม (ซ่อนเวลาพิมพ์ PDF) -->
       <div id="quotationControls" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <button onclick="openSignatureModal('issuer')" class="bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ เซ็น (ผู้รับจ้าง)</button>
-          <button onclick="openSignatureModal('customer')" class="bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ เซ็น (ผู้ว่าจ้าง)</button>
-          <button onclick="saveQuotationToArchive()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">💾 บันทึกประวัติ</button>
-          <button onclick="exportQuotationPDF()" class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">📥 โหลด PDF</button>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="openSignatureModal('sales')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ ผู้เสนอราคา</button>
+          <button onclick="openSignatureModal('issuer')" class="bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ ผู้รับจ้าง (HYM)</button>
+          <button onclick="openSignatureModal('customer')" class="bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ ผู้ว่าจ้าง</button>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="saveQuotationToArchive()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">💾 บันทึกประวัติ</button>
+          <button onclick="exportQuotationPDF()" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">📥 โหลด PDF</button>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <button onclick="shareViaLine()" class="bg-[#06C755] hover:bg-[#05b34c] text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
@@ -207,116 +214,106 @@
         </div>
       </div>
 
-      <!-- แผ่นกระดาษใบเสนอราคาจริง -->
-      <div id="quotationPaper" class="paper-a4 p-5 sm:p-10 bg-white text-slate-800 shadow-xl rounded-xl sm:rounded-none mx-auto border border-slate-300">
+      <!-- แผ่นกระดาษใบเสนอราคาจริง (A4 แบบไม่มีเส้นตารางแข็ง โค้งมน) -->
+      <div id="quotationPaper" class="paper-a4 p-5 sm:p-10 bg-white text-slate-800 shadow-xl rounded-xl sm:rounded-none mx-auto">
         
         <!-- HEADER: โลโก้ตรงกลาง และที่อยู่ใต้โลโก้ -->
-        <div class="flex flex-col items-center justify-center text-center border-b-[1.5px] border-slate-200 pb-5 mb-5">
-          <div class="w-16 h-16 sm:w-20 sm:h-20 bg-[#333333] rounded-xl p-1.5 flex items-center justify-center mb-3">
-            <svg viewBox="0 0 200 200" class="w-full h-full">
-              <g transform="translate(10, 10)">
-                <polygon points="90,10 40,40 40,110 90,140 140,110 140,40" fill="#f97316"/>
-                <polygon points="90,10 40,40 40,110 90,75" fill="#ea580c"/>
-                <line x1="40" y1="55" x2="140" y2="55" stroke="#ffffff" stroke-width="3"/>
-                <line x1="40" y1="70" x2="140" y2="70" stroke="#ffffff" stroke-width="3"/>
-                <line x1="40" y1="85" x2="140" y2="85" stroke="#ffffff" stroke-width="3"/>
-                <line x1="40" y1="100" x2="140" y2="100" stroke="#ffffff" stroke-width="3"/>
-                <path d="M 20,115 L 45,115 L 45,140 L 65,140 L 65,115 L 90,115 L 90,175 L 65,175 L 65,155 L 45,155 L 45,175 L 20,175 Z" fill="#ffffff"/>
-                <path d="M 95,115 L 115,150 L 135,115 L 155,115 L 125,160 L 125,175 L 105,175 L 105,160 L 75,115 Z" fill="#f97316"/>
-                <path d="M 140,115 L 155,115 L 165,150 L 175,115 L 190,115 L 190,175 L 175,175 L 175,140 L 167,165 L 160,165 L 152,140 L 152,175 L 140,175 Z" fill="#ffffff"/>
-              </g>
-            </svg>
+        <div class="flex flex-col items-center justify-center text-center pb-4 mb-4">
+          <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-xl p-1 flex items-center justify-center mb-1">
+             <!-- ใช้รูปภาพที่ผู้ใช้แนบมา[span_1](start_span)[span_1](end_span) -->
+            <img src="image_3.png" alt="โลโก้ หาดใหญ่ ไมโครไพล์" class="w-full h-full object-contain rounded-lg">
           </div>
-          <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-1">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
-          <h2 class="text-xs sm:text-sm font-bold text-orange-600 tracking-widest uppercase mb-3">HATYAI MICROPILE CO.,LTD.</h2>
-          <p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
+          <p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed mt-2">
             12 หมู่ 2 ซ.ไพศาลอุทิศ 9 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110<br>
-            โทร. 089-6536312, 080-4549659 | เลขประจำตัวผู้เสียภาษี : 0905562001693
+            <span class="font-semibold text-orange-700">โทร. 089-6536312, 080-4549659</span> | เลขประจำตัวผู้เสียภาษี : 0905562001693
           </p>
         </div>
 
+        <hr class="border-slate-200 mb-6">
+
         <!-- ชื่อเอกสาร และ เลขที่เอกสาร -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-4">
-          <div class="bg-orange-50 border border-orange-200 text-orange-800 px-5 py-1.5 rounded-lg inline-block">
-            <h2 class="text-base sm:text-lg font-bold">ใบเสนอราคา</h2>
-            <p class="text-[10px] font-black tracking-widest opacity-80 uppercase">Quotation</p>
+        <div class="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-6 gap-4">
+          <!-- กล่องใบเสนอราคาแบบโค้งมนสวยงาม -->
+          <div class="bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-800 px-8 py-2 rounded-2xl shadow-sm inline-flex flex-col items-center justify-center">
+            <h2 class="text-lg sm:text-xl font-extrabold tracking-wide">ใบเสนอราคา</h2>
+            <p class="text-[10px] font-black tracking-widest opacity-70 uppercase">Quotation</p>
           </div>
-          <div class="text-[11px] sm:text-xs space-y-1 bg-slate-50 p-2.5 rounded-lg border border-slate-200 min-w-[150px] sm:text-right">
-            <div class="flex justify-between sm:justify-end sm:gap-4"><span class="font-bold text-slate-600">เลขที่ :</span> <span class="font-bold text-slate-900" id="docViewNo">HYM/134</span></div>
-            <div class="flex justify-between sm:justify-end sm:gap-4"><span class="font-bold text-slate-600">วันที่ :</span> <span class="font-medium text-slate-900" id="docViewDate">26/10/69</span></div>
+          <div class="text-[11px] sm:text-xs space-y-1 bg-slate-50 p-2.5 rounded-xl border border-slate-100 min-w-[160px] text-right">
+            <div class="flex justify-between sm:justify-end sm:gap-4"><span class="font-bold text-slate-500">เลขที่ :</span> <span class="font-bold text-slate-900" id="docViewNo">HYM/134</span></div>
+            <div class="flex justify-between sm:justify-end sm:gap-4"><span class="font-bold text-slate-500">วันที่ :</span> <span class="font-medium text-slate-900" id="docViewDate">26/10/69</span></div>
           </div>
         </div>
 
-        <!-- ข้อมูลลูกค้าในเอกสาร (แบบมีเส้นขอบบางๆ) -->
-        <div class="border border-slate-300 rounded-xl p-4 mb-6 text-[11px] sm:text-xs text-slate-700 bg-white">
-          <div class="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-2 mb-2">
-            <div class="font-bold">ชื่อลูกค้า :</div>
-            <div class="font-bold text-slate-900" id="docViewCustName">-</div>
+        <!-- ข้อมูลลูกค้าในเอกสาร (กรอบบาง โค้งมน) -->
+        <div class="border border-slate-200 rounded-2xl p-4 mb-6 text-[11px] sm:text-xs text-slate-700 bg-white shadow-sm">
+          <div class="grid grid-cols-[90px_1fr] sm:grid-cols-[110px_1fr] gap-2 mb-2">
+            <div class="font-bold text-slate-600">นามลูกค้า :</div>
+            <div class="font-bold text-slate-900 text-sm" id="docViewCustName">-</div>
           </div>
-          <div class="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-2 mb-2">
-            <div class="font-bold">ที่อยู่หน้างาน :</div>
+          <div class="grid grid-cols-[90px_1fr] sm:grid-cols-[110px_1fr] gap-2 mb-2">
+            <div class="font-bold text-slate-600">ที่อยู่หน้างาน :</div>
             <div class="text-slate-800 leading-relaxed" id="docViewCustAddr">-</div>
           </div>
-          <div class="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-2 items-center">
-            <div class="font-bold">เลขผู้เสียภาษี :</div>
+          <div class="grid grid-cols-[90px_1fr] sm:grid-cols-[110px_1fr] gap-2 items-center">
+            <div class="font-bold text-slate-600">เลขผู้เสียภาษี :</div>
             <div class="flex flex-wrap items-center gap-3">
               <span class="font-mono text-slate-900 font-bold" id="docViewCustTax">-</span>
-              <label class="flex items-center space-x-1"><input type="checkbox" checked disabled class="accent-slate-400 w-3 h-3"> <span class="text-slate-600">สำนักงานใหญ่</span></label>
+              <label class="flex items-center space-x-1"><input type="checkbox" checked disabled class="accent-slate-400 w-3 h-3"> <span class="text-slate-500">สำนักงานใหญ่</span></label>
               <label class="flex items-center space-x-1"><input type="checkbox" disabled class="w-3 h-3"> <span class="text-slate-400">สาขา..........</span></label>
             </div>
           </div>
         </div>
 
-        <!-- ตารางรายการ -->
-        <div class="mb-6 overflow-hidden rounded-xl border border-slate-200">
+        <!-- ตารางรายการ (แบบไม่มีเส้นกั้นแนวตั้ง ใช้กรอบมนรอบนอก) -->
+        <div class="mb-6 rounded-2xl border border-slate-200 shadow-sm bg-white overflow-hidden">
           <table class="w-full text-[11px] sm:text-xs text-left border-collapse">
-            <thead class="bg-orange-50/80 border-b border-orange-200 text-orange-900">
+            <thead class="bg-orange-50 text-orange-900 border-b border-orange-100">
               <tr>
-                <th class="py-2.5 px-2 text-center w-10 sm:w-12 font-bold">ลำดับ</th>
-                <th class="py-2.5 px-2 font-bold">รายการ</th>
-                <th class="py-2.5 px-2 text-center w-12 sm:w-16 font-bold">จำนวน</th>
-                <th class="py-2.5 px-2 text-right w-16 sm:w-24 font-bold">ราคา/หน่วย</th>
-                <th class="py-2.5 px-2 text-right w-20 sm:w-28 font-bold">จำนวนเงิน</th>
+                <th class="py-3 px-3 text-center w-12 font-bold tracking-wide">ลำดับ</th>
+                <th class="py-3 px-3 font-bold tracking-wide">รายการ</th>
+                <th class="py-3 px-3 text-center w-16 font-bold tracking-wide">จำนวน</th>
+                <th class="py-3 px-3 text-right w-24 font-bold tracking-wide">ราคา/หน่วย</th>
+                <th class="py-3 px-3 text-right w-28 font-bold tracking-wide">จำนวนเงิน</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100 bg-white">
+            <tbody class="divide-y divide-slate-100">
               <!-- Item 1 -->
               <tr>
-                <td class="py-3 px-2 text-center text-slate-500 align-top">1</td>
-                <td class="py-3 px-2 font-bold text-slate-800 leading-relaxed align-top" id="docViewItemName">-</td>
-                <td class="py-3 px-2 text-center font-bold text-slate-900 align-top" id="docViewItemQty">0</td>
-                <td class="py-3 px-2 text-right font-mono align-top" id="docViewItemUnit">0.00</td>
-                <td class="py-3 px-2 text-right font-mono font-bold text-slate-900 align-top" id="docViewItemTotal">0.00</td>
+                <td class="py-4 px-3 text-center text-slate-400 align-top">1</td>
+                <td class="py-4 px-3 font-bold text-slate-800 leading-relaxed align-top" id="docViewItemName">-</td>
+                <td class="py-4 px-3 text-center font-bold text-slate-900 align-top" id="docViewItemQty">0</td>
+                <td class="py-4 px-3 text-right font-mono align-top" id="docViewItemUnit">0.00</td>
+                <td class="py-4 px-3 text-right font-mono font-bold text-slate-900 align-top" id="docViewItemTotal">0.00</td>
               </tr>
               <!-- Item 2 -->
               <tr>
-                <td class="py-3 px-2 text-center text-slate-500 align-top">2</td>
-                <td class="py-3 px-2 font-bold text-slate-800 align-top">ค่าย้ายเครื่องจักรและอุปกรณ์</td>
-                <td class="py-3 px-2 text-center font-bold text-slate-900 align-top">1</td>
-                <td class="py-3 px-2 text-right font-mono align-top" id="docViewTransUnit">0.00</td>
-                <td class="py-3 px-2 text-right font-mono font-bold text-slate-900 align-top" id="docViewTransTotal">0.00</td>
+                <td class="py-4 px-3 text-center text-slate-400 align-top">2</td>
+                <td class="py-4 px-3 font-bold text-slate-800 align-top">ค่าย้ายเครื่องจักรและอุปกรณ์</td>
+                <td class="py-4 px-3 text-center font-bold text-slate-900 align-top">1</td>
+                <td class="py-4 px-3 text-right font-mono align-top" id="docViewTransUnit">0.00</td>
+                <td class="py-4 px-3 text-right font-mono font-bold text-slate-900 align-top" id="docViewTransTotal">0.00</td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <!-- ส่วนสรุปยอดและเงื่อนไข (แบ่ง 2 ฝั่ง ซ้าย/ขวา) -->
-        <div class="flex flex-col sm:flex-row justify-between items-start gap-5 mb-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start gap-6 mb-8">
           
           <!-- ฝั่งซ้าย: เงื่อนไขการชำระเงิน และหมายเหตุ -->
           <div class="w-full sm:w-7/12 space-y-4">
             
             <!-- เงื่อนไขการชำระเงิน -->
-            <div>
+            <div class="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl">
               <div class="text-[11px] sm:text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> เงื่อนไขการแบ่งชำระเงิน
               </div>
-              <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl space-y-2 text-[11px] sm:text-xs">
-                <div class="flex justify-between items-center text-slate-700">
+              <div class="space-y-1.5 text-[11px] sm:text-xs">
+                <div class="flex justify-between items-center text-slate-600">
                   <span>งวดที่ 1 (ตกลงมัดจำ) <span class="font-bold text-slate-900 ml-1" id="docViewDepPct">60%</span></span>
                   <span class="font-mono font-bold text-slate-900" id="docViewDepVal">0.00</span>
                 </div>
-                <div class="flex justify-between items-center border-t border-slate-200 pt-2 text-slate-700">
+                <div class="flex justify-between items-center border-t border-slate-200/60 pt-1.5 text-slate-600">
                   <span>งวดที่ 2 (งานเสร็จสิ้น) <span class="font-bold text-slate-900 ml-1" id="docViewCompPct">40%</span></span>
                   <span class="font-mono font-bold text-slate-900" id="docViewCompVal">0.00</span>
                 </div>
@@ -324,11 +321,11 @@
             </div>
 
             <!-- หมายเหตุ -->
-            <div>
-              <div class="text-[11px] sm:text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
+            <div class="px-2">
+              <div class="text-[11px] sm:text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span> เงื่อนไขหน้างาน / หมายเหตุ
               </div>
-              <div class="text-[10px] sm:text-[11px] text-slate-600 space-y-1 leading-relaxed pl-3 border-l-2 border-slate-200">
+              <div class="text-[10px] sm:text-[11px] text-slate-500 space-y-1 leading-relaxed pl-3 border-l-2 border-slate-200">
                 <p>- พื้นที่หน้างานต้องปรับให้พร้อมทำงาน และลำเลียงวัสดุเข้าได้</p>
                 <p>- หลังจากชำระมัดจำ 5-7 วัน ทีมงานเตรียมเข้าพื้นที่หน้างาน</p>
                 <p>- ผู้ว่าจ้างจัดเตรียมกระแสไฟฟ้าและน้ำประปาไว้ให้พร้อมใช้งาน</p>
@@ -337,59 +334,71 @@
             </div>
             
             <!-- ตัวอักษรยอดเงิน -->
-            <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-4 text-[11px] sm:text-xs">
-              <span class="font-bold text-slate-700">ตัวอักษร:</span>
-              <span class="text-slate-800 font-bold text-center sm:text-left" id="docViewThaiBaht">(ศูนย์บาทถ้วน)</span>
+            <div class="bg-blue-50/50 p-2.5 rounded-xl border border-blue-100 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-[11px] sm:text-xs">
+              <span class="font-bold text-slate-600">ยอดเงินตัวอักษร:</span>
+              <span class="text-blue-900 font-bold text-center sm:text-left" id="docViewThaiBaht">(ศูนย์บาทถ้วน)</span>
             </div>
 
           </div>
 
           <!-- ฝั่งขวา: สรุปยอดเงิน -->
-          <div class="w-full sm:w-5/12 bg-slate-50 p-4 rounded-xl border border-slate-200">
-            <div class="space-y-2.5 text-[11px] sm:text-xs">
-              <div class="flex justify-between items-center text-slate-700">
-                <span class="font-bold">รวมเป็นเงิน</span>
+          <div class="w-full sm:w-5/12 bg-slate-50/80 p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="space-y-3 text-[11px] sm:text-xs">
+              <div class="flex justify-between items-center text-slate-600">
+                <span class="font-semibold">รวมเป็นเงิน</span>
                 <span class="font-mono font-bold text-slate-900" id="docViewSubTotal">0.00</span>
               </div>
-              <div class="flex justify-between items-center text-slate-700">
-                <span class="font-bold">ภาษีมูลค่าเพิ่ม (7%)</span>
+              <div class="flex justify-between items-center text-slate-600">
+                <span class="font-semibold">ภาษีมูลค่าเพิ่ม (7%)</span>
                 <span class="font-mono font-bold text-slate-900" id="docViewVat">0.00</span>
               </div>
             </div>
-            <div class="mt-3.5 pt-3.5 border-t-2 border-slate-200 flex justify-between items-center">
+            <div class="mt-4 pt-4 border-t-[1.5px] border-slate-200 flex justify-between items-end">
               <span class="text-xs sm:text-sm font-black text-slate-900">ยอดสุทธิรวมทั้งสิ้น</span>
-              <span class="text-sm sm:text-base font-mono font-extrabold text-blue-700" id="docViewGrandTotal">0.00</span>
+              <span class="text-base sm:text-lg font-mono font-extrabold text-blue-700" id="docViewGrandTotal">0.00</span>
             </div>
           </div>
 
         </div>
 
-        <!-- ช่องลงนาม -->
-        <div class="grid grid-cols-2 gap-6 sm:gap-12 pt-6 border-t border-slate-200 text-[10px] sm:text-[11px] text-center">
+        <!-- ช่องลงนาม 3 ช่อง (ผู้เสนอราคา, ผู้รับจ้าง, ผู้ว่าจ้าง) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-slate-200 text-[10px] sm:text-[11px] text-center">
           
-          <!-- ฝั่งผู้เสนอราคา -->
+          <!-- 1. ผู้เสนอราคา (เซลล์) -->
           <div class="flex flex-col items-center">
-            <div class="flex items-end justify-center h-16 w-36 sm:w-52 border-b border-dotted border-slate-400 pb-1 mb-2 relative">
-              <img id="imgSignIssuer" src="" class="max-h-14 max-w-full hidden object-contain">
-              <span id="placeholderSignIssuer" class="text-slate-300 italic absolute bottom-1">(ลายเซ็น)</span>
+            <div class="flex items-end justify-center h-16 w-40 sm:w-full border-b border-dashed border-slate-300 pb-1 mb-2 relative">
+              <img id="imgSignSales" src="" class="max-h-14 max-w-full hidden object-contain">
+              <span id="placeholderSignSales" class="text-slate-300 italic absolute bottom-1 text-[9px]">(ลายเซ็น)</span>
             </div>
-            <div class="font-bold text-slate-800 mb-1">ผู้เสนอราคา / ผู้รับจ้าง</div>
-            <div class="text-slate-600 mb-1">(........................................................)</div>
-            <div class="text-slate-800 font-bold mb-1">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</div>
-            <div class="text-slate-500 mt-1">วันที่ _______/_______/_______</div>
+            <div class="text-slate-500 mb-1">ลงชื่อ <span class="font-bold text-slate-700">ผู้เสนอราคา</span></div>
+            <div class="text-slate-700 mb-0.5 font-medium" id="docViewSignSalesName">(........................................)</div>
+            <div class="text-slate-500 mt-1">วันที่ ....... / ....... / .......</div>
           </div>
 
-          <!-- ฝั่งผู้สั่งจ้าง -->
+          <!-- 2. ผู้รับจ้าง (บริษัท) -->
           <div class="flex flex-col items-center">
-            <div class="flex items-end justify-center h-16 w-36 sm:w-52 border-b border-dotted border-slate-400 pb-1 mb-2 relative">
-              <img id="imgSignCustomer" src="" class="max-h-14 max-w-full hidden object-contain">
-              <span id="placeholderSignCustomer" class="text-slate-300 italic absolute bottom-1">(ลายเซ็น)</span>
+            <div class="flex items-end justify-center h-16 w-40 sm:w-full border-b border-dashed border-slate-300 pb-1 mb-2 relative">
+              <img id="imgSignIssuer" src="" class="max-h-14 max-w-full hidden object-contain">
+              <span id="placeholderSignIssuer" class="text-slate-300 italic absolute bottom-1 text-[9px]">(ลายเซ็น)</span>
             </div>
-            <div class="font-bold text-slate-800 mb-1">ผู้สั่งจ้าง / ลูกค้า</div>
-            <div class="text-slate-600 mb-1 font-medium" id="docViewSignCustName">(........................................................)</div>
-            <div class="text-slate-800 font-bold mb-1 opacity-0">.</div> <!-- ตัวดันบรรทัดให้ตรงกัน -->
-            <div class="text-slate-500 mt-1">วันที่ _______/_______/_______</div>
+            <div class="text-slate-500 mb-1">ลงชื่อ <span class="font-bold text-slate-700">ผู้รับจ้าง</span></div>
+            <div class="text-slate-700 mb-0.5 font-medium">(........................................)</div>
+            <div class="text-slate-800 font-bold mb-0.5 text-[10px]">บจก.หาดใหญ่ ไมโครไพล์</div>
+            <div class="text-slate-500 mt-1">วันที่ ....... / ....... / .......</div>
           </div>
+
+          <!-- 3. ผู้ว่าจ้าง (ลูกค้า) -->
+          <div class="flex flex-col items-center">
+            <div class="flex items-end justify-center h-16 w-40 sm:w-full border-b border-dashed border-slate-300 pb-1 mb-2 relative">
+              <img id="imgSignCustomer" src="" class="max-h-14 max-w-full hidden object-contain">
+              <span id="placeholderSignCustomer" class="text-slate-300 italic absolute bottom-1 text-[9px]">(ลายเซ็น)</span>
+            </div>
+            <div class="text-slate-500 mb-1">ลงชื่อ <span class="font-bold text-slate-700">ผู้ว่าจ้าง</span></div>
+            <div class="text-slate-700 mb-0.5 font-medium" id="docViewSignCustName">(........................................)</div>
+            <div class="text-slate-800 font-bold mb-0.5 text-[10px] opacity-0">.</div> <!-- ดันบรรทัด -->
+            <div class="text-slate-500 mt-1">วันที่ ....... / ....... / .......</div>
+          </div>
+
         </div>
 
       </div>
@@ -592,11 +601,16 @@
       const gpPct = quotationSubtotal > 0 ? ((gp / quotationSubtotal) * 100).toFixed(1) : 0;
       document.getElementById('costGrossProfitDisplay').innerText = `${gp.toLocaleString('th-TH')} บ. (${gpPct}%)`;
 
+      // อัปเดตข้อมูลลูกค้า
       const custName = document.getElementById('custName').value || '-';
       document.getElementById('docViewCustName').innerText = custName;
       document.getElementById('docViewSignCustName').innerText = `(${custName})`;
       document.getElementById('docViewCustTax').innerText = document.getElementById('custTaxId').value || '-';
       document.getElementById('docViewCustAddr').innerText = document.getElementById('custAddress').value || '-';
+
+      // อัปเดตข้อมูลผู้เสนอราคา
+      const salesName = document.getElementById('salesName').value || '-';
+      document.getElementById('docViewSignSalesName').innerText = `(${salesName})`;
 
       const catSelect = document.getElementById('costCategory');
       const catText = catSelect.options[catSelect.selectedIndex].text.split('. ')[1];
@@ -668,7 +682,12 @@
 
     function openSignatureModal(role) {
       currentSignRole = role;
-      document.getElementById('signatureModalTitle').innerText = role === 'issuer' ? 'ลงลายมือชื่อ (ผู้เสนอราคา)' : 'ลงลายมือชื่อ (ผู้สั่งจ้าง / ลูกค้า)';
+      let title = '';
+      if (role === 'sales') title = 'ลงลายมือชื่อ (ผู้เสนอราคา)';
+      else if (role === 'issuer') title = 'ลงลายมือชื่อ (ผู้รับจ้าง/บริษัท)';
+      else title = 'ลงลายมือชื่อ (ผู้สั่งจ้าง / ลูกค้า)';
+      
+      document.getElementById('signatureModalTitle').innerText = title;
       document.getElementById('modalSignature').classList.remove('hidden');
       if (!sigPad) {
           initSignaturePad();
@@ -696,7 +715,12 @@
         return;
       }
       const dataUrl = sigPad.toDataURL('image/png');
-      if (currentSignRole === 'issuer') {
+      if (currentSignRole === 'sales') {
+        const img = document.getElementById('imgSignSales');
+        img.src = dataUrl;
+        img.classList.remove('hidden');
+        document.getElementById('placeholderSignSales').classList.add('hidden');
+      } else if (currentSignRole === 'issuer') {
         const img = document.getElementById('imgSignIssuer');
         img.src = dataUrl;
         img.classList.remove('hidden');
