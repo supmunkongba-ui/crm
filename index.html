@@ -22,9 +22,10 @@
 
     @media print {
       body * { visibility: hidden; }
-      #tabQuotation, #tabQuotation * { visibility: visible; }
+      /* แก้ไขบั๊กจาก #tabQuotation เป็น #tabQuote เพื่อให้พิมพ์ออก */
+      #tabQuote, #tabQuote * { visibility: visible; }
       #quotationControls { display: none !important; }
-      #tabQuotation { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
+      #tabQuote { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
       .no-print { display: none !important; }
     }
   </style>
@@ -33,10 +34,9 @@
 
   <div class="max-w-4xl mx-auto space-y-4">
     
-    <!-- ส่วนหัวโปรแกรม (Header โลโก้ HYM) -->
+    <!-- ส่วนหัวโปรแกรม -->
     <header class="no-print bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <!-- โลโก้หน้าจอใช้งาน -->
         <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-1 shadow flex-shrink-0">
              <img src="image_3.png" alt="โลโก้ หาดใหญ่ ไมโครไพล์" class="w-full h-full object-contain rounded-lg">
         </div>
@@ -62,8 +62,7 @@
 
     <!-- ================= แท็บ 1: กรอกข้อมูลและคำนวณต้นทุน ================= -->
     <main id="tabCost" class="space-y-4">
-      
-      <!-- ข้อมูลผู้เสนอราคา (เซลล์) -->
+      <!-- ข้อมูลผู้เสนอราคา -->
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <h2 class="text-sm font-bold text-slate-800 border-b pb-2"><span class="text-blue-600 mr-1">●</span> ข้อมูลพนักงานขาย</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -193,7 +192,7 @@
     <!-- ================= แท็บ 2: ใบเสนอราคาและเซ็นชื่อ ================= -->
     <section id="tabQuote" class="hidden space-y-4 relative">
       
-      <!-- แถบปุ่มควบคุม (ซ่อนเวลาพิมพ์ PDF) -->
+      <!-- แถบปุ่มควบคุม -->
       <div id="quotationControls" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="grid grid-cols-3 gap-2">
           <button onclick="openSignatureModal('sales')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ ผู้เสนอราคา</button>
@@ -214,13 +213,12 @@
         </div>
       </div>
 
-      <!-- แผ่นกระดาษใบเสนอราคาจริง (A4 แบบไม่มีเส้นตารางแข็ง โค้งมน) -->
+      <!-- แผ่นกระดาษใบเสนอราคาจริง (รูปแบบเส้นบางโค้งมน) -->
       <div id="quotationPaper" class="paper-a4 p-5 sm:p-10 bg-white text-slate-800 shadow-xl rounded-xl sm:rounded-none mx-auto">
         
-        <!-- HEADER: โลโก้ตรงกลาง และที่อยู่ใต้โลโก้ -->
+        <!-- HEADER -->
         <div class="flex flex-col items-center justify-center text-center pb-4 mb-4">
           <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-xl p-1 flex items-center justify-center mb-1">
-             <!-- ใช้รูปภาพที่ผู้ใช้แนบมา[span_1](start_span)[span_1](end_span) -->
             <img src="image_3.png" alt="โลโก้ หาดใหญ่ ไมโครไพล์" class="w-full h-full object-contain rounded-lg">
           </div>
           <p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed mt-2">
@@ -233,7 +231,6 @@
 
         <!-- ชื่อเอกสาร และ เลขที่เอกสาร -->
         <div class="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-6 gap-4">
-          <!-- กล่องใบเสนอราคาแบบโค้งมนสวยงาม -->
           <div class="bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-800 px-8 py-2 rounded-2xl shadow-sm inline-flex flex-col items-center justify-center">
             <h2 class="text-lg sm:text-xl font-extrabold tracking-wide">ใบเสนอราคา</h2>
             <p class="text-[10px] font-black tracking-widest opacity-70 uppercase">Quotation</p>
@@ -244,8 +241,8 @@
           </div>
         </div>
 
-        <!-- ข้อมูลลูกค้าในเอกสาร (กรอบบาง โค้งมน) -->
-        <div class="border border-slate-200 rounded-2xl p-4 mb-6 text-[11px] sm:text-xs text-slate-700 bg-white shadow-sm">
+        <!-- ข้อมูลลูกค้าในเอกสาร (กรอบบางพิเศษ โค้งมน) -->
+        <div class="border-[0.5px] border-slate-300 rounded-3xl p-5 mb-6 text-[11px] sm:text-xs text-slate-700 bg-white">
           <div class="grid grid-cols-[90px_1fr] sm:grid-cols-[110px_1fr] gap-2 mb-2">
             <div class="font-bold text-slate-600">นามลูกค้า :</div>
             <div class="font-bold text-slate-900 text-sm" id="docViewCustName">-</div>
@@ -264,19 +261,19 @@
           </div>
         </div>
 
-        <!-- ตารางรายการ (แบบไม่มีเส้นกั้นแนวตั้ง ใช้กรอบมนรอบนอก) -->
-        <div class="mb-6 rounded-2xl border border-slate-200 shadow-sm bg-white overflow-hidden">
-          <table class="w-full text-[11px] sm:text-xs text-left border-collapse">
-            <thead class="bg-orange-50 text-orange-900 border-b border-orange-100">
+        <!-- ตารางรายการ (ไร้เส้นกั้น ใช้กรอบบางมนรอบนอก) -->
+        <div class="mb-6 rounded-3xl border-[0.5px] border-slate-300 bg-white p-2">
+          <table class="w-full text-[11px] sm:text-xs text-left border-none" style="border-spacing: 0;">
+            <thead class="bg-slate-50/80 text-slate-700">
               <tr>
-                <th class="py-3 px-3 text-center w-12 font-bold tracking-wide">ลำดับ</th>
+                <th class="py-3 px-3 text-center w-12 font-bold tracking-wide rounded-l-2xl">ลำดับ</th>
                 <th class="py-3 px-3 font-bold tracking-wide">รายการ</th>
                 <th class="py-3 px-3 text-center w-16 font-bold tracking-wide">จำนวน</th>
                 <th class="py-3 px-3 text-right w-24 font-bold tracking-wide">ราคา/หน่วย</th>
-                <th class="py-3 px-3 text-right w-28 font-bold tracking-wide">จำนวนเงิน</th>
+                <th class="py-3 px-3 text-right w-28 font-bold tracking-wide rounded-r-2xl">จำนวนเงิน</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100">
+            <tbody class="border-none">
               <!-- Item 1 -->
               <tr>
                 <td class="py-4 px-3 text-center text-slate-400 align-top">1</td>
@@ -297,14 +294,14 @@
           </table>
         </div>
 
-        <!-- ส่วนสรุปยอดและเงื่อนไข (แบ่ง 2 ฝั่ง ซ้าย/ขวา) -->
+        <!-- ส่วนสรุปยอดและเงื่อนไข -->
         <div class="flex flex-col sm:flex-row justify-between items-start gap-6 mb-8">
           
           <!-- ฝั่งซ้าย: เงื่อนไขการชำระเงิน และหมายเหตุ -->
           <div class="w-full sm:w-7/12 space-y-4">
             
             <!-- เงื่อนไขการชำระเงิน -->
-            <div class="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl">
+            <div class="bg-slate-50/50 border-[0.5px] border-slate-300 p-4 rounded-3xl">
               <div class="text-[11px] sm:text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> เงื่อนไขการแบ่งชำระเงิน
               </div>
@@ -334,7 +331,7 @@
             </div>
             
             <!-- ตัวอักษรยอดเงิน -->
-            <div class="bg-blue-50/50 p-2.5 rounded-xl border border-blue-100 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-[11px] sm:text-xs">
+            <div class="bg-blue-50/30 p-3 rounded-2xl border-[0.5px] border-blue-200 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-[11px] sm:text-xs mt-4">
               <span class="font-bold text-slate-600">ยอดเงินตัวอักษร:</span>
               <span class="text-blue-900 font-bold text-center sm:text-left" id="docViewThaiBaht">(ศูนย์บาทถ้วน)</span>
             </div>
@@ -342,7 +339,7 @@
           </div>
 
           <!-- ฝั่งขวา: สรุปยอดเงิน -->
-          <div class="w-full sm:w-5/12 bg-slate-50/80 p-4 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="w-full sm:w-5/12 bg-slate-50/50 p-5 rounded-3xl border-[0.5px] border-slate-300">
             <div class="space-y-3 text-[11px] sm:text-xs">
               <div class="flex justify-between items-center text-slate-600">
                 <span class="font-semibold">รวมเป็นเงิน</span>
@@ -361,7 +358,7 @@
 
         </div>
 
-        <!-- ช่องลงนาม 3 ช่อง (ผู้เสนอราคา, ผู้รับจ้าง, ผู้ว่าจ้าง) -->
+        <!-- ช่องลงนาม 3 ช่อง -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-slate-200 text-[10px] sm:text-[11px] text-center">
           
           <!-- 1. ผู้เสนอราคา (เซลล์) -->
@@ -417,7 +414,7 @@
 
   </div>
 
-  <!-- Modal ดูตัวอย่างใบเสนอราคา (Live Preview Modal) -->
+  <!-- Modal ดูตัวอย่างใบเสนอราคา -->
   <div id="modalPreview" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-3 overflow-y-auto">
     <div class="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl my-4">
       <div class="flex justify-between items-center border-b pb-2">
