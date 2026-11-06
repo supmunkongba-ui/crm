@@ -1419,7 +1419,7 @@
       const message = `📋 *${d.docTitle} บจก.หาดใหญ่ ไมโครไพล์*\n📄 เลขที่: ${d.docNo}\n👤 นามลูกค้า: ${d.custName}\n📍 สถานที่: ${d.custAddr}\n🏗️ งาน: ${d.itemDesc} ${d.itemDesc2 ? 'และ ' + d.itemDesc2 : ''} (รวม ${d.qty + d.qty2} ต้น)\n💰 ยอดสุทธิ: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\nสอบถามเพิ่มเติม โทร. 080-4549659`;
       
       // ใช้ line.me/R/msg/text/? เพื่อส่งข้อความเข้าแชทได้โดยตรง
-      window.open(`https://line.me/R/msg/text/?${encodeURIComponent(message)}`, '_blank');
+      window.open(`https://line.me/R/msg/text/?text=${encodeURIComponent(message)}`, '_blank');
     }
     
     function shareViaEmail() {
