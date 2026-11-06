@@ -134,9 +134,24 @@
             <label class="block font-semibold text-slate-700 mb-1">ที่อยู่หน้างาน / สถานที่ติดตั้ง *</label>
             <input type="text" id="custAddress" placeholder="เช่น 211/2 ม.6 ต.นาทวี อ.นาทวี จ.สงขลา 90160" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
           </div>
-          <div class="sm:col-span-2">
-            <label class="block font-semibold text-slate-700 mb-1">อีเมลลูกค้า</label>
-            <input type="email" id="custEmail" placeholder="example@email.com" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+          <!-- ส่วนข้อมูลติดต่อใหม่ -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:col-span-2 pt-3 border-t border-slate-100 mt-1">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">เบอร์มือถือ</label>
+              <input type="text" id="custMobile" placeholder="08X-XXX-XXXX" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">เบอร์สำนักงาน (ต่อ)</label>
+              <input type="text" id="custOfficePhone" placeholder="02-XXX-XXXX ต่อ XX" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">อีเมล</label>
+              <input type="email" id="custEmail" placeholder="example@email.com" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">LINE ID</label>
+              <input type="text" id="custLine" placeholder="@lineid" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+            </div>
           </div>
         </div>
       </div>
@@ -311,6 +326,10 @@
             <div class="grid grid-cols-[110px_1fr] gap-2 mb-1.5">
               <div class="font-bold text-slate-600">ที่อยู่/สถานที่ :</div>
               <div class="text-slate-800 leading-relaxed" id="docViewCustAddr">-</div>
+            </div>
+            <div class="grid grid-cols-[110px_1fr] gap-2 mb-1.5">
+              <div class="font-bold text-slate-600">ข้อมูลติดต่อ :</div>
+              <div class="text-slate-800 leading-relaxed" id="docViewCustContact">-</div>
             </div>
             <div class="grid grid-cols-[110px_1fr] gap-2 items-center">
               <div class="font-bold text-slate-600">เลขผู้เสียภาษี :</div>
@@ -500,7 +519,28 @@
             <label class="block font-semibold text-slate-700 mb-1">ที่อยู่หน้างาน / สถานที่ติดตั้ง (สำหรับออกใบเสร็จ)</label>
             <input type="text" id="dbCustAddress" class="w-full border rounded-xl p-2 bg-slate-50 outline-none">
           </div>
+          
+          <!-- ส่วนข้อมูลติดต่อใหม่ในฐานข้อมูล -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:col-span-2 pt-2 border-t border-slate-100 mt-1">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">เบอร์มือถือ</label>
+              <input type="text" id="dbCustMobile" class="w-full border rounded-xl p-2 bg-slate-50 outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">เบอร์สำนักงาน (ต่อ)</label>
+              <input type="text" id="dbCustOffice" class="w-full border rounded-xl p-2 bg-slate-50 outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">อีเมล</label>
+              <input type="text" id="dbCustEmail" class="w-full border rounded-xl p-2 bg-slate-50 outline-none">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">LINE ID</label>
+              <input type="text" id="dbCustLine" class="w-full border rounded-xl p-2 bg-slate-50 outline-none">
+            </div>
+          </div>
         </div>
+        
         <div class="flex justify-end gap-2 pt-2 border-t">
             <button onclick="clearCustomerForm()" class="px-4 py-2 border border-slate-300 bg-white rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 shadow-sm">ล้างข้อมูล</button>
             <button onclick="saveCustomerDB()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm">💾 บันทึกลงฐานข้อมูล</button>
@@ -908,10 +948,23 @@
 
       // 2. ดึงข้อมูลไปแสดงในเอกสาร
       const custName = document.getElementById('custName').value || '-';
+      const mobile = document.getElementById('custMobile').value.trim();
+      const office = document.getElementById('custOfficePhone').value.trim();
+      const email = document.getElementById('custEmail').value.trim();
+      const lineId = document.getElementById('custLine').value.trim();
+      
       document.getElementById('docViewCustName').innerText = custName;
       document.getElementById('docViewSignCustName').innerText = `(${custName})`;
       document.getElementById('docViewCustTax').innerText = document.getElementById('custTaxId').value || '-';
       document.getElementById('docViewCustAddr').innerText = document.getElementById('custAddress').value || '-';
+      
+      // ประมวลผลและแสดงข้อมูลติดต่อ
+      let contacts = [];
+      if(mobile) contacts.push(`โทร: ${mobile}`);
+      if(office) contacts.push(`สำนักงาน: ${office}`);
+      if(email) contacts.push(`อีเมล: ${email}`);
+      if(lineId) contacts.push(`LINE: ${lineId}`);
+      document.getElementById('docViewCustContact').innerText = contacts.length > 0 ? contacts.join(' | ') : '-';
 
       const salesName = document.getElementById('salesName').value || '-';
       document.getElementById('docViewSignSalesName').innerText = `(${salesName})`;
@@ -984,6 +1037,7 @@
 
       return {
         custName: custName, custAddr: document.getElementById('custAddress').value || '-', custTaxId: document.getElementById('custTaxId').value, 
+        custMobile: mobile, custOffice: office, custEmail: email, custLine: lineId,
         salesName: document.getElementById('salesName').value, catValue: document.getElementById('costCategory').value, 
         specValue: document.getElementById('costSizeSpec').value, subDetail: document.getElementById('costSubDetail').value, itemDesc: fullItemDesc, qty: qty, unitSell: sellUnit, 
         specValue2: specSelect2.value, subDetail2: subDetail2, itemDesc2: fullItemDesc2, qty2: qty2, unitSell2: sellUnit2,
@@ -1109,6 +1163,13 @@
         document.getElementById('custName').value = d.custName;
         document.getElementById('custTaxId').value = d.custTaxId || '';
         document.getElementById('custAddress').value = d.custAddr;
+        
+        // คืนค่าข้อมูลติดต่อ
+        document.getElementById('custMobile').value = d.custMobile || '';
+        document.getElementById('custOfficePhone').value = d.custOffice || '';
+        document.getElementById('custEmail').value = d.custEmail || '';
+        document.getElementById('custLine').value = d.custLine || '';
+
         document.getElementById('salesName').value = d.salesName || '';
         document.getElementById('costCategory').value = d.catValue;
         onCategorySelectChange();
@@ -1240,26 +1301,108 @@
     function resetDefaultProducts() { if(confirm('ข้อมูลสินค้าทั้งหมดจะถูกแทนที่ด้วยค่าเริ่มต้น ยืนยันหรือไม่?')) { localStorage.setItem('hym_products', JSON.stringify(DEFAULT_PRODUCTS)); renderProductDB(); initProductDropdowns(); } }
 
     function saveCustomerDB() {
-      const id = document.getElementById('dbCustId').value; const name = document.getElementById('dbCustName').value.trim(); const tax = document.getElementById('dbCustTax').value.trim(); const addr = document.getElementById('dbCustAddress').value.trim();
+      const id = document.getElementById('dbCustId').value;
+      const name = document.getElementById('dbCustName').value.trim();
+      const tax = document.getElementById('dbCustTax').value.trim();
+      const addr = document.getElementById('dbCustAddress').value.trim();
+      
+      const mobile = document.getElementById('dbCustMobile').value.trim();
+      const office = document.getElementById('dbCustOffice').value.trim();
+      const email = document.getElementById('dbCustEmail').value.trim();
+      const line = document.getElementById('dbCustLine').value.trim();
+
       if(!name) { alert('กรุณาระบุชื่อลูกค้าหรือชื่อบริษัทครับ'); document.getElementById('dbCustName').focus(); return; }
+      
       let customers = JSON.parse(localStorage.getItem('hym_customers') || '[]');
-      if(id) { const idx = customers.findIndex(c => c.id == id); if(idx > -1) customers[idx] = { id, name, tax, addr }; } else { customers.push({ id: Date.now().toString(), name, tax, addr }); }
-      localStorage.setItem('hym_customers', JSON.stringify(customers)); clearCustomerForm(); renderCustomerDB(); alert('บันทึกข้อมูลลูกค้าเรียบร้อยครับ');
+      if(id) { 
+          const idx = customers.findIndex(c => c.id == id); 
+          if(idx > -1) customers[idx] = { id, name, tax, addr, mobile, office, email, line }; 
+      } else { 
+          customers.push({ id: Date.now().toString(), name, tax, addr, mobile, office, email, line }); 
+      }
+      
+      localStorage.setItem('hym_customers', JSON.stringify(customers)); 
+      clearCustomerForm(); 
+      renderCustomerDB(); 
+      alert('บันทึกข้อมูลลูกค้าเรียบร้อยครับ');
     }
+
     function renderCustomerDB() {
-      const customers = JSON.parse(localStorage.getItem('hym_customers') || '[]'); const container = document.getElementById('customerDbContainer');
+      const customers = JSON.parse(localStorage.getItem('hym_customers') || '[]'); 
+      const container = document.getElementById('customerDbContainer');
       if (customers.length === 0) return container.innerHTML = '<p class="text-center text-slate-400 py-6">ยังไม่มีข้อมูลลูกค้าในระบบ</p>';
-      container.innerHTML = customers.map(c => `<div class="border border-slate-200 rounded-xl p-3.5 bg-slate-50 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-3"><div><div class="font-bold text-slate-900 text-sm">${c.name}</div><div class="text-[11px] text-slate-500 mt-1 space-y-0.5"><div><span class="font-semibold">Tax ID:</span> ${c.tax || '-'}</div><div class="truncate max-w-sm"><span class="font-semibold">ที่อยู่:</span> ${c.addr || '-'}</div></div></div><div class="flex gap-2"><button onclick="useCustomer('${c.id}')" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-2 rounded-lg font-bold transition">ดึงไปใช้</button><button onclick="editCustomer('${c.id}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-bold transition">แก้ไข</button><button onclick="deleteCustomer('${c.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg font-bold transition">ลบ</button></div></div>`).join('');
+      
+      container.innerHTML = customers.map(c => {
+          const contactInfo = [c.mobile ? `มือถือ: ${c.mobile}` : '', c.office ? `ต่อ: ${c.office}` : '', c.line ? `LINE: ${c.line}` : ''].filter(Boolean).join(', ');
+          return `
+            <div class="border border-slate-200 rounded-xl p-3.5 bg-slate-50 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+              <div>
+                <div class="font-bold text-slate-900 text-sm">${c.name}</div>
+                <div class="text-[11px] text-slate-500 mt-1 space-y-0.5">
+                  <div><span class="font-semibold">Tax ID:</span> ${c.tax || '-'}</div>
+                  <div class="truncate max-w-sm"><span class="font-semibold">ที่อยู่:</span> ${c.addr || '-'}</div>
+                  <div class="truncate max-w-sm text-blue-700"><span class="font-semibold">ติดต่อ:</span> ${contactInfo || '-'}</div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="useCustomer('${c.id}')" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-2 rounded-lg font-bold transition">ดึงไปใช้</button>
+                <button onclick="editCustomer('${c.id}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-bold transition">แก้ไข</button>
+                <button onclick="deleteCustomer('${c.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg font-bold transition">ลบ</button>
+              </div>
+            </div>`
+      }).join('');
     }
+
     function editCustomer(id) {
       const c = JSON.parse(localStorage.getItem('hym_customers') || '[]').find(x => x.id === id);
-      if(c) { document.getElementById('dbCustId').value = c.id; document.getElementById('dbCustName').value = c.name; document.getElementById('dbCustTax').value = c.tax; document.getElementById('dbCustAddress').value = c.addr; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+      if(c) { 
+          document.getElementById('dbCustId').value = c.id; 
+          document.getElementById('dbCustName').value = c.name; 
+          document.getElementById('dbCustTax').value = c.tax; 
+          document.getElementById('dbCustAddress').value = c.addr; 
+          
+          document.getElementById('dbCustMobile').value = c.mobile || '';
+          document.getElementById('dbCustOffice').value = c.office || '';
+          document.getElementById('dbCustEmail').value = c.email || '';
+          document.getElementById('dbCustLine').value = c.line || '';
+
+          window.scrollTo({ top: 0, behavior: 'smooth' }); 
+      }
     }
-    function deleteCustomer(id) { if(confirm('ยืนยันการลบข้อมูลลูกค้าท่านนี้?')) { localStorage.setItem('hym_customers', JSON.stringify(JSON.parse(localStorage.getItem('hym_customers') || '[]').filter(x => x.id !== id))); renderCustomerDB(); } }
-    function clearCustomerForm() { document.getElementById('dbCustId').value = ''; document.getElementById('dbCustName').value = ''; document.getElementById('dbCustTax').value = ''; document.getElementById('dbCustAddress').value = ''; }
+
+    function deleteCustomer(id) { 
+        if(confirm('ยืนยันการลบข้อมูลลูกค้าท่านนี้?')) { 
+            localStorage.setItem('hym_customers', JSON.stringify(JSON.parse(localStorage.getItem('hym_customers') || '[]').filter(x => x.id !== id))); 
+            renderCustomerDB(); 
+        } 
+    }
+
+    function clearCustomerForm() { 
+        document.getElementById('dbCustId').value = ''; 
+        document.getElementById('dbCustName').value = ''; 
+        document.getElementById('dbCustTax').value = ''; 
+        document.getElementById('dbCustAddress').value = ''; 
+        
+        document.getElementById('dbCustMobile').value = '';
+        document.getElementById('dbCustOffice').value = '';
+        document.getElementById('dbCustEmail').value = '';
+        document.getElementById('dbCustLine').value = '';
+    }
+
     function useCustomer(id) {
       const c = JSON.parse(localStorage.getItem('hym_customers') || '[]').find(x => x.id === id);
-      if(c) { document.getElementById('custName').value = c.name; document.getElementById('custTaxId').value = c.tax; document.getElementById('custAddress').value = c.addr; showTab('cost'); alert(`ดึงข้อมูล ${c.name} เรียบร้อยแล้ว`); }
+      if(c) { 
+          document.getElementById('custName').value = c.name; 
+          document.getElementById('custTaxId').value = c.tax; 
+          document.getElementById('custAddress').value = c.addr; 
+          
+          document.getElementById('custMobile').value = c.mobile || '';
+          document.getElementById('custOfficePhone').value = c.office || '';
+          document.getElementById('custEmail').value = c.email || '';
+          document.getElementById('custLine').value = c.line || '';
+
+          showTab('cost'); alert(`ดึงข้อมูล ${c.name} เรียบร้อยแล้ว`); 
+      }
     }
 
     // ================= การพิมพ์และส่งออก =================
@@ -1269,13 +1412,20 @@
       const docType = document.getElementById('docTitleEN').innerText;
       html2pdf().set({ margin: [4, 4, 4, 4], filename: `${docType}_HYM_${name}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(element).save();
     }
+    
+    // อัปเดตฟังก์ชัน Share via LINE
     function shareViaLine() {
       const d = runEngine();
-      window.open(`https://line.me/R/share?text=${encodeURIComponent(`📋 *${d.docTitle} บจก.หาดใหญ่ ไมโครไพล์*\n📄 เลขที่: ${d.docNo}\n👤 นามลูกค้า: ${d.custName}\n📍 สถานที่: ${d.custAddr}\n🏗️ งาน: ${d.itemDesc} ${d.itemDesc2 ? 'และ ' + d.itemDesc2 : ''} (รวม ${d.qty + d.qty2} ต้น)\n💰 ยอดสุทธิ: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\nสอบถามเพิ่มเติม โทร. 080-4549659`)}`, '_blank');
+      const message = `📋 *${d.docTitle} บจก.หาดใหญ่ ไมโครไพล์*\n📄 เลขที่: ${d.docNo}\n👤 นามลูกค้า: ${d.custName}\n📍 สถานที่: ${d.custAddr}\n🏗️ งาน: ${d.itemDesc} ${d.itemDesc2 ? 'และ ' + d.itemDesc2 : ''} (รวม ${d.qty + d.qty2} ต้น)\n💰 ยอดสุทธิ: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\nสอบถามเพิ่มเติม โทร. 080-4549659`;
+      
+      // ใช้ line.me/R/msg/text/? เพื่อส่งข้อความเข้าแชทได้โดยตรง
+      window.open(`https://line.me/R/msg/text/?${encodeURIComponent(message)}`, '_blank');
     }
+    
     function shareViaEmail() {
       const d = runEngine();
-      window.location.href = `mailto:${document.getElementById('custEmail').value}?subject=${encodeURIComponent(`${d.docTitle} งานเสาเข็ม บจก.หาดใหญ่ ไมโครไพล์ เลขที่ ${d.docNo}`)}&body=${encodeURIComponent(`เรียน ${d.custName},\n\nบริษัท หาดใหญ่ ไมโครไพล์ จำกัด ขอส่ง${d.docTitle} เลขที่ ${d.docNo} สำหรับโครงการติดตั้งเสาเข็ม:\n- รายการ: ${d.itemDesc} ${d.itemDesc2 ? 'และ ' + d.itemDesc2 : ''}\n- ปริมาณ: ${d.qty + d.qty2} ต้น\n- ยอดสุทธิรวมทั้งสิ้น: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\nขอแสดงความนับถือ,\nบริษัท หาดใหญ่ ไมโครไพล์ จำกัด\nโทร. 080-4549659`)}`;
+      const emailTarget = document.getElementById('custEmail').value || '';
+      window.location.href = `mailto:${emailTarget}?subject=${encodeURIComponent(`${d.docTitle} งานเสาเข็ม บจก.หาดใหญ่ ไมโครไพล์ เลขที่ ${d.docNo}`)}&body=${encodeURIComponent(`เรียน ${d.custName},\n\nบริษัท หาดใหญ่ ไมโครไพล์ จำกัด ขอส่ง${d.docTitle} เลขที่ ${d.docNo} สำหรับโครงการติดตั้งเสาเข็ม:\n- รายการ: ${d.itemDesc} ${d.itemDesc2 ? 'และ ' + d.itemDesc2 : ''}\n- ปริมาณ: ${d.qty + d.qty2} ต้น\n- ยอดสุทธิรวมทั้งสิ้น: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\nขอแสดงความนับถือ,\nบริษัท หาดใหญ่ ไมโครไพล์ จำกัด\nโทร. 080-4549659`)}`;
     }
 
     // ================= เริ่มต้นโปรแกรม =================
