@@ -52,13 +52,15 @@
   <div class="max-w-4xl mx-auto space-y-4">
     
     <!-- ส่วนหัวโปรแกรม -->
-    <header class="no-print bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-row items-center justify-center gap-4 sm:gap-6">
-      <div class="h-16 bg-white rounded-xl flex items-center justify-center p-1 shadow shrink-0">
+    <header class="no-print bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-row items-center justify-between gap-4 sm:gap-6">
+      <div class="h-20 w-auto flex items-center justify-center p-1 shadow shrink-0 rounded-2xl bg-white border border-slate-100">
            <img src="IMG_0044.jpeg" onerror="this.src='https://via.placeholder.com/100x50?text=LOGO'" alt="โลโก้ หาดใหญ่ ไมโครไพล์" class="h-full w-auto object-contain rounded-lg">
       </div>
-      <div class="text-left">
-        <h1 class="text-xl sm:text-2xl font-black text-slate-900 leading-tight">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
-        <p class="text-sm text-orange-600 font-bold tracking-wide mt-1">HATYAI MICROPILE CO.,LTD. | โทร. 080-4549659</p>
+      <div class="text-right text-xs sm:text-sm text-slate-600 space-y-1">
+        <h1 class="text-lg sm:text-xl font-black text-slate-900 leading-tight">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
+        <p>12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา</p>
+        <p>เลขประจำตัวผู้เสียภาษี : 0-9055-62001-69-3</p>
+        <p class="text-orange-600 font-bold tracking-wide mt-1">โทร. 080-4549659, 089-653-6312</p>
       </div>
     </header>
 
@@ -110,7 +112,7 @@
         </select>
       </div>
 
-      <!-- ข้อมูลพนักงานขาย -->
+      <!-- ข้อมูลพนักงานขาย / ฐานข้อมูลส่วนตัว -->
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex justify-between items-center border-b pb-2">
             <h2 class="text-sm font-bold text-slate-800"><span class="text-blue-600 mr-1">●</span> ข้อมูลพนักงานขาย</h2>
@@ -124,6 +126,9 @@
             <label class="block font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์พนักงาน</label>
             <input type="text" id="salesPhone" placeholder="08X-XXX-XXXX" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
           </div>
+        </div>
+        <div class="text-right">
+            <button onclick="saveMyProfile()" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg font-bold transition">💾 บันทึกเป็นค่าเริ่มต้น</button>
         </div>
       </div>
 
@@ -301,14 +306,15 @@
         <div id="quotationPaper" class="paper-a4-fixed p-10 sm:p-14 shadow-xl flex flex-col">
           
           <!-- HEADER: โลโก้ซ้าย และ ข้อมูลบริษัท -->
-          <div class="flex flex-row items-center justify-center pb-5 mb-5 border-b border-slate-200 gap-6 w-full">
+          <div class="flex flex-row items-center justify-between pb-5 mb-5 border-b border-slate-200 gap-6 w-full">
             <div class="h-24 w-auto flex items-center justify-center shrink-0">
               <img src="IMG_0044.jpeg" onerror="this.src='https://via.placeholder.com/200x80?text=LOGO'" alt="โลโก้ หาดใหญ่ ไมโครไพล์" class="h-full w-auto object-contain rounded-lg">
             </div>
-            <div class="text-[13px] text-slate-700 leading-relaxed text-left">
+            <div class="text-[13px] text-slate-700 leading-relaxed text-right">
               <h2 class="text-2xl font-black text-slate-900 mb-1">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h2>
-              <p>12 หมู่ 2 ซ.ไพศาลอุทิศ 9 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
-              <p>เลขประจำตัวผู้เสียภาษี : 0905562001693 | <span class="font-semibold text-orange-700">โทร. 089-6536312, 080-4549659</span></p>
+              <p>12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
+              <p>เลขประจำตัวผู้เสียภาษี : 0-9055-62001-69-3</p>
+              <p class="font-semibold text-orange-700 mt-1">โทร. 080-4549659, 089-6536312</p>
             </div>
           </div>
 
@@ -325,7 +331,7 @@
           </div>
 
           <!-- ข้อมูลลูกค้า -->
-          <div class="border-[0.5px] border-slate-300 rounded-3xl p-4 mb-5 text-sm text-slate-700 bg-white">
+          <div class="border-[0.5px] border-slate-300 rounded-3xl p-4 mb-5 text-sm text-slate-700 bg-white shadow-sm">
             <div class="grid grid-cols-[110px_1fr] gap-2 mb-1.5">
               <div class="font-bold text-slate-600">นามลูกค้า :</div>
               <div class="font-bold text-slate-900 text-[15px]" id="docViewCustName">-</div>
@@ -349,7 +355,7 @@
           </div>
 
           <!-- ตารางรายการ -->
-          <div class="mb-2 rounded-3xl border-[0.5px] border-slate-300 bg-white p-2">
+          <div class="mb-2 rounded-3xl border-[0.5px] border-slate-300 bg-white p-2 shadow-sm">
             <table class="w-full text-sm text-left border-none" style="border-spacing: 0;" id="invoiceTable">
               <thead class="bg-slate-50/80 text-slate-700">
                 <tr>
@@ -442,7 +448,7 @@
               </div>
             </div>
 
-            <div class="w-[39%] bg-slate-50/50 p-5 rounded-3xl border-[0.5px] border-slate-300 self-end">
+            <div class="w-[39%] bg-slate-50/50 p-5 rounded-3xl border-[0.5px] border-slate-300 self-end shadow-sm">
               <div class="space-y-3 text-[14px]">
                 <div class="flex justify-between items-center text-slate-600">
                   <span class="font-semibold">รวมเป็นเงิน</span>
@@ -548,21 +554,34 @@
     <!-- ================= แท็บ 5: ภาพหน้างาน (Gallery) ================= -->
     <section id="tabGallery" class="hidden no-print space-y-4">
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-          <h2 class="text-sm font-bold text-slate-800 border-b pb-2">➕ อัปโหลดภาพหน้างาน</h2>
+          <h2 class="text-sm font-bold text-slate-800 border-b pb-2">➕ อัปโหลด/ถ่าย ภาพหน้างาน</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
-                  <label class="block font-semibold text-slate-700 mb-1">เลือกรูปภาพ</label>
-                  <input type="file" id="galleryUpload" accept="image/*" class="w-full border rounded-xl p-2 bg-slate-50 outline-none">
+                  <label class="block font-semibold text-slate-700 mb-1">เลือกรูปภาพ / ถ่ายภาพ</label>
+                  <div class="flex gap-2">
+                      <!-- ปุ่มอัปโหลดจากเครื่อง -->
+                      <label class="flex-1 border border-slate-300 rounded-xl p-2.5 bg-white text-center cursor-pointer hover:bg-slate-50 font-bold text-slate-700 transition">
+                          📁 เลือกจากอัลบั้ม
+                          <input type="file" id="galleryUpload" accept="image/*" class="hidden" onchange="previewGalleryImage(this)">
+                      </label>
+                      <!-- ปุ่มเปิดกล้องถ่ายรูปทันที -->
+                      <label class="flex-1 bg-sky-100 border border-sky-300 rounded-xl p-2.5 text-center cursor-pointer hover:bg-sky-200 font-bold text-sky-800 transition">
+                          📷 ถ่ายรูปหน้างาน
+                          <input type="file" id="galleryCamera" accept="image/*" capture="environment" class="hidden" onchange="previewGalleryImage(this)">
+                      </label>
+                  </div>
+                  <!-- แสดงชื่อไฟล์ที่เลือก -->
+                  <div id="galleryFileName" class="mt-2 text-[10px] text-slate-500 truncate"></div>
               </div>
               <div>
                   <label class="block font-semibold text-slate-700 mb-1">รายละเอียด / ชื่อโครงการ</label>
-                  <input type="text" id="galleryDesc" placeholder="เช่น งานต่อเติมบ้านพี่เอก หาดใหญ่" class="w-full border rounded-xl p-2 bg-slate-50 outline-none">
+                  <input type="text" id="galleryDesc" placeholder="เช่น งานต่อเติมบ้านพี่เอก หาดใหญ่" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
               </div>
           </div>
           <div class="text-right">
               <button onclick="saveGalleryPhoto()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow transition">💾 บันทึกรูปภาพ</button>
           </div>
-          <p class="text-[10px] text-orange-600 text-center mt-2">* ภาพจะถูกลดขนาดอัตโนมัติเพื่อประหยัดพื้นที่ หากอัปโหลดเยอะเกินไปข้อมูลในเครื่องอาจเต็มได้</p>
+          <p class="text-[10px] text-orange-600 text-center mt-2">* ภาพจะถูกลดขนาดอัตโนมัติเพื่อประหยัดพื้นที่เครื่อง</p>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="galleryContainer">
@@ -749,6 +768,23 @@
     let currentRandomID = Math.floor(100 + Math.random() * 900);
     let isEditingOldDoc = false;
     let editingDocNo = '';
+
+    // โหลดข้อมูลโปรไฟล์ตอนเปิดแอป
+    function loadMyProfile() {
+        const profile = JSON.parse(localStorage.getItem('hym_my_profile') || '{}');
+        if(profile.salesName) document.getElementById('salesName').value = profile.salesName;
+        if(profile.salesPhone) document.getElementById('salesPhone').value = profile.salesPhone;
+    }
+    
+    // บันทึกโปรไฟล์ส่วนตัว
+    function saveMyProfile() {
+        const profile = {
+            salesName: document.getElementById('salesName').value.trim(),
+            salesPhone: document.getElementById('salesPhone').value.trim()
+        };
+        localStorage.setItem('hym_my_profile', JSON.stringify(profile));
+        alert('บันทึกข้อมูลส่วนตัวสำหรับเริ่มต้นแล้ว');
+    }
 
     function getProductDB() {
         let db = localStorage.getItem('hym_products');
@@ -1384,12 +1420,31 @@
     }
 
     // ================= ภาพหน้างาน (Gallery) =================
+    // พรีวิวชื่อไฟล์ที่เลือก
+    function previewGalleryImage(input) {
+        if(input.files && input.files[0]) {
+            document.getElementById('galleryFileName').innerText = "ไฟล์ที่เลือก: " + input.files[0].name;
+            
+            // สลับการล้างค่าของอีก input เพื่อไม่ให้ชนกัน
+            if(input.id === 'galleryUpload') {
+                document.getElementById('galleryCamera').value = '';
+            } else {
+                document.getElementById('galleryUpload').value = '';
+            }
+        }
+    }
+
     function saveGalleryPhoto() {
-        const fileInput = document.getElementById('galleryUpload');
+        const uploadInput = document.getElementById('galleryUpload');
+        const cameraInput = document.getElementById('galleryCamera');
         const descInput = document.getElementById('galleryDesc');
-        if (!fileInput.files || !fileInput.files[0]) return alert('กรุณาเลือกรูปภาพก่อนบันทึกครับ');
         
-        const file = fileInput.files[0];
+        let file = null;
+        if (uploadInput.files && uploadInput.files[0]) file = uploadInput.files[0];
+        else if (cameraInput.files && cameraInput.files[0]) file = cameraInput.files[0];
+        
+        if (!file) return alert('กรุณาเลือกรูปภาพ หรือ ถ่ายรูปหน้างานก่อนบันทึกครับ');
+        
         const reader = new FileReader();
         
         reader.onload = function(e) {
@@ -1422,8 +1477,10 @@
                 
                 try {
                     localStorage.setItem('hym_gallery', JSON.stringify(gallery));
-                    fileInput.value = '';
+                    uploadInput.value = '';
+                    cameraInput.value = '';
                     descInput.value = '';
+                    document.getElementById('galleryFileName').innerText = '';
                     renderGallery();
                     alert('บันทึกรูปภาพสำเร็จ');
                 } catch(e) {
@@ -1643,6 +1700,7 @@
 
     // ================= เริ่มต้นโปรแกรม =================
     initProductDropdowns();
+    loadMyProfile();
     const todayInit = new Date();
     document.getElementById('docViewDate').innerText = `${todayInit.getDate()}/${todayInit.getMonth() + 1}/${(todayInit.getFullYear() + 543).toString().slice(-2)}`;
     syncDocType('front'); 
