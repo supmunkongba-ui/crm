@@ -1433,7 +1433,11 @@
     const todayInit = new Date();
     document.getElementById('docViewDate').innerText = `${todayInit.getDate()}/${todayInit.getMonth() + 1}/${(todayInit.getFullYear() + 543).toString().slice(-2)}`;
     syncDocType('front'); 
+    
+    // โหลดประวัติครั้งแรกเพื่อให้แน่ใจว่าแท็บประวัติทำงาน
+    renderArchiveList();
     updateArchiveCount();
+    
     runEngine();
   </script>
 </body>
