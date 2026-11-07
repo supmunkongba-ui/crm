@@ -358,11 +358,13 @@
         </div>
       </div>
 
+      <!-- เพิ่ม Wrapper ตรงนี้เพื่อบังคับไม่ให้กระดาษหดตัว -->
       <div class="paper-wrapper">
+        
         <!-- กระดาษ A4 -->
         <div id="quotationPaper" class="paper-a4-fixed p-10 sm:p-14 shadow-xl flex flex-col">
           
-          <!-- HEADER: โลโก้ซ้าย และ ข้อมูลบริษัท -->
+          <!-- HEADER: โลโก้ซ้าย และ ข้อมูลบริษัทขวา -->
           <div class="flex flex-row items-center justify-start pb-5 mb-5 border-b border-slate-200 gap-6 w-full">
             <div class="h-24 w-auto flex items-center justify-center p-1 rounded-2xl bg-white border border-slate-100 relative shrink-0">
               <img src="A0117C09-C98C-43EC-BBD2-DA96A41B05D4.png" 
@@ -374,67 +376,73 @@
                  <span class="text-white">M</span>
               </div>
             </div>
-            <div class="text-[13px] text-slate-700 leading-relaxed text-left flex-1">
-              <h2 class="text-2xl font-black text-slate-900 mb-1">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h2>
-              <p>12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
-              <p>เลขประจำตัวผู้เสียภาษี : 0-9055-62001-69-3</p>
-              <p class="font-semibold text-orange-700 mt-1">โทร. 080-4549659, 089-6536312</p>
+            
+            <!-- ข้อมูลบริษัท และ ป้ายชื่อเอกสาร -->
+            <div class="text-[13px] text-slate-700 leading-relaxed text-left flex-1 grid grid-cols-[1fr_auto] gap-4 items-center">
+              <div>
+                <h2 class="text-2xl font-black text-slate-900 mb-1">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h2>
+                <p>12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
+                <p>เลขประจำตัวผู้เสียภาษี : 0-9055-62001-69-3</p>
+                <p class="font-semibold text-orange-700 mt-1">โทร. 080-4549659, 089-6536312</p>
+              </div>
+              
+              <!-- ป้ายชื่อเอกสาร ย้ายมาอยู่ขวาของข้อมูลบริษัท -->
+              <div class="bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-800 px-6 py-2 rounded-2xl shadow-sm flex flex-col items-center justify-center shrink-0">
+                <h2 class="text-xl font-extrabold" id="docTitleTH">ใบเสนอราคา</h2>
+                <p class="text-xs font-black opacity-70 uppercase" id="docTitleEN">Quotation</p>
+              </div>
             </div>
           </div>
 
-          <!-- ชื่อเอกสาร และ เลขที่เอกสาร -->
-          <div class="flex flex-row justify-between items-start mb-5 gap-4">
-            <div class="bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-800 px-8 py-2 rounded-2xl shadow-sm inline-flex flex-col items-center justify-center shrink-0">
-              <h2 class="text-xl font-extrabold" id="docTitleTH">ใบเสนอราคา</h2>
-              <p class="text-xs font-black opacity-70 uppercase" id="docTitleEN">Quotation</p>
+          <!-- ข้อมูลลูกค้า และ เลขที่เอกสาร/วันที่ -->
+          <div class="flex flex-row gap-4 mb-5">
+            <!-- ข้อมูลลูกค้า -->
+            <div class="border-[0.5px] border-slate-300 rounded-3xl p-4 text-sm text-slate-700 bg-white shadow-sm flex-1">
+              <div class="grid grid-cols-[110px_1fr] gap-2 mb-1.5">
+                <div class="font-bold text-slate-600">นามลูกค้า :</div>
+                <div class="font-bold text-slate-900 text-[15px]" id="docViewCustName">-</div>
+              </div>
+              <div class="grid grid-cols-[110px_1fr] gap-2 mb-1.5">
+                <div class="font-bold text-slate-600">ที่อยู่/สถานที่ :</div>
+                <div class="text-slate-800 leading-relaxed" id="docViewCustAddr">-</div>
+              </div>
+              <div class="grid grid-cols-[110px_1fr] gap-2 mb-1.5">
+                <div class="font-bold text-slate-600">ข้อมูลติดต่อ :</div>
+                <div class="text-slate-800 leading-relaxed" id="docViewCustContact">-</div>
+              </div>
+              <div class="grid grid-cols-[110px_1fr] gap-2 items-center">
+                <div class="font-bold text-slate-600">เลขผู้เสียภาษี :</div>
+                <div class="flex items-center gap-4">
+                  <span class="font-mono text-slate-900 font-bold" id="docViewCustTax">-</span>
+                  <label class="flex items-center space-x-1"><input type="checkbox" checked disabled class="accent-slate-400 w-3 h-3"> <span class="text-slate-500 text-xs">สำนักงานใหญ่</span></label>
+                  <label class="flex items-center space-x-1"><input type="checkbox" disabled class="w-3 h-3"> <span class="text-slate-400 text-xs">สาขา..........</span></label>
+                </div>
+              </div>
             </div>
             
-            <div class="text-sm space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-100 w-[280px] shrink-0">
-              <div class="flex justify-between items-center">
+            <!-- เลขที่เอกสารและวันที่ ย้ายมาอยู่ขวาของข้อมูลลูกค้า -->
+            <div class="text-sm space-y-2 bg-slate-50 p-4 rounded-3xl border border-slate-200 w-[240px] shrink-0 self-stretch flex flex-col justify-center shadow-sm">
+              <div class="flex justify-between items-center border-b border-slate-200 pb-2">
                 <span class="font-bold text-slate-500" style="white-space: nowrap;">เลขที่ :</span> 
-                <span class="font-bold text-slate-900 editable-cell px-2 py-0.5 outline-none text-right flex-1 ml-2" id="docViewNo" contenteditable="true" oninput="isDocNoManuallyEdited = true">HYM</span>
+                <span class="font-bold text-slate-900 editable-cell px-1 py-0.5 outline-none text-right flex-1 ml-2" id="docViewNo" contenteditable="true" oninput="isDocNoManuallyEdited = true">HYM</span>
               </div>
-              <div class="flex justify-between items-center">
+              <div class="flex justify-between items-center pt-1">
                 <span class="font-bold text-slate-500" style="white-space: nowrap;">วันที่ :</span> 
-                <span class="font-medium text-slate-900 editable-cell px-2 py-0.5 outline-none text-right flex-1 ml-2" id="docViewDate" contenteditable="true">-</span>
+                <span class="font-medium text-slate-900 editable-cell px-1 py-0.5 outline-none text-right flex-1 ml-2" id="docViewDate" contenteditable="true">-</span>
               </div>
             </div>
           </div>
 
-          <!-- ข้อมูลลูกค้า -->
-          <div class="border-[0.5px] border-slate-300 rounded-3xl p-4 mb-5 text-sm text-slate-700 bg-white shadow-sm">
-            <div class="grid grid-cols-[110px_1fr] gap-2 mb-1.5">
-              <div class="font-bold text-slate-600">นามลูกค้า :</div>
-              <div class="font-bold text-slate-900 text-[15px]" id="docViewCustName">-</div>
-            </div>
-            <div class="grid grid-cols-[110px_1fr] gap-2 mb-1.5">
-              <div class="font-bold text-slate-600">ที่อยู่/สถานที่ :</div>
-              <div class="text-slate-800 leading-relaxed" id="docViewCustAddr">-</div>
-            </div>
-            <div class="grid grid-cols-[110px_1fr] gap-2 mb-1.5">
-              <div class="font-bold text-slate-600">ข้อมูลติดต่อ :</div>
-              <div class="text-slate-800 leading-relaxed" id="docViewCustContact">-</div>
-            </div>
-            <div class="grid grid-cols-[110px_1fr] gap-2 items-center">
-              <div class="font-bold text-slate-600">เลขผู้เสียภาษี :</div>
-              <div class="flex items-center gap-4">
-                <span class="font-mono text-slate-900 font-bold" id="docViewCustTax">-</span>
-                <label class="flex items-center space-x-1"><input type="checkbox" checked disabled class="accent-slate-400 w-3 h-3"> <span class="text-slate-500 text-xs">สำนักงานใหญ่</span></label>
-                <label class="flex items-center space-x-1"><input type="checkbox" disabled class="w-3 h-3"> <span class="text-slate-400 text-xs">สาขา..........</span></label>
-              </div>
-            </div>
-          </div>
-
-          <!-- ตารางรายการ -->
+          <!-- ตารางรายการ (ขยายช่องรายการให้กว้างขึ้น ลดช่องจำนวน) -->
           <div class="mb-2 rounded-3xl border-[0.5px] border-slate-300 bg-white p-2 shadow-sm flex-1">
             <table class="w-full text-sm text-left border-none" style="border-spacing: 0;" id="invoiceTable">
               <thead class="bg-slate-50/80 text-slate-700">
                 <tr>
                   <th class="py-2.5 px-2 text-center w-12 font-bold rounded-l-2xl">ลำดับ</th>
                   <th class="py-2.5 px-2 font-bold">รายการ</th>
-                  <th class="py-2.5 px-2 text-center w-20 font-bold">จำนวน</th>
-                  <th class="py-2.5 px-2 text-right w-28 font-bold">ราคา/หน่วย</th>
-                  <th class="py-2.5 px-2 text-right w-32 font-bold">จำนวนเงิน</th>
+                  <th class="py-2.5 px-2 text-center w-16 font-bold">จำนวน</th> <!-- ลด w-20 เหลือ w-16 -->
+                  <th class="py-2.5 px-2 text-right w-24 font-bold">ราคา/หน่วย</th> <!-- ลด w-28 เหลือ w-24 -->
+                  <th class="py-2.5 px-2 text-right w-28 font-bold">จำนวนเงิน</th> <!-- ลด w-32 เหลือ w-28 -->
                   <th class="py-2.5 px-2 w-10 no-print-element rounded-r-2xl"></th>
                 </tr>
               </thead>
@@ -497,7 +505,7 @@
               </tbody>
             </table>
           </div>
-          <div class="mb-3 text-right no-print-element pr-4">
+          <div class="mb-5 text-right no-print-element pr-4">
               <button onclick="addNewRow()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-1.5 px-3 rounded-lg border border-slate-300 transition">➕ เพิ่มรายการอิสระ</button>
           </div>
 
@@ -1819,4 +1827,3 @@
   </script>
 </body>
 </html>
-ใบเสนอราคายังมี 2 หน้าอยู่ครับ
