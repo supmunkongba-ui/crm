@@ -76,7 +76,7 @@
 
   <div class="max-w-4xl mx-auto space-y-4">
     
-    <!-- ส่วนหัวโปรแกรม (โครงสร้างโลโก้ซ้าย ข้อความขวา) -->
+    <!-- ส่วนหัวโปรแกรม (ปรับโครงสร้างโลโก้ซ้าย ข้อความขวา) -->
     <header class="no-print bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-row items-center justify-start gap-4 sm:gap-6 overflow-hidden">
       <!-- ส่วนโลโก้ -->
       <div class="h-16 sm:h-20 w-auto flex items-center justify-center p-1 shadow shrink-0 rounded-2xl bg-white border border-slate-100 relative">
@@ -286,7 +286,7 @@
         </div>
       </div>
 
-      <!-- ข้อมูลพนักงานขาย -->
+      <!-- ข้อมูลพนักงานขาย ย้ายมาอยู่ด้านล่าง -->
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex justify-between items-center border-b pb-2">
             <h2 class="text-sm font-bold text-slate-800"><span class="text-blue-600 mr-1">●</span> 4. ข้อมูลพนักงานขาย</h2>
@@ -357,22 +357,24 @@
             </div>
           </div>
 
-          <!-- ชื่อเอกสาร และ เลขที่เอกสาร (แบบระบุ HYM นำหน้าและคลิกพิมพ์แก้ได้โดยตรง) -->
+          <!-- ชื่อเอกสาร และ เลขที่เอกสาร (แบบแก้ไขได้) -->
           <div class="flex flex-row justify-between items-end mb-5 gap-4">
             <div class="bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-800 px-8 py-2 rounded-2xl shadow-sm inline-flex flex-col items-center justify-center">
               <h2 class="text-xl font-extrabold" id="docTitleTH">ใบเสนอราคา</h2>
               <p class="text-xs font-black opacity-70 uppercase" id="docTitleEN">Quotation</p>
             </div>
-            <div class="text-sm space-y-1 bg-slate-50 p-2.5 rounded-xl border border-slate-100 min-w-[210px] text-right">
-              <div class="flex justify-between gap-2 items-center">
-                <span class="font-bold text-slate-500 whitespace-nowrap">เลขที่ :</span> 
-                <span class="font-bold text-slate-900 editable-cell px-2 py-0.5 outline-none text-right w-full min-w-[100px]" id="docViewNo" contenteditable="true" oninput="isDocNoManuallyEdited = true">HYM</span>
+            
+            <div class="text-sm space-y-1 bg-slate-50 p-2.5 rounded-xl border border-slate-100 min-w-[200px] text-right">
+              <div class="flex justify-between gap-4 items-center">
+                <span class="font-bold text-slate-500">เลขที่ :</span> 
+                <span class="font-bold text-slate-900 editable-cell px-2 py-0.5 outline-none min-w-[100px] text-right w-full" id="docViewNo" contenteditable="true" oninput="isDocNoManuallyEdited = true">HYM</span>
               </div>
-              <div class="flex justify-between gap-2 items-center">
-                <span class="font-bold text-slate-500 whitespace-nowrap">วันที่ :</span> 
-                <span class="font-medium text-slate-900 editable-cell px-2 py-0.5 outline-none text-right w-full min-w-[100px]" id="docViewDate" contenteditable="true">-</span>
+              <div class="flex justify-between gap-4 items-center">
+                <span class="font-bold text-slate-500">วันที่ :</span> 
+                <span class="font-medium text-slate-900 editable-cell px-2 py-0.5 outline-none min-w-[100px] text-right w-full" id="docViewDate" contenteditable="true">-</span>
               </div>
             </div>
+            
           </div>
 
           <!-- ข้อมูลลูกค้า -->
@@ -519,12 +521,13 @@
             </div>
           </div>
 
-          <!-- ช่องลงนาม -->
+          <!-- ช่องลงนาม (เปลี่ยนลายเซ็นผู้รับจ้าง 2 จุด พร้อมแก้ชื่อ) -->
           <div class="grid grid-cols-3 gap-6 pt-5 border-t border-slate-200 text-xs text-center">
             
             <!-- ผู้เสนอราคา -->
             <div class="flex flex-col items-center">
               <div class="flex items-end justify-center h-16 w-full border-b border-dashed border-slate-300 pb-1 mb-2 relative">
+                <!-- ใส่ลายเซ็นอัตโนมัติ (image_12.png) -->
                 <img id="imgSignSales" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" class="max-h-14 max-w-full object-contain">
                 <span id="placeholderSignSales" class="text-slate-300 italic absolute bottom-1 text-[10px] hidden">(ลายเซ็น)</span>
               </div>
@@ -536,6 +539,7 @@
             <!-- ผู้รับจ้าง -->
             <div class="flex flex-col items-center">
               <div class="flex items-end justify-center h-16 w-full border-b border-dashed border-slate-300 pb-1 mb-2 relative">
+                <!-- ใส่ลายเซ็นอัตโนมัติ (image_12.png) -->
                 <img id="imgSignIssuer" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" class="max-h-14 max-w-full object-contain">
                 <span id="placeholderSignIssuer" class="text-slate-300 italic absolute bottom-1 text-[10px] hidden">(ลายเซ็น)</span>
               </div>
@@ -806,13 +810,14 @@
     let currentRandomID = Math.floor(100 + Math.random() * 900);
     let isEditingOldDoc = false;
     let editingDocNo = '';
-    let isDocNoManuallyEdited = false; // ตรวจจับการพิมพ์แก้ไขรหัสเอง
+    let isDocNoManuallyEdited = false; // ตัวแปรสำหรับป้องกันไม่ให้ระบบลบข้อมูลที่คุณพิมพ์แก้เอง
 
     // โหลดข้อมูลโปรไฟล์ตอนเปิดแอป
     function loadMyProfile() {
         const profile = JSON.parse(localStorage.getItem('hym_my_profile') || '{}');
         if(profile.salesName) {
             document.getElementById('salesName').value = profile.salesName;
+            // อัปเดตชื่อผู้เสนอราคาในใบเสนอราคาให้ตรงกัน
             document.getElementById('docViewSignSalesName').innerText = `(${profile.salesName})`;
         } else {
             document.getElementById('docViewSignSalesName').innerText = `(คุณศรายุทธ เมรุลัตร์)`;
@@ -827,6 +832,8 @@
             salesPhone: document.getElementById('salesPhone').value.trim()
         };
         localStorage.setItem('hym_my_profile', JSON.stringify(profile));
+        
+        // อัปเดตชื่อผู้เสนอราคาในหน้าแสดงผลทันที
         document.getElementById('docViewSignSalesName').innerText = `(${profile.salesName || 'คุณศรายุทธ เมรุลัตร์'})`;
         alert('บันทึกข้อมูลส่วนตัวสำหรับเริ่มต้นแล้ว');
     }
@@ -975,6 +982,7 @@
 
     function deleteRow(btn) {
         const row = btn.closest('tr');
+        // หากเป็นการกดลบแถวดีฟอลต์ (ค่าย้าย, เซฟตี้, นอกพื้นที่) จะแค่ซ่อนและตั้งค่าเป็น 0
         if (row.id === 'rowTrans') { document.getElementById('costSellingTransport').value = 0; runEngine(); }
         else if (row.id === 'rowSafety') { document.getElementById('costSafety').value = 0; runEngine(); }
         else if (row.id === 'rowOutArea') { document.getElementById('costOutArea').value = 0; runEngine(); }
@@ -1008,16 +1016,19 @@
             }
         });
 
+        // คำนวณ VAT ตามประเภทเอกสาร
         const type = document.getElementById('docTypeSelector').value;
         let vat7 = 0;
         if(type !== 'REC' && type !== 'QT_NOVAT') { vat7 = quotationSubtotal * 0.07; }
         const grandTotal = quotationSubtotal + vat7;
 
+        // อัปเดตตารางสรุปยอดท้ายบิล
         document.getElementById('docViewSubTotal').innerText = quotationSubtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
         document.getElementById('docViewVat').innerText = vat7.toLocaleString('en-US', { minimumFractionDigits: 2 });
         document.getElementById('docViewGrandTotal').innerText = grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
         document.getElementById('docViewThaiBaht').innerText = `(${arabicToThaiBaht(grandTotal)})`;
         
+        // อัปเดตเงินงวด (มัดจำ / งวด 2 / งวด 3)
         const depPct = parseFloat(document.getElementById('depositPct').value) || 0;
         const inst2Pct = parseFloat(document.getElementById('install2Pct').value) || 0;
         const compPct = parseFloat(document.getElementById('completePct').value) || 0;
@@ -1041,7 +1052,7 @@
       const y = (today.getFullYear() + 543).toString().slice(-2);
       const m = String(today.getMonth() + 1).padStart(2, '0');
       
-      // ตั้งต้นด้วยรหัส HYM เสมอ (HYM ปีเดือน-รหัสสุ่ม)
+      // ให้ขึ้นต้นด้วย HYM เสมอ (HYM ปีเดือน-รหัสสุ่ม) 
       let displayDocNo = isEditingOldDoc ? editingDocNo : `HYM${y}${m}-${currentRandomID}`;
 
       if (type === 'QT_VAT') {
@@ -1066,7 +1077,7 @@
           vatRow.classList.remove('hidden'); 
       }
       
-      // อัปเดตรหัสเฉพาะกรณีที่ผู้ใช้ยังไม่ได้พิมพ์แก้เอง หรือตอนดึงประวัติเก่า
+      // อัปเดตเลขที่เอกสารเฉพาะตอนที่ผู้ใช้ยังไม่ได้พิมพ์แก้รหัสเอง หรือตอนโหลดดึงประวัติเก่า
       if (isEditingOldDoc || !isDocNoManuallyEdited) {
           docNo.innerText = displayDocNo;
       }
@@ -1095,6 +1106,7 @@
       const outArea = parseFloat(document.getElementById('costOutArea').value) || 0;
 
       const matCost = (qty * (unitPile + unitPlate)) + (qty2 * (unitPile2 + unitPlate));
+      // รวมค่าแรงคนงาน และ ค่าใช้จ่ายอื่นๆ ในต้นทุนรวม
       const totalCost = matCost + laborDay + workerCost + otherCost + (2000 + (distance * 25));
       const quotationSubtotal = (qty * sellUnit) + (qty2 * sellUnit2) + sellTrans + safety + outArea;
       
@@ -1114,6 +1126,7 @@
       document.getElementById('docViewCustTax').innerText = document.getElementById('custTaxId').value || '-';
       document.getElementById('docViewCustAddr').innerText = document.getElementById('custAddress').value || '-';
       
+      // ประมวลผลและแสดงข้อมูลติดต่อ
       let contacts = [];
       if(mobile) contacts.push(`โทร: ${mobile}`);
       if(office) contacts.push(`สำนักงาน: ${office}`);
@@ -1162,6 +1175,7 @@
       document.getElementById('docViewOutAreaUnitRaw').value = outArea;
       if(outArea > 0) { document.getElementById('rowOutArea').style.display = ''; } else { document.getElementById('rowOutArea').style.display = 'none'; document.getElementById('docViewOutAreaUnitRaw').value = 0; }
       
+      // อัปเดต % และเงื่อนไข
       const depPct = parseFloat(document.getElementById('depositPct').value) || 0;
       const inst2Pct = parseFloat(document.getElementById('install2Pct').value) || 0;
       const compPct = parseFloat(document.getElementById('completePct').value) || 0;
@@ -1201,11 +1215,8 @@
         unitCostWorker: workerCost, unitCostOther: otherCost,
         costDistance: distance, 
         depPct: depPct, inst2Pct: inst2Pct, compPct: compPct, excessCondition: document.getElementById('excessCondition').value,
-        subTotal: tableSubtotal, vat: finalVat, grandTotal: tableSubtotal + finalVat, 
-        docNo: document.getElementById('docViewNo').innerText.trim(), 
-        docDate: document.getElementById('docViewDate').innerText.trim(),
-        docTitle: document.getElementById('docTitleTH').innerText,
-        totalCost: totalCost
+        subTotal: tableSubtotal, vat: finalVat, grandTotal: tableSubtotal + finalVat, docNo: document.getElementById('docViewNo').innerText, docTitle: document.getElementById('docTitleTH').innerText,
+        totalCost: totalCost // บันทึกต้นทุนรวมเพื่อใช้ใน Dashboard
       };
     }
 
@@ -1285,14 +1296,13 @@
       });
       d.tableRows = tableRows; 
       let archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
-      const docData = { id: Date.now(), date: document.getElementById('docViewDate').innerText.trim(), rawData: d };
+      const docData = { id: Date.now(), date: document.getElementById('docViewDate').innerText, rawData: d };
       if(isEditingOldDoc) { archive = archive.filter(x => x.rawData.docNo !== d.docNo); }
       archive.unshift(docData);
       localStorage.setItem('hym_archive_docs', JSON.stringify(archive));
       
-      isEditingOldDoc = false; 
-      editingDocNo = '';
-      isDocNoManuallyEdited = false; // รีเซ็ตการแก้ไขด้วยมือ
+      isEditingOldDoc = false; editingDocNo = '';
+      isDocNoManuallyEdited = false; // รีเซ็ตการพิมพ์มือหลังเซฟ
       
       updateArchiveCount(); alert('บันทึกเอกสารลงประวัติเรียบร้อยแล้ว!');
     }
@@ -1333,11 +1343,13 @@
         document.getElementById('custTaxId').value = d.custTaxId || '';
         document.getElementById('custAddress').value = d.custAddr;
         
+        // คืนค่าข้อมูลติดต่อ
         document.getElementById('custMobile').value = d.custMobile || '';
         document.getElementById('custOfficePhone').value = d.custOffice || '';
         document.getElementById('custEmail').value = d.custEmail || '';
         document.getElementById('custLine').value = d.custLine || '';
 
+        // ข้อมูลพนักงานขาย
         document.getElementById('salesName').value = d.salesName || '';
         document.getElementById('salesPhone').value = d.salesPhone || '';
         
@@ -1376,9 +1388,8 @@
 
             isEditingOldDoc = true;
             editingDocNo = d.docNo;
-            isDocNoManuallyEdited = false;
+            isDocNoManuallyEdited = false; // รีเซ็ตตัวแปรพิมพ์มือเมื่อเปิดของเก่ามาแก้
             
-            document.getElementById('docViewNo').innerText = d.docNo;
             document.getElementById('docViewDate').innerText = doc.date; 
             
             const typeSelector = document.getElementById('docTypeSelector');
@@ -1390,6 +1401,7 @@
             else typeSelector.value = 'REC';
             syncDocType('back'); 
             
+            // ลบแถวไดนามิกเดิมและใส่ใหม่
             document.querySelectorAll('.item-row.dynamic-row').forEach(el => el.remove());
             if(d.tableRows && d.tableRows.length > 0) {
                 const tbody = document.getElementById('invoiceTbody');
@@ -1444,6 +1456,7 @@
             const d = item.rawData;
             const rev = d.grandTotal || 0;
             
+            // หาต้นทุนรวม (เผื่อเป็นประวัติเก่าที่ยังไม่ได้เซฟ totalCost ไว้)
             let cost = d.totalCost;
             if(cost === undefined) {
                 const matCost = (d.qty * (d.unitCostPile + d.unitCostPlate)) + ((d.qty2||0) * ((d.unitCostPile2||0) + d.unitCostPlate));
@@ -1501,6 +1514,7 @@
         reader.onload = function(e) {
             const img = new Image();
             img.onload = function() {
+                // ย่อขนาดเพื่อไม่ให้หน่วยความจำเต็ม
                 const canvas = document.createElement('canvas');
                 const MAX_WIDTH = 600;
                 let width = img.width;
@@ -1515,7 +1529,7 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
                 
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.6); // บีบอัดเป็น JPG 60%
                 const gallery = JSON.parse(localStorage.getItem('hym_gallery') || '[]');
                 
                 gallery.unshift({
