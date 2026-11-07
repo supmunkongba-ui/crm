@@ -37,13 +37,20 @@
     /* สร้างกรอบให้กระดาษ Scroll แนวนอนได้ในมือถือ */
     .paper-wrapper {
       width: 100%;
-      overflow-x: auto;
+      display: flex;
+      justify-content: center;
       background: rgba(203, 213, 225, 0.3);
-      padding: 1rem;
+      padding: 1rem 0;
       border-radius: 0.75rem;
       border: 1px solid #e2e8f0;
       position: relative;
       z-index: 10;
+      overflow: hidden;
+    }
+
+    /* คลาสนี้จะถูกใช้ด้วย Javascript เพื่อย่อขนาดกระดาษบนจอมือถือ */
+    .scale-paper {
+        transform-origin: top center;
     }
 
     canvas { touch-action: none; } 
@@ -51,6 +58,7 @@
     .editable-cell {
         border: 1px dashed transparent; background: transparent; outline: none;
         transition: border-color 0.2s;
+        width: 100%;
     }
     .editable-cell:hover, .editable-cell:focus { border-color: #cbd5e1; background: #f8fafc; }
 
@@ -78,6 +86,10 @@
           background: transparent !important;
           padding: 0 !important;
           border: none !important;
+      }
+      
+      .scale-paper {
+          transform: none !important;
       }
 
       .paper-a4-fixed { 
@@ -358,91 +370,89 @@
         </div>
       </div>
 
-      <div class="paper-wrapper">
+      <!-- เพิ่ม Wrapper ตรงนี้เพื่อบังคับไม่ให้กระดาษหดตัว และย่อส่วนให้พอดีจอ -->
+      <div id="paperWrapper" class="paper-wrapper">
         
         <!-- กระดาษ A4 -->
-        <div id="quotationPaper" class="paper-a4-fixed p-8 sm:p-12 shadow-xl flex flex-col">
+        <div id="quotationPaper" class="paper-a4-fixed p-8 sm:p-12 shadow-xl flex flex-col scale-paper">
           
-          <!-- HEADER: โลโก้ซ้าย และ ข้อมูลบริษัทขวา -->
-          <div class="flex flex-row items-center justify-start pb-4 mb-4 border-b border-slate-200 gap-6 w-full">
-            <div class="h-20 w-auto flex items-center justify-center p-1 rounded-2xl bg-white border border-slate-100 relative shrink-0">
-              <img src="A0117C09-C98C-43EC-BBD2-DA96A41B05D4.png" 
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
-                   alt="โลโก้ หาดใหญ่ ไมโครไพล์" 
-                   class="h-full w-auto object-contain rounded-lg relative z-10 bg-white">
-              <div style="display: none;" class="w-20 h-full bg-slate-800 text-white flex-col items-center justify-center rounded-lg font-black text-xl leading-none">
-                 <span class="text-orange-500">H Y</span>
-                 <span class="text-white">M</span>
+          <!-- HEADER: โลโก้ซ้าย ป้ายเอกสารและเลขที่อยู่ขวาบน -->
+          <div class="flex flex-row items-start justify-between pb-3 mb-3 border-b border-slate-200 w-full gap-4">
+            <!-- ซ้าย: โลโก้และข้อมูลบริษัท -->
+            <div class="flex flex-row items-center gap-4 flex-1">
+              <div class="h-20 w-auto flex items-center justify-center p-1 rounded-2xl bg-white border border-slate-100 relative shrink-0">
+                <img src="A0117C09-C98C-43EC-BBD2-DA96A41B05D4.png" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                     alt="โลโก้ หาดใหญ่ ไมโครไพล์" 
+                     class="h-full w-auto object-contain rounded-lg relative z-10 bg-white">
+                <div style="display: none;" class="w-20 h-full bg-slate-800 text-white flex-col items-center justify-center rounded-lg font-black text-xl leading-none">
+                   <span class="text-orange-500">H Y</span>
+                   <span class="text-white">M</span>
+                </div>
+              </div>
+              <div class="text-[13px] text-slate-700 leading-snug">
+                <h2 class="text-[22px] font-black text-slate-900 mb-1">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h2>
+                <p>12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
+                <p>เลขประจำตัวผู้เสียภาษี : 0-9055-62001-69-3</p>
+                <p class="font-semibold text-orange-700">โทร. 080-4549659, 089-6536312</p>
               </div>
             </div>
             
-            <!-- ข้อมูลบริษัท และ ป้ายชื่อเอกสาร -->
-            <div class="text-[13px] text-slate-700 leading-relaxed text-left flex-1 grid grid-cols-[1fr_auto] gap-4 items-center">
-              <div>
-                <h2 class="text-xl font-black text-slate-900 mb-1">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h2>
-                <p>12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
-                <p>เลขประจำตัวผู้เสียภาษี : 0-9055-62001-69-3</p>
-                <p class="font-semibold text-orange-700 mt-1">โทร. 080-4549659, 089-6536312</p>
-              </div>
-              
-              <!-- ป้ายชื่อเอกสาร ย้ายมาอยู่ขวาของข้อมูลบริษัท -->
-              <div class="bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-800 px-6 py-2 rounded-2xl shadow-sm flex flex-col items-center justify-center shrink-0">
-                <h2 class="text-lg font-extrabold" id="docTitleTH">ใบเสนอราคา</h2>
+            <!-- ขวา: ป้ายเอกสาร และ เลขที่/วันที่ -->
+            <div class="flex flex-col items-end gap-2 shrink-0">
+              <div class="bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-800 px-6 py-1.5 rounded-2xl shadow-sm flex flex-col items-center justify-center w-full">
+                <h2 class="text-xl font-extrabold" id="docTitleTH">ใบเสนอราคา</h2>
                 <p class="text-[10px] font-black opacity-70 uppercase" id="docTitleEN">Quotation</p>
               </div>
-            </div>
-          </div>
-
-          <!-- ข้อมูลลูกค้า และ เลขที่เอกสาร/วันที่ -->
-          <div class="flex flex-row gap-4 mb-4">
-            <!-- ข้อมูลลูกค้า -->
-            <div class="border-[0.5px] border-slate-300 rounded-3xl p-3 text-sm text-slate-700 bg-white shadow-sm flex-1">
-              <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
-                <div class="font-bold text-slate-600">นามลูกค้า :</div>
-                <div class="font-bold text-slate-900 text-[15px]" id="docViewCustName">-</div>
-              </div>
-              <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
-                <div class="font-bold text-slate-600">ที่อยู่/สถานที่ :</div>
-                <div class="text-slate-800 leading-relaxed" id="docViewCustAddr">-</div>
-              </div>
-              <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
-                <div class="font-bold text-slate-600">ข้อมูลติดต่อ :</div>
-                <div class="text-slate-800 leading-relaxed" id="docViewCustContact">-</div>
-              </div>
-              <div class="grid grid-cols-[100px_1fr] gap-2 items-center">
-                <div class="font-bold text-slate-600">เลขผู้เสียภาษี :</div>
-                <div class="flex items-center gap-4">
-                  <span class="font-mono text-slate-900 font-bold" id="docViewCustTax">-</span>
-                  <label class="flex items-center space-x-1"><input type="checkbox" checked disabled class="accent-slate-400 w-3 h-3"> <span class="text-slate-500 text-xs">สำนักงานใหญ่</span></label>
-                  <label class="flex items-center space-x-1"><input type="checkbox" disabled class="w-3 h-3"> <span class="text-slate-400 text-xs">สาขา..........</span></label>
+              <div class="text-[13px] space-y-1 bg-slate-50 p-2.5 rounded-2xl border border-slate-100 w-full min-w-[200px]">
+                <div class="flex justify-between items-center border-b border-slate-200 pb-1">
+                  <span class="font-bold text-slate-500 whitespace-nowrap">เลขที่ :</span> 
+                  <span class="font-bold text-slate-900 editable-cell px-1 outline-none text-right flex-1 ml-2" id="docViewNo" contenteditable="true" oninput="isDocNoManuallyEdited = true">HYM</span>
+                </div>
+                <div class="flex justify-between items-center pt-0.5">
+                  <span class="font-bold text-slate-500 whitespace-nowrap">วันที่ :</span> 
+                  <span class="font-medium text-slate-900 editable-cell px-1 outline-none text-right flex-1 ml-2" id="docViewDate" contenteditable="true">-</span>
                 </div>
               </div>
             </div>
-            
-            <!-- เลขที่เอกสารและวันที่ ย้ายมาอยู่ขวาของข้อมูลลูกค้า -->
-            <div class="text-sm space-y-1.5 bg-slate-50 p-3 rounded-3xl border border-slate-200 w-[240px] shrink-0 self-stretch flex flex-col justify-center shadow-sm">
-              <div class="flex justify-between items-center border-b border-slate-200 pb-1.5">
-                <span class="font-bold text-slate-500" style="white-space: nowrap;">เลขที่ :</span> 
-                <span class="font-bold text-slate-900 editable-cell px-1 py-0.5 outline-none text-right flex-1 ml-2" id="docViewNo" contenteditable="true" oninput="isDocNoManuallyEdited = true">HYM</span>
-              </div>
-              <div class="flex justify-between items-center pt-0.5">
-                <span class="font-bold text-slate-500" style="white-space: nowrap;">วันที่ :</span> 
-                <span class="font-medium text-slate-900 editable-cell px-1 py-0.5 outline-none text-right flex-1 ml-2" id="docViewDate" contenteditable="true">-</span>
+          </div>
+
+          <!-- ข้อมูลลูกค้า -->
+          <div class="border-[0.5px] border-slate-300 rounded-3xl p-3 mb-4 text-[13px] text-slate-700 bg-white shadow-sm w-full">
+            <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
+              <div class="font-bold text-slate-600">นามลูกค้า :</div>
+              <div class="font-bold text-slate-900 text-[14px]" id="docViewCustName">-</div>
+            </div>
+            <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
+              <div class="font-bold text-slate-600">ที่อยู่/สถานที่ :</div>
+              <div class="text-slate-800 leading-snug" id="docViewCustAddr">-</div>
+            </div>
+            <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
+              <div class="font-bold text-slate-600">ข้อมูลติดต่อ :</div>
+              <div class="text-slate-800 leading-snug" id="docViewCustContact">-</div>
+            </div>
+            <div class="grid grid-cols-[100px_1fr] gap-2 items-center">
+              <div class="font-bold text-slate-600">เลขผู้เสียภาษี :</div>
+              <div class="flex items-center gap-4">
+                <span class="font-mono text-slate-900 font-bold" id="docViewCustTax">-</span>
+                <label class="flex items-center space-x-1"><input type="checkbox" checked disabled class="accent-slate-400 w-3 h-3"> <span class="text-slate-500 text-[11px]">สำนักงานใหญ่</span></label>
+                <label class="flex items-center space-x-1"><input type="checkbox" disabled class="w-3 h-3"> <span class="text-slate-400 text-[11px]">สาขา..........</span></label>
               </div>
             </div>
           </div>
 
-          <!-- ตารางรายการ (ขยายช่องรายการให้กว้างขึ้น ลดช่องจำนวน/ราคา) -->
+          <!-- ตารางรายการ (ปรับความกว้างคอลัมน์) -->
           <div class="mb-2 rounded-3xl border-[0.5px] border-slate-300 bg-white p-2 shadow-sm flex-1">
-            <table class="w-full text-sm text-left border-none" style="border-spacing: 0;" id="invoiceTable">
+            <table class="w-full text-[13px] text-left border-none" style="border-spacing: 0;" id="invoiceTable">
               <thead class="bg-slate-50/80 text-slate-700">
                 <tr>
-                  <th class="py-2.5 px-2 text-center w-10 font-bold rounded-l-2xl">ลำดับ</th>
-                  <th class="py-2.5 px-2 font-bold">รายการ</th>
-                  <th class="py-2.5 px-2 text-center w-16 font-bold">จำนวน</th> <!-- ลดความกว้าง -->
-                  <th class="py-2.5 px-2 text-right w-20 font-bold">ราคา/หน่วย</th> <!-- ลดความกว้าง -->
-                  <th class="py-2.5 px-2 text-right w-24 font-bold">จำนวนเงิน</th> <!-- ลดความกว้าง -->
-                  <th class="py-2.5 px-2 w-8 no-print-element rounded-r-2xl"></th>
+                  <th class="py-2 px-2 text-center w-10 font-bold rounded-l-2xl">ลำดับ</th>
+                  <th class="py-2 px-2 font-bold">รายการ</th>
+                  <!-- กำหนดความกว้างของคอลัมน์ตัวเลขให้ชัดเจน เพื่อเพิ่มพื้นที่ให้คอลัมน์รายการ -->
+                  <th class="py-2 px-2 text-center w-[60px] font-bold">จำนวน</th> 
+                  <th class="py-2 px-2 text-right w-[80px] font-bold">ราคา/หน่วย</th> 
+                  <th class="py-2 px-2 text-right w-[90px] font-bold">จำนวนเงิน</th> 
+                  <th class="py-2 px-1 w-6 no-print-element rounded-r-2xl"></th>
                 </tr>
               </thead>
               <tbody class="border-none" id="invoiceTbody">
@@ -450,62 +460,62 @@
                 <tr class="item-row" id="rowItem1">
                   <td class="py-2 px-2 text-center text-slate-400 align-top item-index">1</td>
                   <td class="py-2 px-2 align-top">
-                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-relaxed" id="docViewItemName" contenteditable="true" oninput="recalcTable()">-</div>
+                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" id="docViewItemName" contenteditable="true" oninput="recalcTable()">-</div>
                   </td>
                   <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" id="docViewItemQty" value="0" readonly oninput="recalcTable()"></td>
                   <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewItemUnitRaw" value="0" readonly oninput="recalcTable()"></td>
                   <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total" id="docViewItemTotal">0.00</td>
-                  <td class="py-2 px-2 text-center align-top no-print-element"></td>
+                  <td class="py-2 px-1 text-center align-top no-print-element"></td>
                 </tr>
                 <!-- แถวที่ 2 (รายการเสริม/ถ้ามี) -->
                 <tr class="item-row" id="rowItem2" style="display:none;">
                   <td class="py-2 px-2 text-center text-slate-400 align-top item-index">2</td>
                   <td class="py-2 px-2 align-top">
-                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-relaxed" id="docViewItemName2" contenteditable="true" oninput="recalcTable()">-</div>
+                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" id="docViewItemName2" contenteditable="true" oninput="recalcTable()">-</div>
                   </td>
                   <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" id="docViewItemQty2" value="0" readonly oninput="recalcTable()"></td>
                   <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewItemUnitRaw2" value="0" readonly oninput="recalcTable()"></td>
                   <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total" id="docViewItemTotal2">0.00</td>
-                  <td class="py-2 px-2 text-center align-top no-print-element"></td>
+                  <td class="py-2 px-1 text-center align-top no-print-element"></td>
                 </tr>
                 <!-- แถวค่าย้าย -->
                 <tr class="item-row" id="rowTrans">
                   <td class="py-2 px-2 text-center text-slate-400 align-top item-index">3</td>
                   <td class="py-2 px-2 align-top">
-                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap" contenteditable="true" oninput="recalcTable()">ค่าย้ายเครื่องจักรและอุปกรณ์</div>
+                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าย้ายเครื่องจักรและอุปกรณ์</div>
                   </td>
                   <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
                   <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewTransUnitRaw" value="0" oninput="recalcTable()"></td>
                   <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
-                  <td class="py-2 px-2 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
+                  <td class="py-2 px-1 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
                 </tr>
                 <!-- แถวค่าเซฟตี้ -->
                 <tr class="item-row" id="rowSafety" style="display:none;">
                   <td class="py-2 px-2 text-center text-slate-400 align-top item-index">4</td>
                   <td class="py-2 px-2 align-top">
-                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap" contenteditable="true" oninput="recalcTable()">ค่าเซฟตี้ (Safety)</div>
+                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าเซฟตี้ (Safety)</div>
                   </td>
                   <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
                   <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewSafetyUnitRaw" oninput="recalcTable()"></td>
                   <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
-                  <td class="py-2 px-2 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
+                  <td class="py-2 px-1 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
                 </tr>
                 <!-- แถวค่าดำเนินการนอกพื้นที่ -->
                 <tr class="item-row" id="rowOutArea" style="display:none;">
                   <td class="py-2 px-2 text-center text-slate-400 align-top item-index">5</td>
                   <td class="py-2 px-2 align-top">
-                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap" contenteditable="true" oninput="recalcTable()">ค่าดำเนินการนอกพื้นที่</div>
+                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าดำเนินการนอกพื้นที่</div>
                   </td>
                   <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
                   <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewOutAreaUnitRaw" oninput="recalcTable()"></td>
                   <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
-                  <td class="py-2 px-2 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
+                  <td class="py-2 px-1 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div class="mb-4 text-right no-print-element pr-4">
-              <button onclick="addNewRow()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-1.5 px-3 rounded-lg border border-slate-300 transition">➕ เพิ่มรายการอิสระ</button>
+              <button onclick="addNewRow()" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-1 px-3 rounded-lg border border-slate-300 transition">➕ เพิ่มรายการอิสระ</button>
           </div>
 
           <!-- สรุปยอดและเงื่อนไข -->
@@ -809,6 +819,29 @@
   </div>
 
   <script>
+    // สคริปต์ปรับย่อขนาดกระดาษอัตโนมัติให้พอดีหน้าจอมือถือ (แต่ขนาด Print ยังเป็น A4 เสมอ)
+    function scalePaperToFit() {
+        const wrapper = document.getElementById('paperWrapper');
+        const paper = document.getElementById('quotationPaper');
+        if(!wrapper || !paper) return;
+        
+        // ความกว้างหน้าจอจริงลบด้วย padding ซ้ายขวา
+        const availableWidth = wrapper.clientWidth - 32; 
+        const paperWidth = 794;
+        
+        if (availableWidth < paperWidth) {
+            const scale = availableWidth / paperWidth;
+            paper.style.transform = `scale(${scale})`;
+            // ลดความสูงของ wrapper ลงตามสัดส่วนที่หดตัว เพื่อไม่ให้มีพื้นที่ว่างด้านล่าง
+            wrapper.style.height = `${(1122 * scale) + 32}px`;
+        } else {
+            paper.style.transform = 'none';
+            wrapper.style.height = 'auto';
+        }
+    }
+    window.addEventListener('resize', scalePaperToFit);
+    
+    // ... [ส่วนข้อมูลสินค้าพื้นฐาน]
     const DEFAULT_PRODUCTS = {
       "เสาเข็มไมโครไพล์ ไอ (I-Micropile)": [
         { id: "p1", name: 'ขนาด I-18 (รับน้ำหนักปลอดภัย 10-15 ตัน)', price: 7500, cost: 3400, condition: 'ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม.' },
@@ -938,7 +971,7 @@
       document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.remove('hidden');
       document.getElementById('nav' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).className = 'snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition flex-shrink-0';
 
-      if (tabName === 'quote') runEngine();
+      if (tabName === 'quote') { runEngine(); setTimeout(scalePaperToFit, 100); }
       if (tabName === 'archive') renderArchiveList();
       if (tabName === 'customers') renderCustomerDB();
       if (tabName === 'products') renderProductDB();
@@ -987,14 +1020,14 @@
         const newRow = document.createElement('tr');
         newRow.className = 'item-row dynamic-row';
         newRow.innerHTML = `
-            <td class="py-3 px-2 text-center text-slate-400 align-top item-index"></td>
-            <td class="py-3 px-2 align-top">
-              <div class="editable-cell font-bold text-slate-800 text-[15px] row-name w-full break-words whitespace-pre-wrap leading-relaxed" contenteditable="true" oninput="recalcTable()">ชื่อรายการ...</div>
+            <td class="py-2 px-2 text-center text-slate-400 align-top item-index"></td>
+            <td class="py-2 px-2 align-top">
+              <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ชื่อรายการ...</div>
             </td>
-            <td class="py-3 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[15px] row-qty" value="1" oninput="recalcTable()"></td>
-            <td class="py-3 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[15px] row-unit" value="0" oninput="recalcTable()"></td>
-            <td class="py-3 px-2 text-right font-mono font-bold text-slate-900 align-top text-[15px] row-total">0.00</td>
-            <td class="py-3 px-2 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-2">✕</button></td>
+            <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
+            <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" value="0" oninput="recalcTable()"></td>
+            <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
+            <td class="py-2 px-1 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
         `;
         tbody.appendChild(newRow);
         updateRowIndices();
