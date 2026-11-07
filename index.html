@@ -76,7 +76,7 @@
 
   <div class="max-w-4xl mx-auto space-y-4">
     
-    <!-- ส่วนหัวโปรแกรม (ปรับโครงสร้างโลโก้ซ้าย ข้อความขวา) -->
+    <!-- ส่วนหัวโปรแกรม (โครงสร้างโลโก้ซ้าย ข้อความขวา) -->
     <header class="no-print bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-row items-center justify-start gap-4 sm:gap-6 overflow-hidden">
       <!-- ส่วนโลโก้ -->
       <div class="h-16 sm:h-20 w-auto flex items-center justify-center p-1 shadow shrink-0 rounded-2xl bg-white border border-slate-100 relative">
@@ -340,13 +340,14 @@
           
           <!-- HEADER: โลโก้ซ้าย และ ข้อมูลบริษัท -->
           <div class="flex flex-row items-center justify-start pb-5 mb-5 border-b border-slate-200 gap-6 w-full">
-            <div class="h-24 w-auto flex items-center justify-center shrink-0">
-              <img src="https://media.discordapp.net/attachments/1118749870828757042/1174986161962307594/image_10.png" 
+            <div class="h-24 w-auto flex items-center justify-center p-1 rounded-2xl bg-white border border-slate-100 relative shrink-0">
+              <img src="A0117C09-C98C-43EC-BBD2-DA96A41B05D4.png" 
                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
                    alt="โลโก้ หาดใหญ่ ไมโครไพล์" 
-                   class="h-full w-auto object-contain rounded-lg relative z-10">
+                   class="h-full w-auto object-contain rounded-lg relative z-10 bg-white">
               <div style="display: none;" class="w-24 h-full bg-slate-800 text-white flex-col items-center justify-center rounded-lg font-black text-2xl leading-none">
-                 <span class="text-orange-500">H Y</span><span class="text-white">M</span>
+                 <span class="text-orange-500">H Y</span>
+                 <span class="text-white">M</span>
               </div>
             </div>
             <div class="text-[13px] text-slate-700 leading-relaxed text-left flex-1">
@@ -1190,11 +1191,8 @@
         unitCostWorker: workerCost, unitCostOther: otherCost,
         costDistance: distance, 
         depPct: depPct, inst2Pct: inst2Pct, compPct: compPct, excessCondition: document.getElementById('excessCondition').value,
-        subTotal: tableSubtotal, vat: finalVat, grandTotal: tableSubtotal + finalVat, 
-        docNo: document.getElementById('docViewNo').innerText.trim(), 
-        docDate: document.getElementById('docViewDate').innerText.trim(),
-        docTitle: document.getElementById('docTitleTH').innerText,
-        totalCost: totalCost
+        subTotal: tableSubtotal, vat: finalVat, grandTotal: tableSubtotal + finalVat, docNo: document.getElementById('docViewNo').innerText, docTitle: document.getElementById('docTitleTH').innerText,
+        totalCost: totalCost 
       };
     }
 
