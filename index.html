@@ -22,7 +22,7 @@
       width: 794px !important;
       min-width: 794px !important;
       max-width: 794px !important;
-      height: 1122px !important; /* ปรับลดลง 1px จาก 1123 เพื่อกันล้น */
+      height: 1122px !important; 
       min-height: 1122px !important;
       max-height: 1122px !important;
       margin: 0 auto;
@@ -42,6 +42,8 @@
       padding: 1rem;
       border-radius: 0.75rem;
       border: 1px solid #e2e8f0;
+      position: relative;
+      z-index: 10;
     }
 
     canvas { touch-action: none; } 
@@ -58,6 +60,12 @@
     #quotationPaper, #quotationPaper * {
         letter-spacing: normal !important;
         word-spacing: normal !important;
+    }
+    
+    /* ล็อกเมนูให้อยู่บนสุดเสมอ */
+    nav {
+        position: relative;
+        z-index: 50;
     }
 
     @media print {
@@ -93,7 +101,7 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 p-2 sm:p-5">
+<body class="bg-slate-100 text-slate-800 p-2 sm:p-5 relative">
 
   <div class="max-w-4xl mx-auto space-y-4">
     
@@ -118,7 +126,7 @@
     </header>
 
     <!-- เมนู Tabs -->
-    <nav class="no-print bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200 flex overflow-x-auto whitespace-nowrap scrollbar-hide gap-1.5 snap-x">
+    <nav class="no-print bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200 flex overflow-x-auto whitespace-nowrap scrollbar-hide gap-1.5 snap-x relative z-50">
       <button id="navCost" onclick="showTab('cost')" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition flex-shrink-0">
         ⚙️ 1. ข้อมูล
       </button>
@@ -1163,7 +1171,7 @@
       }
 
       document.getElementById('docViewTransUnitRaw').value = sellTrans;
-      if(sellTrans > 0) { document.getElementById('rowTrans').style.display = ''; } else { document.getElementById('rowTrans').style.display = 'none document.getElementById('docViewTransUnitRaw').value = 0; }
+      if(sellTrans > 0) { document.getElementById('rowTrans').style.display = ''; } else { document.getElementById('rowTrans').style.display = 'none'; document.getElementById('docViewTransUnitRaw').value = 0; }
 
       document.getElementById('docViewSafetyUnitRaw').value = safety;
       if(safety > 0) { document.getElementById('rowSafety').style.display = ''; } else { document.getElementById('rowSafety').style.display = 'none'; document.getElementById('docViewSafetyUnitRaw').value = 0; }
@@ -1814,3 +1822,6 @@
   </script>
 </body>
 </html>
+ขยับมาตรงกลางได้ปะครับเลขที่ ให้พอดีกับคำว่าวันที่
+
+There is a file you can reference named "image_6.png". Refer to this file by its name verbatim.
