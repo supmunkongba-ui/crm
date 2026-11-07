@@ -17,26 +17,41 @@
       letter-spacing: 0px !important;
     }
     
+    /* ล็อกขนาดกระดาษ A4 ให้ตายตัว 100% ป้องกันการสร้างหน้า 2 */
     .paper-a4-fixed {
-      width: 794px;
-      min-height: 1123px;
+      width: 794px !important;
+      min-width: 794px !important;
+      max-width: 794px !important;
+      height: 1122px !important; /* ปรับลดลง 1px จาก 1123 เพื่อกันล้น */
+      min-height: 1122px !important;
+      max-height: 1122px !important;
       margin: 0 auto;
       background: #ffffff;
       color: #1e293b;
       box-sizing: border-box;
       line-height: 1.45;
+      position: relative;
+      overflow: hidden !important; 
     }
     
+    /* สร้างกรอบให้กระดาษสามารถ Scroll แนวนอนได้ในจอมือถือ */
+    .paper-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      background: rgba(203, 213, 225, 0.3);
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid #e2e8f0;
+    }
+
     canvas { touch-action: none; } 
 
-    /* ซ่อนเส้นขอบ Input ตอน Print และหน้าปกติ เพื่อความสวยงาม */
     .editable-cell {
         border: 1px dashed transparent; background: transparent; outline: none;
         transition: border-color 0.2s;
     }
     .editable-cell:hover, .editable-cell:focus { border-color: #cbd5e1; background: #f8fafc; }
 
-    /* ซ่อน Scrollbar สำหรับเมนูแนวนอน */
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     
@@ -50,22 +65,28 @@
       #tabQuote, #tabQuote * { visibility: visible; }
       #quotationControls, nav, header { display: none !important; }
       #tabQuote { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
+      
+      .paper-wrapper {
+          overflow: visible !important;
+          background: transparent !important;
+          padding: 0 !important;
+          border: none !important;
+      }
+
       .paper-a4-fixed { 
           box-shadow: none !important; 
           margin: 0; 
-          width: 100%;
-          /* บังคับให้อยู่หน้าเดียว */
-          page-break-inside: avoid;
-          page-break-after: avoid;
-          page-break-before: avoid;
+          width: 794px !important;
+          height: 1122px !important;
+          page-break-inside: avoid !important;
+          page-break-after: avoid !important;
+          page-break-before: avoid !important;
       }
       
-      /* ป้องกันการตัดแถวตารางข้ามหน้า */
       tr, td, th, table, div.grid {
           page-break-inside: avoid !important;
       }
       
-      .print-no-scroll { overflow: visible !important; }
       .no-print-element { display: none !important; } 
       .editable-cell { border: none !important; background: transparent !important; }
       textarea.editable-cell { overflow: visible !important; white-space: pre-wrap; }
@@ -76,9 +97,8 @@
 
   <div class="max-w-4xl mx-auto space-y-4">
     
-    <!-- ส่วนหัวโปรแกรม (โครงสร้างโลโก้ซ้าย ข้อความขวา) -->
+    <!-- ส่วนหัวโปรแกรม -->
     <header class="no-print bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-row items-center justify-start gap-4 sm:gap-6 overflow-hidden">
-      <!-- ส่วนโลโก้ -->
       <div class="h-16 sm:h-20 w-auto flex items-center justify-center p-1 shadow shrink-0 rounded-2xl bg-white border border-slate-100 relative">
            <img src="A0117C09-C98C-43EC-BBD2-DA96A41B05D4.png" 
                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
@@ -89,8 +109,6 @@
               <span class="text-white">M</span>
            </div>
       </div>
-      
-      <!-- ส่วนข้อความบริษัท -->
       <div class="text-left text-[12px] sm:text-sm text-slate-600 space-y-1 flex-1 min-w-0">
         <h1 class="text-[15px] sm:text-xl font-black text-slate-900 leading-tight truncate">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
         <p class="truncate">12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
@@ -333,7 +351,8 @@
         </div>
       </div>
 
-      <div class="w-full overflow-x-auto print-no-scroll bg-slate-300/30 p-2 sm:p-4 rounded-xl border border-slate-200">
+      <!-- เพิ่ม Wrapper ตรงนี้เพื่อบังคับไม่ให้กระดาษหดตัว -->
+      <div class="paper-wrapper">
         
         <!-- กระดาษ A4 -->
         <div id="quotationPaper" class="paper-a4-fixed p-10 sm:p-14 shadow-xl flex flex-col">
@@ -346,7 +365,8 @@
                    alt="โลโก้ หาดใหญ่ ไมโครไพล์" 
                    class="h-full w-auto object-contain rounded-lg relative z-10 bg-white">
               <div style="display: none;" class="w-24 h-full bg-slate-800 text-white flex-col items-center justify-center rounded-lg font-black text-2xl leading-none">
-                 <span class="text-orange-500">H Y</span><span class="text-white">M</span>
+                 <span class="text-orange-500">H Y</span>
+                 <span class="text-white">M</span>
               </div>
             </div>
             <div class="text-[13px] text-slate-700 leading-relaxed text-left flex-1">
@@ -1143,7 +1163,7 @@
       }
 
       document.getElementById('docViewTransUnitRaw').value = sellTrans;
-      if(sellTrans > 0) { document.getElementById('rowTrans').style.display = ''; } else { document.getElementById('rowTrans').style.display = 'none'; document.getElementById('docViewTransUnitRaw').value = 0; }
+      if(sellTrans > 0) { document.getElementById('rowTrans').style.display = ''; } else { document.getElementById('rowTrans').style.display = 'none document.getElementById('docViewTransUnitRaw').value = 0; }
 
       document.getElementById('docViewSafetyUnitRaw').value = safety;
       if(safety > 0) { document.getElementById('rowSafety').style.display = ''; } else { document.getElementById('rowSafety').style.display = 'none'; document.getElementById('docViewSafetyUnitRaw').value = 0; }
@@ -1190,8 +1210,11 @@
         unitCostWorker: workerCost, unitCostOther: otherCost,
         costDistance: distance, 
         depPct: depPct, inst2Pct: inst2Pct, compPct: compPct, excessCondition: document.getElementById('excessCondition').value,
-        subTotal: tableSubtotal, vat: finalVat, grandTotal: tableSubtotal + finalVat, docNo: document.getElementById('docViewNo').innerText, docTitle: document.getElementById('docTitleTH').innerText,
-        totalCost: totalCost 
+        subTotal: tableSubtotal, vat: finalVat, grandTotal: tableSubtotal + finalVat, 
+        docNo: document.getElementById('docViewNo').innerText.trim(), 
+        docDate: document.getElementById('docViewDate').innerText.trim(),
+        docTitle: document.getElementById('docTitleTH').innerText,
+        totalCost: totalCost
       };
     }
 
@@ -1567,10 +1590,16 @@
         if(!cat || !name) return alert('กรุณากรอกหมวดหมู่และชื่อสินค้า');
         let db = getProductDB();
         const oldId = document.getElementById('dbProdId').value;
-        if(oldId) { for (let c in db) { db[c] = db[c].filter(i => i.id !== oldId); } }
+        if(oldId) { 
+            for (let c in db) { 
+                db[c] = db[c].filter(i => i.id !== oldId); 
+            } 
+        }
         if(!db[cat]) db[cat] = [];
         db[cat].push({ id, name, cost, price, condition });
-        for (let c in db) { if(db[c].length === 0) delete db[c]; }
+        for (let c in db) { 
+            if(db[c].length === 0) delete db[c]; 
+        }
         localStorage.setItem('hym_products', JSON.stringify(db));
         clearProductForm(); renderProductDB(); initProductDropdowns();
     }
