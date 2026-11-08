@@ -1348,33 +1348,52 @@
       editingDocNo = '';
       isDocNoManuallyEdited = false; 
       
-      updateArchiveCount(); alert('บันทึกเอกสารลงประวัติเรียบร้อยแล้ว!');
+      updateArchiveCount(); 
+      
+      // อัปเดตและแสดงหน้าประวัติทันที
+      renderArchiveList();
+      showTab('archive');
+      
+      alert('บันทึกเอกสารลงประวัติเรียบร้อยแล้ว!');
     }
 
     function renderArchiveList() {
       const archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
       const container = document.getElementById('archiveRenderContainer');
       if (archive.length === 0) { container.innerHTML = '<p class="text-center text-slate-400 py-8 font-medium">ยังไม่มีประวัติการออกเอกสาร</p>'; return; }
-      container.innerHTML = archive.map(item => `
+      
+      container.innerHTML = archive.map(item => {
+        const d = item.rawData;
+        
+        // พยายามดึงชื่อรายการหลักมาแสดง ถ้าว่างเปล่าให้ดึงจากรายการอิสระ (tableRows)
+        let mainDesc = d.itemDesc;
+        let totalQty = (parseFloat(d.qty) || 0) + (parseFloat(d.qty2) || 0);
+        
+        if ((!mainDesc || mainDesc.trim() === '-' || mainDesc.trim() === '') && d.tableRows && d.tableRows.length > 0) {
+            mainDesc = d.tableRows[0].name;
+            totalQty = d.tableRows.reduce((sum, row) => sum + (parseFloat(row.qty) || 0), 0);
+        }
+
+        return `
         <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-2 shadow-sm">
           <div class="flex justify-between items-start">
             <div>
-              <span class="font-extrabold text-slate-900 text-sm">${item.rawData.custName}</span>
-              <span class="text-[11px] text-orange-600 font-bold ml-2">(${item.rawData.docTitle} - ${item.rawData.docNo})</span>
+              <span class="font-extrabold text-slate-900 text-sm">${d.custName || '-'}</span>
+              <span class="text-[11px] text-orange-600 font-bold ml-2">(${d.docTitle || ''} - ${d.docNo || ''})</span>
             </div>
             <span class="text-[10px] text-slate-400 font-medium">${item.date}</span>
           </div>
-          <p class="text-slate-600 text-xs">📍 ${item.rawData.custAddr}</p>
-          <p class="text-slate-700 font-medium text-xs">🏗️ ${item.rawData.itemDesc} (${item.rawData.qty + (item.rawData.qty2||0)} ต้น)</p>
+          <p class="text-slate-600 text-xs">📍 ${d.custAddr || '-'}</p>
+          <p class="text-slate-700 font-medium text-xs">🏗️ ${mainDesc || 'ไม่มีข้อมูลรายการ'} (จำนวน ${totalQty} หน่วย)</p>
           <div class="flex justify-between items-center pt-3 border-t border-slate-200 mt-2">
-            <span class="font-bold text-blue-900">ยอดรวม: ${item.rawData.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.</span>
+            <span class="font-bold text-blue-900">ยอดรวม: ${(d.grandTotal || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.</span>
             <div class="flex gap-2">
                 <button onclick="loadArchiveToEdit(${item.id})" class="bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-xs px-3 py-1.5 rounded-lg transition">แก้ไข</button>
                 <button onclick="deleteArchiveItem(${item.id})" class="bg-red-50 text-red-600 hover:bg-red-100 font-bold text-xs px-3 py-1.5 rounded-lg transition">ลบ</button>
             </div>
           </div>
         </div>
-      `).join('');
+      `}).join('');
     }
 
     function loadArchiveToEdit(id) {
@@ -1893,4 +1912,3 @@
   </script>
 </body>
 </html>
-
