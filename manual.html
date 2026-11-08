@@ -3,143 +3,180 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>คู่มือการใช้งานระบบ - หาดใหญ่ไมโครไพล์</title>
+  <title>คู่มือการใช้งานระบบคำนวณต้นทุนและออกเอกสาร - บจก. หาดใหญ่ ไมโครไพล์</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
-    body { font-family: 'Sarabun', sans-serif; background-color: #f1f5f9; }
-    
-    /* กรอบจำลองกระดาษ A4 */
-    .paper-a4 {
-      width: 794px;
-      min-height: 1123px;
-      margin: 0 auto;
-      background: #ffffff;
-      padding: 50px 65px;
-      box-sizing: border-box;
-      color: #1e293b;
+    * {
+      font-family: 'Sarabun', sans-serif !important;
     }
-    
     @media print {
-      body { background-color: #ffffff; }
-      .no-print { display: none !important; }
-      .paper-a4 { box-shadow: none !important; margin: 0; padding: 20px; width: 100%; }
+      body {
+        background: white !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .page-container {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .page-break {
+        page-break-before: always;
+      }
     }
   </style>
 </head>
-<body class="p-4 sm:p-8 text-slate-800">
+<body class="bg-slate-100 text-slate-800 p-4 sm:p-8">
 
-  <!-- ปุ่มกดดาวน์โหลด (ส่วนนี้จะไม่ถูกพิมพ์ลง PDF) -->
-  <div class="max-w-4xl mx-auto mb-6 text-center no-print">
-    <button onclick="downloadManualPDF()" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 px-8 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2 mx-auto">
-      📥 ดาวน์โหลดคู่มือเป็นไฟล์ PDF
+  <!-- แถบปุ่มดาวน์โหลด PDF ด้านบน -->
+  <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center no-print bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+    <div>
+      <h2 class="text-base font-bold text-slate-800">เอกสารคู่มือการใช้งานระบบ</h2>
+      <p class="text-xs text-slate-500">กดปุ่มด้านขวาเพื่อบันทึกคู่มือเป็นไฟล์ PDF หรือสั่งพิมพ์</p>
+    </div>
+    <button onclick="window.print()" class="bg-orange-600 hover:bg-orange-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+      <span>📥 บันทึกเป็นไฟล์ PDF / สั่งพิมพ์</span>
     </button>
   </div>
 
-  <!-- เนื้อหาคู่มือ (หน้า A4) -->
-  <div class="w-full overflow-x-auto pb-8 no-print">
-    <div id="manualPaper" class="paper-a4 shadow-xl rounded-sm border border-slate-200">
-      
-      <!-- หัวกระดาษ -->
-      <div class="text-center mb-8 border-b-2 border-orange-500 pb-6">
-        <h1 class="text-2xl font-extrabold text-slate-900 mb-2">คู่มือการใช้งานระบบจัดการเอกสาร</h1>
-        <h2 class="text-lg font-bold text-orange-700">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h2>
+  <!-- ตัวเอกสาร A4 -->
+  <div class="page-container max-w-4xl mx-auto bg-white p-8 sm:p-12 rounded-3xl shadow-md border border-slate-200 space-y-6">
+
+    <!-- Header หัวกระดาษ -->
+    <div class="border-b-2 border-orange-500 pb-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <span class="text-xs font-bold text-orange-600 uppercase tracking-wider bg-orange-50 px-2.5 py-1 rounded-md border border-orange-200">User Manual Guide</span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">คู่มือการใช้งานระบบคำนวณต้นทุนและออกเอกสาร</h1>
+        <p class="text-sm font-semibold text-slate-600 mt-0.5">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด (Hatyai Micropile Co., Ltd.)</p>
       </div>
-
-      <div class="text-[14px] leading-relaxed space-y-6">
-        <p>ระบบถูกออกแบบมาให้เป็น <strong>หน้าเดียว (Single Page Application)</strong> ใช้งานง่าย ไม่ต้องติดตั้งโปรแกรมเพิ่มเติม ข้อมูลจะถูกบันทึกในเครื่องของคุณอย่างปลอดภัย แบ่งการทำงานออกเป็น 5 เมนูหลัก ดังนี้:</p>
-
-        <!-- หมวดที่ 1 -->
-        <div>
-          <h3 class="text-[15px] font-bold text-slate-900 bg-slate-100 p-2.5 rounded-lg border-l-4 border-orange-500 mb-2">⚙️ 1. เมนู "ข้อมูล" (กรอกข้อมูลเพื่อออกเอกสาร)</h3>
-          <ul class="list-disc pl-6 space-y-1.5 text-slate-700 marker:text-orange-500">
-            <li><strong class="text-slate-900">ข้อมูลพนักงานขาย:</strong> ใส่ชื่อและเบอร์โทรเซลล์ ข้อมูลนี้จะปรากฏในช่องเซ็นชื่อบนเอกสาร</li>
-            <li><strong class="text-slate-900">ข้อมูลลูกค้าและหน้างาน:</strong> พิมพ์ข้อมูลใหม่ หรือกด <strong>"🔍 ดึงจากฐานข้อมูล"</strong> เพื่อเลือกรายชื่อลูกค้าที่เคยบันทึกไว้มาใช้อัตโนมัติ</li>
-            <li><strong class="text-slate-900">สเปกเสาเข็มและเงื่อนไข:</strong> เลือกรุ่นเสาเข็ม (ตัวเลือกจะดึงมาจากเมนูสินค้า) กำหนดจำนวนต้น และสามารถแก้ไขข้อความหมายเหตุด้านล่างบิลได้</li>
-            <li><strong class="text-slate-900">วิเคราะห์ต้นทุน & ราคาขาย:</strong> ประเมินต้นทุนระยะทาง ค่าเข็ม และค่าแรง เพื่อดู <strong>กำไรขั้นต้น (GP)</strong> <span class="text-slate-500">(ลูกค้าจะไม่เห็นส่วนนี้บนเอกสาร)</span></li>
-          </ul>
-        </div>
-
-        <!-- หมวดที่ 2 -->
-        <div>
-          <h3 class="text-[15px] font-bold text-slate-900 bg-slate-100 p-2.5 rounded-lg border-l-4 border-orange-500 mb-2">📄 2. เมนู "เอกสาร" (ดูเอกสาร, เซ็นชื่อ และพิมพ์)</h3>
-          <ul class="list-disc pl-6 space-y-1.5 text-slate-700 marker:text-orange-500">
-            <li><strong class="text-slate-900">เปลี่ยนประเภทเอกสาร:</strong> เลือก Dropdown ด้านบนเพื่อเปลี่ยนหัวกระดาษเป็น ใบเสนอราคา (QT), ใบแจ้งหนี้ (INV) หรือ ใบเสร็จรับเงิน (RE)</li>
-            <li><strong class="text-slate-900">การลงลายมือชื่อ:</strong> กดปุ่มเซ็นชื่อ 3 ตำแหน่ง (ฝั่งซ้าย, ตรงกลาง, ฝั่งขวา) ใช้นิ้วลากหรือเมาส์เซ็นบนหน้าจอได้ทันที</li>
-            <li><strong class="text-slate-900">บันทึกและส่งออก:</strong> 
-              <ul class="list-circle pl-5 mt-1.5 space-y-1">
-                <li>กด <strong>"💾 บันทึกประวัติ"</strong> เพื่อเซฟเอกสารเก็บไว้ในระบบ (แนะนำให้กดทุกครั้งก่อนส่งไฟล์ให้ลูกค้า)</li>
-                <li>กด <strong>"📥 โหลด PDF"</strong> เพื่อเซฟเอกสารเป็นไฟล์ PDF สำหรับพิมพ์หรือส่งต่อ</li>
-                <li>กดปุ่มแชร์ <strong>LINE</strong> หรือ <strong>Email</strong> เพื่อส่งข้อความสรุปยอดเงินให้ลูกค้าอย่างรวดเร็ว</li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-
-        <!-- หมวดที่ 3 -->
-        <div>
-          <h3 class="text-[15px] font-bold text-slate-900 bg-slate-100 p-2.5 rounded-lg border-l-4 border-orange-500 mb-2">📋 3. เมนู "ประวัติ" (ดูเอกสารย้อนหลัง)</h3>
-          <ul class="list-disc pl-6 space-y-1.5 text-slate-700 marker:text-orange-500">
-            <li>หน้าต่างนี้จะแสดงรายการเอกสารทั้งหมดที่คุณเคยกด "บันทึกประวัติ" เอาไว้</li>
-            <li><strong class="text-slate-900">แก้ไขเอกสารเก่า:</strong> กดปุ่ม "แก้ไข" ระบบจะดึงข้อมูลลูกค้า สเปกเข็ม และราคาของบิลใบนั้นกลับมาให้คุณแก้ไขในแท็บข้อมูลได้ทันที</li>
-            <li><strong class="text-red-600">การล้างประวัติ:</strong> <em>ระวัง!</em> ปุ่ม "ล้างประวัติทั้งหมด" สีแดงมุมขวาบน จะทำการลบเอกสารทุกใบออกจากระบบอย่างถาวร</li>
-          </ul>
-        </div>
-
-        <!-- หมวดที่ 4 -->
-        <div>
-          <h3 class="text-[15px] font-bold text-slate-900 bg-slate-100 p-2.5 rounded-lg border-l-4 border-orange-500 mb-2">👥 4. เมนู "ลูกค้า" (ฐานข้อมูลลูกค้า)</h3>
-          <ul class="list-disc pl-6 space-y-1.5 text-slate-700 marker:text-orange-500">
-            <li>ใช้สำหรับจัดการรายชื่อลูกค้าประจำ เพิ่มชื่อบริษัท เลขผู้เสียภาษี และที่อยู่</li>
-            <li>เมื่อบันทึกแล้ว สามารถกดปุ่ม <strong>"ดึงไปใช้"</strong> ข้อมูลลูกค้าคนนั้นจะถูกส่งไปที่หน้าแรก เพื่อเตรียมออกบิลได้อย่างรวดเร็ว</li>
-          </ul>
-        </div>
-
-        <!-- หมวดที่ 5 -->
-        <div>
-          <h3 class="text-[15px] font-bold text-slate-900 bg-slate-100 p-2.5 rounded-lg border-l-4 border-orange-500 mb-2">📦 5. เมนู "สินค้า" (ฐานข้อมูลเสาเข็ม)</h3>
-          <ul class="list-disc pl-6 space-y-1.5 text-slate-700 marker:text-orange-500">
-            <li><strong class="text-slate-900">เพิ่ม/แก้ไข สินค้า:</strong> สามารถเพิ่มชนิดเสาเข็มใหม่ กำหนดต้นทุน และราคาขายมาตรฐานได้ด้วยตนเอง</li>
-            <li>หากเผลอลบข้อมูลสเปกผิดพลาด สามารถกด <strong>"กู้คืนข้อมูลสินค้าเริ่มต้น"</strong> (มุมขวาบน) เพื่อดึงราคากลางชุดแรกเริ่มกลับมาได้ทั้งหมด</li>
-          </ul>
-        </div>
-
-        <!-- Warning Box -->
-        <div class="mt-8 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl">
-          <h4 class="font-bold text-red-700 flex items-center gap-2 mb-2">💡 ข้อควรระวัง (สำคัญมาก)</h4>
-          <p class="text-[13px] text-red-600 leading-relaxed">
-            เนื่องจากระบบทำงานในรูปแบบ Offline (Local Storage) ข้อมูลจะอยู่เฉพาะในเครื่องคอมพิวเตอร์หรือสมาร์ทโฟน <strong>เครื่องที่กดบันทึกเท่านั้น</strong> 
-            ห้ามกด Clear Cache หรือ Clear History ในเบราว์เซอร์ (เช่น Safari, Chrome) เพราะจะทำให้ประวัติบิลย้อนหลัง รายชื่อลูกค้า และราคาสินค้าที่คุณเพิ่มไว้สูญหายทั้งหมด
-          </p>
-        </div>
-
+      <div class="text-right text-xs text-slate-400">
+        <p>เวอร์ชันระบบ: 2.0 WebApp</p>
+        <p>รองรับ: มือถือ, แท็บเล็ต และคอมพิวเตอร์</p>
       </div>
     </div>
+
+    <!-- ภาพรวมระบบ -->
+    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+      <h2 class="text-base font-bold text-slate-900 flex items-center gap-2 mb-1.5">
+        <span class="text-orange-500 text-lg">●</span> ภาพรวมของระบบ
+      </h2>
+      <p class="text-sm text-slate-600 leading-relaxed">
+        ระบบนี้ออกแบบมาเพื่อช่วยให้พนักงานขาย (เซลล์) และฝ่ายเอกสารสามารถคำนวณต้นทุน ประเมินกำไรขั้นต้น (GP) และออกเอกสารทางการค้า เช่น ใบเสนอราคา (Quotation), ใบแจ้งหนี้ (Invoice), ใบเสร็จรับเงิน (Receipt) และใบกำกับภาษี (Tax Invoice) ได้อย่างรวดเร็ว พร้อมทั้งเซ็นชื่อบนหน้าจอและส่งออกเป็น PDF ได้ทันที โดยแบ่งการทำงานออกเป็น 7 ฟังก์ชันหลัก
+      </p>
+    </div>
+
+    <!-- ส่วนที่ 1 -->
+    <div class="space-y-3">
+      <h3 class="text-base font-bold text-orange-700 border-l-4 border-orange-500 pl-3">
+        1. แท็บ "⚙️ ข้อมูล" (การตั้งค่าเอกสารและคำนวณราคา)
+      </h3>
+      <p class="text-xs text-slate-600">เป็นหน้าหลักที่ใช้กรอกรายละเอียดงานและสูตรการคิดเงินทั้งหมด:</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+        <div class="p-3 bg-white border border-slate-200 rounded-xl">
+          <p class="font-bold text-slate-800 mb-1">📑 เลือกประเภทเอกสาร</p>
+          <p class="text-slate-600">เลือกประเภทที่ต้องการออก เช่น ใบเสนอราคา (มี/ไม่มี VAT), ใบแจ้งหนี้, ใบเสร็จรับเงิน ระบบจะเปลี่ยนชื่อหัวบิลและปรับสูตรคิด VAT 7% ให้อัตโนมัติ</p>
+        </div>
+        <div class="p-3 bg-white border border-slate-200 rounded-xl">
+          <p class="font-bold text-slate-800 mb-1">👤 ข้อมูลลูกค้าและหน้างาน</p>
+          <p class="text-slate-600">กรอกชื่อและสถานที่ติดตั้ง (จำเป็นต้องระบุ) หรือกดปุ่ม <strong>"🔍 ดึงจากฐานข้อมูล"</strong> เพื่อดึงข้อมูลลูกค้าเดิมมาใส่โดยไม่ต้องพิมพ์ใหม่</p>
+        </div>
+        <div class="p-3 bg-white border border-slate-200 rounded-xl">
+          <p class="font-bold text-slate-800 mb-1">🏗️ สเปกเสาเข็มและเงื่อนไข</p>
+          <p class="text-slate-600">เลือกชนิด/ขนาดเสาเข็ม ระบบจะใส่ราคาขายและต้นทุนเริ่มต้นให้ ระบุจำนวนต้น, ความยาวเฉลี่ย, ปรับเปอร์เซ็นต์แบ่งงวดชำระ (งวด 1, 2, 3) และสามารถเพิ่มรายการเสาเข็มสำรอง (รายการที่ 2) ได้</p>
+        </div>
+        <div class="p-3 bg-white border border-slate-200 rounded-xl">
+          <p class="font-bold text-slate-800 mb-1">📊 วิเคราะห์ต้นทุน & ราคาขาย</p>
+          <p class="text-slate-600">ระบบคำนวณกำไรขั้นต้น (GP) อัตโนมัติ โดยนำราคาขายหักลบต้นทุนวัสดุ ค่าแรงเครื่องจักร ค่าแรงคนงาน และค่าน้ำมันตามระยะทาง พร้อมช่องบวกค่า Safety และค่านอกพื้นที่</p>
+        </div>
+      </div>
+      <div class="p-2.5 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900">
+        <strong>💡 ข้อมูลพนักงานขาย:</strong> กรอกชื่อและเบอร์โทรเซลล์ แล้วกดปุ่ม <strong>"💾 บันทึกเป็นค่าเริ่มต้น"</strong> ระบบจะจำชื่อไว้ในเครื่อง ไม่ต้องกรอกซ้ำในครั้งต่อไป
+      </div>
+    </div>
+
+    <!-- ส่วนที่ 2 -->
+    <div class="space-y-3">
+      <h3 class="text-base font-bold text-orange-700 border-l-4 border-orange-500 pl-3">
+        2. แท็บ "📄 เอกสาร" (การจัดการ พรีวิว และออก PDF)
+      </h3>
+      <p class="text-xs text-slate-600">กดปุ่ม <em>"👀 ดูตัวอย่างตัวเลข / ไปหน้าออกเอกสาร"</em> เพื่อเข้าสู่หน้าจัดวางกระดาษพิมพ์:</p>
+      
+      <ul class="list-disc list-inside space-y-1.5 text-xs text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-200">
+        <li><strong>การลงลายมือชื่อดิจิทัล:</strong> กดปุ่ม ✍️ ฝั่งซ้าย (เซลล์), ตรงกลาง (ผู้รับจ้าง) หรือ ฝั่งขวา (ลูกค้า) เพื่อเปิดกระดานเซ็นชื่อด้วยนิ้วมือ แล้วกดบันทึก ลายเซ็นจะประทับลงในช่องทันที</li>
+        <li><strong>การเพิ่มรายการอิสระ:</strong> หากมีค่าใช้จ่ายเพิ่มเติมที่ไม่อยู่ในสูตรมาตรฐาน สามารถกดปุ่ม <strong>"➕ เพิ่มรายการอิสระ"</strong> เพื่อพิมพ์ชื่อและระบุราคาลงในตารางได้เอง</li>
+        <li><strong>💾 บันทึกประวัติ:</strong> กดเพื่อเซฟเอกสารใบนี้เก็บไว้ในระบบ (ประวัติจะไปปรากฏในแท็บที่ 4)</li>
+        <li><strong>📥 โหลด PDF:</strong> บันทึกเอกสารออกมาเป็นไฟล์ PDF ขนาด A4 ที่จัดหน้าเต็มสัดส่วน 100%</li>
+        <li><strong>💬 แนบ PDF เข้า LINE / ✉️ Email:</strong> ระบบจะเตรียมไฟล์ PDF พร้อมร่างข้อความสรุปยอดเงินและข้อมูลหน้างาน ให้กดส่งต่อเข้าแอปพลิเคชันได้ทันที</li>
+      </ul>
+    </div>
+
+    <!-- ส่วนที่ 3 & 4 -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="space-y-2 p-4 bg-white border border-slate-200 rounded-2xl">
+        <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+          <span>📊</span> 3. แท็บ "ภาพรวม" (Dashboard)
+        </h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          แสดงสถิติผลประกอบการรวมของทุกงานที่เคยกดบันทึกประวัติไว้:
+        </p>
+        <ul class="list-disc list-inside text-xs text-slate-600 space-y-1">
+          <li>การ์ดสรุปยอดขายรวม, ต้นทุนรวม และกำไรรวม</li>
+          <li>ตารางสรุปรายโครงการ แสดงกำไรสุทธิ และ % Margin ของแต่ละบิล</li>
+        </ul>
+      </div>
+
+      <div class="space-y-2 p-4 bg-white border border-slate-200 rounded-2xl">
+        <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+          <span>📋</span> 4. แท็บ "ประวัติ" (Archive)
+        </h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          จัดเก็บรายการเอกสารย้อนหลัง:
+        </p>
+        <ul class="list-disc list-inside text-xs text-slate-600 space-y-1">
+          <li>กด <strong>"แก้ไข"</strong> เพื่อดึงข้อมูลเดิมกลับไปแก้ไขหรือออกบิลใหม่</li>
+          <li>กด <strong>"ลบ"</strong> เพื่อนำรายการที่ไม่ต้องการออกจากระบบ</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ส่วนที่ 5, 6, 7 -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1 text-xs">
+        <p class="font-bold text-slate-800">📸 5. ภาพหน้างาน (Gallery)</p>
+        <p class="text-slate-600">ถ่ายรูปหน้างานจริงหรืออัปโหลดรูปจากคลังภาพ พร้อมใส่ชื่อโครงการ ภาพจะถูกย่อขนาดให้อัตโนมัติเพื่อประหยัดพื้นที่จัดเก็บ</p>
+      </div>
+
+      <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1 text-xs">
+        <p class="font-bold text-slate-800">👥 6. ฐานข้อมูลลูกค้า</p>
+        <p class="text-slate-600">บันทึกรายชื่อบริษัท ที่อยู่ เลขประจำตัวผู้เสียภาษี และเบอร์โทร เพื่อนำไปกดดึงข้อมูลมาใช้ออกเอกสารได้รวดเร็ว</p>
+      </div>
+
+      <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1 text-xs">
+        <p class="font-bold text-slate-800">📦 7. ฐานข้อมูลสินค้า</p>
+        <p class="text-slate-600">ปรับแต่งราคาขาย ต้นทุน และเงื่อนไขเสาเข็มแต่ละขนาดตามนโยบายบริษัท สามารถกดปุ่มกู้คืนค่าเริ่มต้นได้เสมอ</p>
+      </div>
+    </div>
+
+    <!-- กล่องข้อควรระวังสำคัญ -->
+    <div class="bg-amber-50 border-2 border-amber-300 p-4 rounded-2xl text-xs text-amber-900 space-y-1.5">
+      <p class="font-extrabold flex items-center gap-1.5 text-amber-950 text-sm">
+        ⚠️ หมายเหตุสำคัญด้านการใช้งานและจัดเก็บข้อมูล
+      </p>
+      <p>1. <strong>ข้อมูลถูกบันทึกในเบราว์เซอร์ของอุปกรณ์ (Local Storage):</strong> ประวัติเอกสาร รายชื่อลูกค้า และภาพถ่ายหน้างาน จะถูกเก็บไว้ในเครื่องที่ท่านใช้งานเท่านั้น หากมีการกด <em>"ล้างประวัติการท่องเว็บ / Clear Cache"</em> ข้อมูลในระบบจะถูกล้างไปด้วย จึงแนะนำให้บันทึกไฟล์ PDF เก็บสำรองไว้ในเครื่องหรือส่งต่อเข้า LINE เสมอ</p>
+      <p>2. <strong>การพิมพ์และส่งออก PDF:</strong> แนะนำให้ใช้ปุ่ม <strong>"📥 โหลด PDF"</strong> ภายในระบบ เพื่อให้โปรแกรมคำนวณสเกลหน้ากระดาษ A4 ให้เต็มหน้าอย่างสมบูรณ์แบบ</p>
+    </div>
+
+    <!-- ส่วนท้ายเอกสาร -->
+    <div class="pt-4 border-t border-slate-200 text-center text-xs text-slate-400">
+      บริษัท หาดใหญ่ ไมโครไพล์ จำกัด • โทร. 080-4549659, 089-653-6312 • www.hatyaimicropile.com
+    </div>
+
   </div>
 
-  <script>
-    function downloadManualPDF() {
-      const element = document.getElementById('manualPaper');
-      const opt = {
-        margin:       [10, 10, 10, 10],
-        filename:     'คู่มือการใช้งาน_หาดใหญ่ไมโครไพล์.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      
-      const btn = document.querySelector('button');
-      const oldText = btn.innerHTML;
-      btn.innerHTML = '⏳ กำลังสร้างไฟล์ PDF...';
-      btn.classList.add('opacity-70', 'cursor-not-allowed');
-      
-      html2pdf().set(opt).from(element).save().then(() => {
-         btn.innerHTML = oldText;
-         btn.classList.remove('opacity-70', 'cursor-not-allowed');
-      });
-    }
-  </script>
 </body>
 </html>
-
