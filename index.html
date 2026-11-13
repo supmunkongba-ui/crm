@@ -302,9 +302,10 @@
           <div><label class="block font-semibold text-amber-900 mb-1">เพลท+เชื่อม/ต้น</label><input type="number" id="unitCostPlate" placeholder="450" value="450" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right"></div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs pb-3 border-b border-amber-200">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs pb-3 border-b border-amber-200">
             <div><label class="block font-semibold text-amber-900 mb-1">ค่าแรงเครื่องจักร (เหมา)</label><input type="number" id="unitCostLaborDay" placeholder="7500" value="7500" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right font-medium"></div>
-            <div><label class="block font-semibold text-amber-900 mb-1">ค่าแรงคนงาน (เหมา/วัน)</label><input type="number" id="unitCostWorker" placeholder="0" value="0" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right font-medium"></div>
+            <div><label class="block font-semibold text-amber-900 mb-1">จำนวนคนงาน (คน)</label><input type="number" id="workerCount" placeholder="0" value="0" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right font-medium"></div>
+            <div><label class="block font-semibold text-amber-900 mb-1">ค่าแรง/คน/วัน (บ.)</label><input type="number" id="workerWage" placeholder="500" value="500" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right font-medium"></div>
             <div><label class="block font-semibold text-amber-900 mb-1">ค่าใช้จ่ายอื่นๆ (บ.)</label><input type="number" id="unitCostOther" placeholder="0" value="0" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right font-medium"></div>
         </div>
         
@@ -412,7 +413,7 @@
                 </div>
                 <div class="flex justify-between items-center pt-0.5">
                   <span class="font-bold text-slate-500 whitespace-nowrap">วันที่ :</span> 
-                  <span class="font-medium text-slate-900 editable-cell px-1 outline-none text-right flex-1 ml-2" id="docViewDate" contenteditable="true">-</span>
+                  <span class="font-medium text-slate-900 editable-cell px-1 outline-none text-right flex-1 ml-2" id="docViewDate" contenteditable="true" oninput="syncSignDates()">-</span>
                 </div>
               </div>
             </div>
@@ -573,7 +574,7 @@
               </div>
               <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignSales">ผู้เสนอราคา</span></div>
               <div class="text-slate-700 mb-0.5 font-medium text-[10px]" id="docViewSignSalesName">(คุณศรายุทธ เมรุลัตร์)</div>
-              <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ ....... / ....... / .......</div>
+              <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
             </div>
             
             <!-- ผู้รับจ้าง -->
@@ -585,7 +586,7 @@
               <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignIssuer">ผู้รับจ้าง</span></div>
               <div class="text-slate-700 mb-0.5 font-medium text-[10px]">(คุณศรายุทธ เมรุลัตร์)</div>
               <div class="text-slate-800 font-bold mb-0.5 text-[9px]">บจก.หาดใหญ่ ไมโครไพล์</div>
-              <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ ....... / ....... / .......</div>
+              <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
             </div>
             
             <!-- ผู้ว่าจ้าง (ลูกค้าเซ็น) -->
@@ -597,7 +598,7 @@
               <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignCustomer">ผู้ว่าจ้าง</span></div>
               <div class="text-slate-700 mb-0.5 font-medium text-[10px]" id="docViewSignCustName">(........................................)</div>
               <div class="text-slate-800 font-bold mb-0.5 text-[9px] opacity-0">.</div>
-              <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ ....... / ....... / .......</div>
+              <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
             </div>
           </div>
           
@@ -1017,6 +1018,13 @@
        updateDocType();
     }
 
+    function syncSignDates() {
+        const docDate = document.getElementById('docViewDate').innerText.trim();
+        document.querySelectorAll('.sign-date-display').forEach(el => {
+            el.innerText = (docDate !== '-' && docDate !== '') ? docDate : '....... / ....... / .......';
+        });
+    }
+
     function addNewRow() {
         const tbody = document.getElementById('invoiceTbody');
         const newRow = document.createElement('tr');
@@ -1145,7 +1153,12 @@
       const unitPile2 = parseFloat(document.getElementById('unitCostPile2').value) || 0;
       const unitPlate = parseFloat(document.getElementById('unitCostPlate').value) || 0;
       const laborDay = parseFloat(document.getElementById('unitCostLaborDay').value) || 0;
-      const workerCost = parseFloat(document.getElementById('unitCostWorker').value) || 0;
+      
+      // คำนวณค่าแรงคนงานจากจำนวนคน x ค่าแรง/วัน
+      const workerCount = parseFloat(document.getElementById('workerCount').value) || 0;
+      const workerWage = parseFloat(document.getElementById('workerWage').value) || 0;
+      const workerCost = workerCount * workerWage;
+      
       const otherCost = parseFloat(document.getElementById('unitCostOther').value) || 0;
       
       const sellUnit = parseFloat(document.getElementById('costSellingUnitPrice').value) || 0;
@@ -1155,7 +1168,8 @@
       const outArea = parseFloat(document.getElementById('costOutArea').value) || 0;
 
       const matCost = (qty * (unitPile + unitPlate)) + (qty2 * (unitPile2 + unitPlate));
-      const totalCost = matCost + laborDay + workerCost + otherCost + (2000 + (distance * 25));
+      // ปรับปรุงการคำนวณระยะทาง = ระยะทาง x 10
+      const totalCost = matCost + laborDay + workerCost + otherCost + (distance * 10);
       const quotationSubtotal = (qty * sellUnit) + (qty2 * sellUnit2) + sellTrans + safety + outArea;
       
       const gp = quotationSubtotal - totalCost;
@@ -1234,6 +1248,7 @@
       
       updateRowIndices();
       recalcTable();
+      syncSignDates(); // อัปเดตวันที่ใต้ลายเซ็น
 
       const type = document.getElementById('docTypeSelector').value;
       let finalVat = 0;
@@ -1254,7 +1269,7 @@
         specValue2: specSelect2.value, subDetail2: subDetail2, itemDesc2: fullItemDesc2, qty2: qty2, unitSell2: sellUnit2,
         sellTrans: sellTrans, safety: safety, outArea: outArea,
         unitCostPile: unitPile, unitCostPile2: unitPile2, unitCostPlate: unitPlate, unitCostLaborDay: laborDay, 
-        unitCostWorker: workerCost, unitCostOther: otherCost,
+        workerCount: workerCount, workerWage: workerWage, unitCostWorker: workerCost, unitCostOther: otherCost,
         costDistance: distance, 
         depPct: depPct, inst2Pct: inst2Pct, compPct: compPct, excessCondition: document.getElementById('excessCondition').value,
         subTotal: tableSubtotal, vat: finalVat, grandTotal: tableSubtotal + finalVat, 
@@ -1438,7 +1453,11 @@
             document.getElementById('unitCostPile2').value = d.unitCostPile2 || 0;
             document.getElementById('unitCostPlate').value = d.unitCostPlate;
             document.getElementById('unitCostLaborDay').value = d.unitCostLaborDay;
-            document.getElementById('unitCostWorker').value = d.unitCostWorker || 0;
+            
+            // โหลดข้อมูลช่องคนงานใหม่
+            document.getElementById('workerCount').value = d.workerCount !== undefined ? d.workerCount : 0;
+            document.getElementById('workerWage').value = d.workerWage !== undefined ? d.workerWage : 500;
+            
             document.getElementById('unitCostOther').value = d.unitCostOther || 0;
             document.getElementById('costDistance').value = d.costDistance;
             
@@ -1453,6 +1472,7 @@
             
             document.getElementById('docViewNo').innerText = d.docNo;
             document.getElementById('docViewDate').innerText = doc.date; 
+            syncSignDates();
             
             const typeSelector = document.getElementById('docTypeSelector');
             if(d.docNo.startsWith('HYM') || d.docNo.startsWith('QT') || d.docTitle.includes('ใบเสนอราคา')) {
@@ -1519,7 +1539,9 @@
             let cost = d.totalCost;
             if(cost === undefined) {
                 const matCost = (d.qty * (d.unitCostPile + d.unitCostPlate)) + ((d.qty2||0) * ((d.unitCostPile2||0) + d.unitCostPlate));
-                cost = matCost + d.unitCostLaborDay + (d.unitCostWorker||0) + (d.unitCostOther||0) + (2000 + (d.costDistance * 25));
+                const wCost = d.unitCostWorker !== undefined ? d.unitCostWorker : ((d.workerCount || 0) * (d.workerWage || 0));
+                // คำนวณระยะทางแบบใหม่ในประวัติเก่าด้วยถ้าเกิดไม่ได้บันทึก totalCost ไว้
+                cost = matCost + d.unitCostLaborDay + wCost + (d.unitCostOther||0) + ((d.costDistance || 0) * 10);
             }
             const profit = rev - cost;
             const margin = rev > 0 ? (profit / rev * 100).toFixed(1) : 0;
@@ -1909,6 +1931,7 @@
     renderArchiveList();
     updateArchiveCount();
     runEngine();
+    syncSignDates(); // ซิงค์วันที่ใต้ลายเซ็นครั้งแรกเมื่อเปิดหน้า
   </script>
 </body>
 </html>
