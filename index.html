@@ -118,22 +118,33 @@
   <div class="max-w-4xl mx-auto space-y-4">
     
     <!-- ส่วนหัวโปรแกรม -->
-    <header class="no-print bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-row items-center justify-start gap-4 sm:gap-6 overflow-hidden">
-      <div class="h-16 sm:h-20 w-auto flex items-center justify-center p-1 shadow shrink-0 rounded-2xl bg-white border border-slate-100 relative">
-           <img src="A0117C09-C98C-43EC-BBD2-DA96A41B05D4.png" 
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
-                alt="โลโก้ หาดใหญ่ ไมโครไพล์" 
-                class="h-full w-auto object-contain rounded-lg relative z-10 bg-white">
-           <div style="display: none;" class="w-16 sm:w-20 h-full bg-slate-800 text-white flex-col items-center justify-center rounded-lg font-black text-lg sm:text-xl leading-none">
-              <span class="text-orange-500">H Y</span>
-              <span class="text-white">M</span>
-           </div>
+    <header class="no-print bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-row items-center justify-between gap-4 sm:gap-6 overflow-hidden">
+      <div class="flex flex-row items-center gap-4 sm:gap-6 min-w-0 flex-1">
+        <div class="h-16 sm:h-20 w-auto flex items-center justify-center p-1 shadow shrink-0 rounded-2xl bg-white border border-slate-100 relative">
+             <img src="A0117C09-C98C-43EC-BBD2-DA96A41B05D4.png" 
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                  alt="โลโก้ หาดใหญ่ ไมโครไพล์" 
+                  class="h-full w-auto object-contain rounded-lg relative z-10 bg-white">
+             <div style="display: none;" class="w-16 sm:w-20 h-full bg-slate-800 text-white flex-col items-center justify-center rounded-lg font-black text-lg sm:text-xl leading-none">
+                <span class="text-orange-500">H Y</span>
+                <span class="text-white">M</span>
+             </div>
+        </div>
+        <div class="text-left text-[12px] sm:text-sm text-slate-600 space-y-1 flex-1 min-w-0">
+          <h1 class="text-[15px] sm:text-xl font-black text-slate-900 leading-tight truncate">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
+          <p class="truncate">12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
+          <p class="truncate">เลขประจำตัวผู้เสียภาษี : 0-9055-62001-69-3</p>
+          <p class="text-orange-600 font-bold tracking-wide mt-1 truncate">โทร. 080-4549659, 089-653-6312</p>
+        </div>
       </div>
-      <div class="text-left text-[12px] sm:text-sm text-slate-600 space-y-1 flex-1 min-w-0">
-        <h1 class="text-[15px] sm:text-xl font-black text-slate-900 leading-tight truncate">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
-        <p class="truncate">12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
-        <p class="truncate">เลขประจำตัวผู้เสียภาษี : 0-9055-62001-69-3</p>
-        <p class="text-orange-600 font-bold tracking-wide mt-1 truncate">โทร. 080-4549659, 089-653-6312</p>
+      <!-- ปุ่มลัดสำรองข้อมูล & เคลียร์ฟอร์ม -->
+      <div class="flex flex-col gap-1.5 shrink-0">
+        <button onclick="resetNewDocumentForm()" class="text-[11px] bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 font-bold px-3 py-1.5 rounded-xl transition shadow-sm">
+          ✨ เริ่มใบงานใหม่
+        </button>
+        <button onclick="openBackupModal()" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-bold px-3 py-1.5 rounded-xl transition shadow-sm">
+          💾 สำรอง/กู้ข้อมูล
+        </button>
       </div>
     </header>
 
@@ -160,8 +171,11 @@
       <button id="navProducts" onclick="showTab('products')" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex-shrink-0">
         📦 7. สินค้า
       </button>
+      <button id="navEmployees" onclick="showTab('employees')" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex-shrink-0">
+        👷 8. พนักงาน (<span id="empCountBadge">0</span>)
+      </button>
       <a href="https://www.hatyaimicropile.com/เอกสารรับประกัน" target="_blank" rel="noopener noreferrer" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-orange-600 bg-orange-50 border border-orange-200 hover:bg-orange-100 transition flex-shrink-0 flex items-center gap-1">
-        🛡️ 8. เอกสารรับประกัน
+        🛡️ 9. เอกสารรับประกัน
       </a>
     </nav>
 
@@ -173,19 +187,34 @@
       <option value="6.00 ม.">
     </datalist>
 
+    <!-- ดาต้าลิสต์รายชื่อพนักงานสำหรับ Auto-complete -->
+    <datalist id="employeeListOptions"></datalist>
+
     <!-- ================= แท็บ 1: กรอกข้อมูลและคำนวณต้นทุน ================= -->
     <main id="tabCost" class="space-y-4">
       
-      <!-- เลือกประเภทเอกสาร -->
-      <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200 shadow-sm flex flex-col sm:flex-row gap-3 items-center">
-        <label class="block text-sm font-extrabold text-blue-900 whitespace-nowrap">📑 ต้องการออกเอกสารอะไร:</label>
-        <select id="docTypeSelectorFront" onchange="syncDocType('front')" class="w-full sm:w-2/3 border-2 border-blue-400 rounded-xl p-2.5 text-sm font-bold bg-white text-blue-700 outline-none focus:ring-2 focus:ring-blue-300">
-            <option value="QT_VAT">ใบเสนอราคา (รวม VAT)</option>
-            <option value="QT_NOVAT">ใบเสนอราคา (ไม่รวม VAT)</option>
-            <option value="INV">ใบแจ้งหนี้ / ใบวางบิล (Invoice)</option>
-            <option value="REC">ใบเสร็จรับเงิน (ไม่มี VAT)</option>
-            <option value="TAX">ใบกำกับภาษี / ใบเสร็จรับเงิน (รวม VAT)</option>
-        </select>
+      <!-- เลือกประเภทเอกสาร & สถานะงาน -->
+      <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200 shadow-sm grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <div class="sm:col-span-2 flex flex-col sm:flex-row gap-2 sm:items-center">
+          <label class="block text-sm font-extrabold text-blue-900 whitespace-nowrap">📑 ประเภทเอกสาร:</label>
+          <select id="docTypeSelectorFront" onchange="syncDocType('front')" class="w-full border-2 border-blue-400 rounded-xl p-2.5 text-sm font-bold bg-white text-blue-700 outline-none focus:ring-2 focus:ring-blue-300">
+              <option value="QT_VAT">ใบเสนอราคา (รวม VAT)</option>
+              <option value="QT_NOVAT">ใบเสนอราคา (ไม่รวม VAT)</option>
+              <option value="INV">ใบแจ้งหนี้ / ใบวางบิล (Invoice)</option>
+              <option value="REC">ใบเสร็จรับเงิน (ไม่มี VAT)</option>
+              <option value="TAX">ใบกำกับภาษี / ใบเสร็จรับเงิน (รวม VAT)</option>
+          </select>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
+          <label class="block text-xs font-extrabold text-blue-900 whitespace-nowrap">📌 สถานะงาน:</label>
+          <select id="projectStatus" onchange="runEngine()" class="w-full border-2 border-blue-300 rounded-xl p-2.5 text-xs font-bold bg-white text-slate-700 outline-none">
+              <option value="รออนุมัติ">⏳ รออนุมัติ</option>
+              <option value="มัดจำแล้ว">💰 มัดจำแล้ว</option>
+              <option value="กำลังตอก">🏗️ กำลังดำเนินงาน</option>
+              <option value="เสร็จสิ้น">✅ เสร็จสิ้น</option>
+              <option value="ยกเลิก">❌ ยกเลิก</option>
+          </select>
+        </div>
       </div>
 
       <!-- ข้อมูลลูกค้า -->
@@ -197,22 +226,22 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
             <label class="block font-semibold text-slate-700 mb-1">นามลูกค้า / ผู้สั่งจ้าง *</label>
-            <input type="text" id="custName" placeholder="เช่น บริษัท นาวี กรีน เอนเนอร์ยี จำกัด" class="w-full border rounded-xl p-2.5 bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-orange-500 font-bold">
+            <input type="text" id="custName" placeholder="เช่น บริษัท นาวี กรีน เอนเนอร์ยี จำกัด" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-orange-500 font-bold">
           </div>
           <div>
             <label class="block font-semibold text-slate-700 mb-1">เลขประจำตัวผู้เสียภาษี</label>
-            <input type="text" id="custTaxId" placeholder="เช่น 0 9055 69005 84 8" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none font-mono">
+            <input type="text" id="custTaxId" placeholder="เช่น 0 9055 69005 84 8" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none font-mono">
           </div>
           <div class="sm:col-span-2">
             <label class="block font-semibold text-slate-700 mb-1">ที่อยู่หน้างาน / สถานที่ติดตั้ง *</label>
-            <input type="text" id="custAddress" placeholder="เช่น 211/2 ม.6 ต.นาทวี อ.นาทวี จ.สงขลา 90160" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+            <input type="text" id="custAddress" placeholder="เช่น 211/2 ม.6 ต.นาทวี อ.นาทวี จ.สงขลา 90160" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
           </div>
           <!-- ข้อมูลติดต่อ -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:col-span-2 pt-3 border-t border-slate-100 mt-1">
-            <div><label class="block font-semibold text-slate-700 mb-1">เบอร์มือถือ</label><input type="text" id="custMobile" placeholder="08X-XXX-XXXX" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none"></div>
-            <div><label class="block font-semibold text-slate-700 mb-1">เบอร์สำนักงาน (ต่อ)</label><input type="text" id="custOfficePhone" placeholder="02-XXX-XXXX ต่อ XX" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none"></div>
-            <div><label class="block font-semibold text-slate-700 mb-1">อีเมล</label><input type="email" id="custEmail" placeholder="example@email.com" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none"></div>
-            <div><label class="block font-semibold text-slate-700 mb-1">LINE ID</label><input type="text" id="custLine" placeholder="@lineid" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none"></div>
+            <div><label class="block font-semibold text-slate-700 mb-1">เบอร์มือถือ</label><input type="text" id="custMobile" placeholder="08X-XXX-XXXX" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none"></div>
+            <div><label class="block font-semibold text-slate-700 mb-1">เบอร์สำนักงาน (ต่อ)</label><input type="text" id="custOfficePhone" placeholder="02-XXX-XXXX ต่อ XX" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none"></div>
+            <div><label class="block font-semibold text-slate-700 mb-1">อีเมล</label><input type="email" id="custEmail" placeholder="example@email.com" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none"></div>
+            <div><label class="block font-semibold text-slate-700 mb-1">LINE ID</label><input type="text" id="custLine" placeholder="@lineid" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none"></div>
           </div>
         </div>
       </div>
@@ -307,23 +336,33 @@
             <div><label class="block font-semibold text-amber-900 mb-1">ค่าใช้จ่ายอื่นๆ (บ.)</label><input type="number" id="unitCostOther" placeholder="0" value="0" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right font-medium"></div>
         </div>
         
-        <!-- ส่วนจัดการค่าแรงพนักงาน (แบบอิสระ) -->
+        <!-- ส่วนจัดการค่าแรงพนักงาน (เชื่อมกับฐานข้อมูลพนักงาน) -->
         <div class="pb-3 border-b border-amber-200">
-            <div class="flex justify-between items-center mb-2 mt-1">
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-2 mt-1">
                 <label class="block font-semibold text-amber-900 text-xs">👷 รายชื่อพนักงาน และ ค่าแรงที่คิดในงานนี้</label>
-                <button onclick="addWorkerRow()" class="text-[10px] bg-amber-200 hover:bg-amber-300 text-amber-900 px-3 py-1.5 rounded-lg font-bold shadow-sm transition">➕ เพิ่มพนักงาน</button>
+                <div class="flex gap-1.5">
+                    <button onclick="showTab('employees')" class="text-[10px] bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 px-2.5 py-1.5 rounded-lg font-bold shadow-sm transition">⚙️ จัดการประวัติพนักงาน</button>
+                    <button onclick="addWorkerRow()" class="text-[10px] bg-amber-200 hover:bg-amber-300 text-amber-900 px-3 py-1.5 rounded-lg font-bold shadow-sm transition">➕ เพิ่มแถวว่าง</button>
+                </div>
             </div>
+
+            <!-- แถบปุ่มลัดดึงพนักงานจากฐานข้อมูล -->
+            <div id="quickEmployeeButtons" class="flex flex-wrap gap-1.5 mb-2.5"></div>
+
             <div id="workersContainer" class="space-y-2">
                 <!-- แถวพนักงานจะถูกเพิ่มที่นี่ผ่าน JavaScript -->
                 <div class="flex gap-2 items-center worker-item">
-                    <input type="text" class="flex-1 border rounded-xl p-2 bg-white text-xs worker-name outline-none focus:ring-2 focus:ring-amber-500" placeholder="ชื่อพนักงาน (เช่น นายเอกพงศ์)">
+                    <input type="text" list="employeeListOptions" onchange="onWorkerNameInput(this)" class="flex-1 border rounded-xl p-2 bg-white text-xs worker-name outline-none focus:ring-2 focus:ring-amber-500" placeholder="ชื่อพนักงาน (พิมพ์หรือเลือกจากระบบ)">
                     <input type="number" class="w-24 sm:w-32 border rounded-xl p-2 bg-white text-xs text-right worker-wage outline-none focus:ring-2 focus:ring-amber-500" placeholder="ค่าแรง" value="500" oninput="runEngine()">
                     <button onclick="removeWorkerRow(this)" class="text-red-400 hover:text-red-600 font-bold px-2 text-sm">✕</button>
                 </div>
             </div>
-            <div class="mt-2.5 text-right text-xs bg-amber-100/50 p-2 rounded-xl">
-                <span class="font-semibold text-amber-900">รวมค่าแรงพนักงาน:</span>
-                <span id="sumWorkerCost" class="font-bold text-red-600 ml-2 text-sm">500</span> <span class="text-amber-900">บาท</span>
+            <div class="mt-2.5 flex justify-between items-center text-xs bg-amber-100/60 p-2.5 rounded-xl">
+                <span class="text-[11px] text-amber-800">💡 กดปุ่มชื่อพนักงานด้านบนเพื่อดึงชื่อและค่าแรงอัตโนมัติ</span>
+                <div>
+                    <span class="font-semibold text-amber-900">รวมค่าแรงพนักงาน:</span>
+                    <span id="sumWorkerCost" class="font-bold text-red-600 ml-1 text-sm">500</span> <span class="text-amber-900">บาท</span>
+                </div>
             </div>
         </div>
         
@@ -337,25 +376,42 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 pt-3 border-t border-amber-200">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 pt-3 border-t border-amber-200">
             <div><label class="block text-xs font-semibold text-slate-700 mb-1">ค่าเซฟตี้ (Safety) (บ.) ชาร์จในบิล</label><input type="number" id="costSafety" value="0" placeholder="0" oninput="runEngine()" class="w-full border rounded-xl p-2 text-sm font-bold text-right text-slate-800 bg-white outline-none"></div>
             <div><label class="block text-xs font-semibold text-slate-700 mb-1">ค่าดำเนินการนอกพื้นที่ (บ.) ชาร์จในบิล</label><input type="number" id="costOutArea" value="0" placeholder="0" oninput="runEngine()" class="w-full border rounded-xl p-2 text-sm font-bold text-right text-slate-800 bg-white outline-none"></div>
+            <div><label class="block text-xs font-semibold text-red-700 mb-1">ส่วนลดพิเศษท้ายบิล (บ.)</label><input type="number" id="costDiscount" value="0" placeholder="0" oninput="runEngine()" class="w-full border border-red-200 rounded-xl p-2 text-sm font-bold text-right text-red-600 bg-white outline-none"></div>
+        </div>
+
+        <!-- ตัวเลือกหัก ณ ที่จ่าย 3% -->
+        <div class="pt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <label class="flex items-center gap-2 cursor-pointer font-bold text-amber-950 bg-white px-3 py-2 rounded-xl border border-amber-200">
+                <input type="checkbox" id="enableWht3" onchange="runEngine()" class="w-4 h-4 accent-orange-600">
+                <span>คำนวณภาษีหัก ณ ที่จ่าย 3% (แสดงยอดโอนสุทธิในบิลสำหรับลูกค้านิติบุคคล)</span>
+            </label>
         </div>
       </div>
 
-      <!-- ข้อมูลพนักงานขาย ย้ายมาอยู่ด้านล่าง -->
+      <!-- ข้อมูลพนักงานขาย & บัญชีธนาคาร -->
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex justify-between items-center border-b pb-2">
-            <h2 class="text-sm font-bold text-slate-800"><span class="text-blue-600 mr-1">●</span> 4. ข้อมูลพนักงานขาย</h2>
+            <h2 class="text-sm font-bold text-slate-800"><span class="text-blue-600 mr-1">●</span> 4. ข้อมูลพนักงานขาย & บัญชีรับโอนเงิน</h2>
+            <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-600 cursor-pointer">
+                <input type="checkbox" id="showBankOnDoc" checked onchange="runEngine()" class="accent-blue-600">
+                แสดงเลขบัญชีบนเอกสาร
+            </label>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
             <label class="block font-semibold text-slate-700 mb-1">ชื่อผู้เสนอราคา (เซลล์)</label>
-            <input type="text" id="salesName" placeholder="เช่น คุณสมชาย นามสกุล" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+            <input type="text" id="salesName" placeholder="เช่น คุณศรายุทธ เมรุลัตร์" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
           </div>
           <div>
             <label class="block font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์พนักงาน</label>
             <input type="text" id="salesPhone" placeholder="08X-XXX-XXXX" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block font-semibold text-slate-700 mb-1">ข้อมูลบัญชีธนาคารสำหรับชำระเงิน (แสดงในเอกสาร)</label>
+            <input type="text" id="bankAccountInfo" placeholder="เช่น ธ.กสิกรไทย เลขที่ 123-4-56789-0 ชื่อบัญชี บจก.หาดใหญ่ ไมโครไพล์" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none font-medium text-blue-900">
           </div>
         </div>
         <div class="text-right">
@@ -390,7 +446,7 @@
         </div>
       </div>
 
-      <!-- เพิ่ม Wrapper ตรงนี้เพื่อบังคับไม่ให้กระดาษหดตัว และย่อส่วนให้พอดีจอ -->
+      <!-- Wrapper บังคับไม่ให้กระดาษหดตัว และย่อส่วนให้พอดีจอ -->
       <div id="paperWrapper" class="paper-wrapper">
         
         <!-- กระดาษ A4 -->
@@ -438,7 +494,7 @@
           </div>
 
           <!-- ข้อมูลลูกค้า -->
-          <div class="border-[0.5px] border-slate-300 rounded-3xl p-3 mb-4 text-[13px] text-slate-700 bg-white shadow-sm w-full">
+          <div class="border-[0.5px] border-slate-300 rounded-3xl p-3 mb-3 text-[13px] text-slate-700 bg-white shadow-sm w-full">
             <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
               <div class="font-bold text-slate-600">นามลูกค้า :</div>
               <div class="font-bold text-slate-900 text-[14px]" id="docViewCustName">-</div>
@@ -461,7 +517,7 @@
             </div>
           </div>
 
-          <!-- ตารางรายการ (ปรับความกว้างคอลัมน์) -->
+          <!-- ตารางรายการ -->
           <div class="mb-2 rounded-3xl border-[0.5px] border-slate-300 bg-white p-2 shadow-sm flex-1">
             <table class="w-full text-[13px] text-left border-none" style="border-spacing: 0;" id="invoiceTable">
               <thead class="bg-slate-50/80 text-slate-700">
@@ -533,11 +589,11 @@
               </tbody>
             </table>
           </div>
-          <div class="mb-4 text-right no-print-element pr-4">
+          <div class="mb-2 text-right no-print-element pr-4">
               <button onclick="addNewRow()" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-1 px-3 rounded-lg border border-slate-300 transition">➕ เพิ่มรายการอิสระ</button>
           </div>
 
-          <!-- สรุปยอดและเงื่อนไข (ปรับแก้ช่องว่าง) -->
+          <!-- สรุปยอดและเงื่อนไข -->
           <div class="flex flex-row justify-between items-start gap-4 mb-2 mt-auto shrink-0">
             <div class="w-[60%] space-y-1">
               <div class="bg-slate-50/50 border-[0.5px] border-slate-300 p-2 rounded-3xl" id="docViewConditionBlock">
@@ -548,13 +604,14 @@
                   <div class="flex justify-between items-center border-t border-slate-200/60 pt-1 text-slate-600" id="docViewCompRow" style="display:none;"><span>งวดที่ 3 (งานเสร็จสิ้น) <span class="font-bold text-slate-900 ml-1" id="docViewCompPct">0%</span></span><span class="font-mono font-bold text-slate-900" id="docViewCompVal">0.00</span></div>
                 </div>
               </div>
-              <div class="px-2 pt-1">
+              <div class="px-2 pt-0.5">
                 <div class="text-[11px] font-bold text-slate-800 mb-0.5 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span> เงื่อนไขหน้างาน / หมายเหตุ</div>
                 <div class="text-[10px] text-slate-500 space-y-0.5 leading-snug pl-3 border-l-2 border-slate-200">
                   <p>- พื้นที่หน้างานต้องปรับให้พร้อมทำงาน และลำเลียงวัสดุเข้าได้</p>
                   <p>- หลังจากชำระมัดจำ 5-7 วัน ทีมงานเตรียมเข้าพื้นที่หน้างาน</p>
                   <p>- ผู้ว่าจ้างจัดเตรียมกระแสไฟฟ้าและน้ำประปาไว้ให้พร้อมใช้งาน</p>
                   <p class="text-red-600 font-bold mt-0.5 break-words whitespace-normal" id="docViewExcessCondition">- ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม.</p>
+                  <p class="text-blue-800 font-bold mt-0.5 break-words whitespace-normal" id="docViewBankLine" style="display:none;"></p>
                 </div>
               </div>
               <div class="bg-blue-50/40 p-2 rounded-2xl border-[0.5px] border-blue-200 flex flex-row items-center gap-2 text-[12px] mt-1">
@@ -564,19 +621,34 @@
             </div>
 
             <div class="w-[38%] bg-slate-50/50 p-3 rounded-3xl border-[0.5px] border-slate-300 self-end shadow-sm">
-              <div class="space-y-1.5 text-[12px]">
+              <div class="space-y-1 text-[12px]">
                 <div class="flex justify-between items-center text-slate-600">
                   <span class="font-semibold">รวมเป็นเงิน</span>
                   <span class="font-mono font-bold text-slate-900" id="docViewSubTotal">0.00</span>
+                </div>
+                <div class="flex justify-between items-center text-red-600" id="docViewDiscountRow" style="display:none;">
+                  <span class="font-semibold">หักส่วนลด</span>
+                  <span class="font-mono font-bold" id="docViewDiscount">0.00</span>
                 </div>
                 <div class="flex justify-between items-center text-slate-600" id="docViewVatRow">
                   <span class="font-semibold">ภาษีมูลค่าเพิ่ม (7%)</span>
                   <span class="font-mono font-bold text-slate-900" id="docViewVat">0.00</span>
                 </div>
               </div>
-              <div class="mt-2.5 pt-2.5 border-t-[1.5px] border-slate-200 flex justify-between items-end">
+              <div class="mt-2 pt-2 border-t-[1.5px] border-slate-200 flex justify-between items-end">
                 <span class="text-[11px] font-black text-slate-900">ยอดสุทธิรวมทั้งสิ้น</span>
                 <span class="text-[15px] font-mono font-extrabold text-blue-700" id="docViewGrandTotal">0.00</span>
+              </div>
+              <!-- แถวแสดงภาษีหัก ณ ที่จ่าย 3% (ถ้าติ๊กเลือก) -->
+              <div id="docViewWhtBlock" style="display:none;" class="mt-1.5 pt-1.5 border-t border-dashed border-slate-300 text-[10px] space-y-0.5">
+                <div class="flex justify-between text-slate-500">
+                  <span>หัก ณ ที่จ่าย 3% (ก่อน VAT)</span>
+                  <span class="font-mono font-semibold text-red-600" id="docViewWhtVal">-0.00</span>
+                </div>
+                <div class="flex justify-between font-bold text-emerald-700">
+                  <span>ยอดโอนชำระจริง</span>
+                  <span class="font-mono" id="docViewNetPayable">0.00</span>
+                </div>
               </div>
             </div>
           </div>
@@ -626,28 +698,44 @@
 
     <!-- ================= แท็บ 3: แดชบอร์ด (สรุปงาน) ================= -->
     <section id="tabDashboard" class="hidden no-print space-y-4">
+      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-2 text-xs">
+          <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-700">🔍 กรองสถานะโครงการ:</span>
+              <select id="dashFilterStatus" onchange="renderDashboard()" class="border rounded-xl p-2 bg-slate-50 font-bold text-slate-700 outline-none">
+                  <option value="ALL">แสดงทั้งหมด (ไม่รวมยกเลิก)</option>
+                  <option value="CONFIRMED">เฉพาะงานที่อนุมัติแล้ว (มัดจำ/กำลังตอก/เสร็จสิ้น)</option>
+                  <option value="รออนุมัติ">⏳ เฉพาะรออนุมัติ</option>
+                  <option value="เสร็จสิ้น">✅ เฉพาะงานเสร็จสิ้น</option>
+              </select>
+          </div>
+          <button onclick="exportDashboardCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl shadow-sm transition">
+              📥 ส่งออกรายงาน Excel (CSV)
+          </button>
+      </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl shadow-sm text-center">
-              <div class="text-blue-600 font-bold text-xs mb-1">ยอดขายรวมทั้งหมด (บาท)</div>
+              <div class="text-blue-600 font-bold text-xs mb-1">ยอดขายรวม (บาท)</div>
               <div class="text-2xl font-black text-blue-800" id="dashTotalRev">0.00</div>
           </div>
           <div class="bg-red-50 border border-red-200 p-4 rounded-2xl shadow-sm text-center">
-              <div class="text-red-600 font-bold text-xs mb-1">ต้นทุนรวมทั้งหมด (บาท)</div>
+              <div class="text-red-600 font-bold text-xs mb-1">ต้นทุนรวม (บาท)</div>
               <div class="text-2xl font-black text-red-800" id="dashTotalCost">0.00</div>
           </div>
           <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl shadow-sm text-center">
-              <div class="text-emerald-600 font-bold text-xs mb-1">กำไรรวมทั้งหมด (บาท)</div>
+              <div class="text-emerald-600 font-bold text-xs mb-1">กำไรรวม (บาท)</div>
               <div class="text-2xl font-black text-emerald-800" id="dashTotalProfit">0.00</div>
           </div>
       </div>
       
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 overflow-x-auto">
           <h2 class="text-sm font-bold text-slate-800 mb-3">สรุปกำไร/ขาดทุน รายโปรเจกต์</h2>
-          <table class="w-full text-xs text-left min-w-[600px]">
+          <table class="w-full text-xs text-left min-w-[650px]">
               <thead class="bg-slate-100 text-slate-600">
                   <tr>
                       <th class="p-2 rounded-l-lg font-bold">วันที่</th>
                       <th class="p-2 font-bold">ลูกค้า / เลขที่</th>
+                      <th class="p-2 text-center font-bold">สถานะ</th>
                       <th class="p-2 text-right font-bold">ยอดขาย (บ.)</th>
                       <th class="p-2 text-right font-bold">ต้นทุน (บ.)</th>
                       <th class="p-2 text-right font-bold">กำไร (บ.)</th>
@@ -661,10 +749,22 @@
 
     <!-- ================= แท็บ 4: ประวัติ ================= -->
     <section id="tabArchive" class="hidden no-print space-y-3">
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-        <div class="flex justify-between items-center mb-3">
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <div class="flex flex-wrap justify-between items-center gap-2">
           <h2 class="text-sm font-bold text-slate-800">ประวัติการออกเอกสาร</h2>
           <button onclick="clearAllArchiveData()" class="text-xs text-red-500 hover:underline font-bold">ล้างประวัติทั้งหมด</button>
+        </div>
+        <!-- ค้นหาและกรองประวัติ -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+          <input type="text" id="archiveSearchInput" oninput="renderArchiveList()" placeholder="🔍 ค้นหาชื่อลูกค้า, เลขที่เอกสาร, สถานที่..." class="sm:col-span-2 border rounded-xl p-2 bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500">
+          <select id="archiveStatusFilter" onchange="renderArchiveList()" class="border rounded-xl p-2 bg-slate-50 font-bold text-slate-700 outline-none">
+              <option value="ALL">ทุกสถานะ</option>
+              <option value="รออนุมัติ">⏳ รออนุมัติ</option>
+              <option value="มัดจำแล้ว">💰 มัดจำแล้ว</option>
+              <option value="กำลังตอก">🏗️ กำลังดำเนินงาน</option>
+              <option value="เสร็จสิ้น">✅ เสร็จสิ้น</option>
+              <option value="ยกเลิก">❌ ยกเลิก</option>
+          </select>
         </div>
         <div id="archiveRenderContainer" class="space-y-3 text-xs"></div>
       </div>
@@ -744,7 +844,6 @@
     <section id="tabProducts" class="hidden no-print space-y-4">
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
           <h2 class="text-sm font-bold text-slate-800 border-b pb-2">➕ เพิ่ม/แก้ไข สินค้า/เสาเข็ม</h2>
-          <!-- เพิ่มบรรทัดนี้กลับมา (สำคัญมากสำหรับการ Update สินค้า) -->
           <input type="hidden" id="dbProdId">
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -781,7 +880,53 @@
           </div>
           <div id="productDbContainer" class="space-y-4 text-xs"></div>
         </div>
-      </section>
+    </section>
+
+    <!-- ================= แท็บ 8: ประวัติและฐานข้อมูลพนักงาน (ใหม่) ================= -->
+    <section id="tabEmployees" class="hidden no-print space-y-4">
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <div class="flex justify-between items-center border-b pb-2">
+          <h2 class="text-sm font-bold text-slate-800">👷 เพิ่ม/แก้ไข ประวัติพนักงานและค่าแรง</h2>
+          <span class="text-[11px] text-slate-500">เชื่อมโยงกับหน้าคำนวณต้นทุนอัตโนมัติ</span>
+        </div>
+        <input type="hidden" id="dbEmpId">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ชื่อ - นามสกุล / ชื่อเล่น *</label>
+            <input type="text" id="dbEmpName" placeholder="เช่น นายเอกพงศ์ (ช่างเอก)" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500 font-bold">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ค่าแรงมาตรฐาน (บาท/วัน หรือ ต่องาน) *</label>
+            <input type="number" id="dbEmpWage" placeholder="เช่น 500" value="500" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500 font-bold text-emerald-700">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">เลขบัตรประจำตัวประชาชน (13 หลัก)</label>
+            <input type="text" id="dbEmpIdCard" maxlength="17" placeholder="เช่น 1-9098-00123-45-6" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none font-mono">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์ติดต่อ</label>
+            <input type="text" id="dbEmpPhone" placeholder="เช่น 081-234-5678" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block font-semibold text-slate-700 mb-1">หมายเหตุ (ตำแหน่ง / ทักษะ / เลขบัญชีธนาคาร / ประวัติเบิกเงิน)</label>
+            <textarea id="dbEmpNote" rows="2" placeholder="เช่น ช่างเชื่อม / คุมเครื่องตอกไฮดรอลิค | ธ.กสิกรไทย 123-4-56789-0" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none"></textarea>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2 border-t">
+          <button onclick="clearEmployeeForm()" class="px-4 py-2 border border-slate-300 bg-white rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 shadow-sm">ล้างฟอร์ม</button>
+          <button onclick="saveEmployeeDB()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm">💾 บันทึกประวัติพนักงาน</button>
+        </div>
+      </div>
+
+      <!-- รายชื่อพนักงานและสถิติการออกงาน -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <div class="flex flex-wrap justify-between items-center gap-2">
+          <h2 class="text-sm font-bold text-slate-800">📋 รายชื่อพนักงานในระบบ & สรุปประวัติการออกงาน</h2>
+          <input type="text" id="empSearchInput" oninput="renderEmployeeDB()" placeholder="🔍 ค้นหาชื่อ, เลขบัตร, หมายเหตุ..." class="border rounded-xl p-2 text-xs bg-slate-50 outline-none w-full sm:w-64">
+        </div>
+        <div id="employeeDbContainer" class="space-y-2.5 text-xs"></div>
+      </div>
+    </section>
 
   </div>
 
@@ -799,6 +944,9 @@
         <div class="flex justify-between"><span class="text-slate-500">จำนวนรวม:</span><span class="font-bold text-orange-600" id="pvQty">-</span></div>
         <div class="border-t pt-2 mt-2 flex justify-between">
           <span class="text-slate-500">ยอดรวม:</span><span class="font-bold" id="pvSub">-</span>
+        </div>
+        <div class="flex justify-between text-red-600 font-bold text-[11px]" id="pvDiscountRow" style="display:none;">
+          <span>หักส่วนลด:</span><span id="pvDiscount">-</span>
         </div>
         <div class="flex justify-between text-orange-600 font-bold text-[10px]" id="modalPreviewVatLine">
           <span class="text-slate-500 font-normal">VAT 7%:</span><span id="pvVat">-</span>
@@ -839,6 +987,31 @@
     </div>
   </div>
 
+  <!-- Modal สำรองและกู้คืนข้อมูล (Backup & Restore) -->
+  <div id="modalBackup" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-3">
+    <div class="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-slate-900">💾 สำรองและกู้คืนข้อมูลทั้งหมดของระบบ</h3>
+        <button onclick="closeBackupModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slate-600 leading-relaxed">
+        สำรองข้อมูลทั้งหมด (ประวัติเอกสาร, ลูกค้า, สินค้า, พนักงาน, ภาพหน้างาน) เป็นไฟล์เก็บไว้ในเครื่อง หรือย้ายข้อมูลไปใช้อีกเครื่องได้ทันที
+      </p>
+      <div class="space-y-3 pt-1">
+        <button onclick="exportFullBackupJSON()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow flex items-center justify-center gap-2">
+          📥 ดาวน์โหลดไฟล์สำรองข้อมูล (.json)
+        </button>
+        <label class="w-full py-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-2 border-dashed border-emerald-300 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition">
+          📤 เลือกไฟล์สำรองข้อมูลเพื่อกู้คืน (.json)
+          <input type="file" accept=".json" class="hidden" onchange="importFullBackupJSON(this)">
+        </label>
+      </div>
+      <div class="text-right pt-2 border-t">
+        <button onclick="closeBackupModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-600">ปิดหน้าต่าง</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // สคริปต์ปรับย่อขนาดกระดาษอัตโนมัติให้พอดีหน้าจอมือถือ (แต่ขนาด Print ยังเป็น A4 เสมอ)
     function scalePaperToFit() {
@@ -846,14 +1019,12 @@
         const paper = document.getElementById('quotationPaper');
         if(!wrapper || !paper) return;
         
-        // ความกว้างหน้าจอจริงลบด้วย padding ซ้ายขวา
         const availableWidth = wrapper.clientWidth - 32; 
         const paperWidth = 794;
         
         if (availableWidth < paperWidth) {
             const scale = availableWidth / paperWidth;
             paper.style.transform = `scale(${scale})`;
-            // ลดความสูงของ wrapper ลงตามสัดส่วนที่หดตัว เพื่อไม่ให้มีพื้นที่ว่างด้านล่าง
             wrapper.style.height = `${(1122 * scale) + 32}px`;
         } else {
             paper.style.transform = 'none';
@@ -862,7 +1033,7 @@
     }
     window.addEventListener('resize', scalePaperToFit);
     
-    // ... [ส่วนข้อมูลสินค้าพื้นฐาน]
+    // ข้อมูลสินค้าพื้นฐาน
     const DEFAULT_PRODUCTS = {
       "เสาเข็มไมโครไพล์ ไอ (I-Micropile)": [
         { id: "p1", name: 'ขนาด I-18 (รับน้ำหนักปลอดภัย 10-15 ตัน)', price: 7500, cost: 3400, condition: 'ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม.' },
@@ -904,16 +1075,49 @@
             document.getElementById('docViewSignSalesName').innerText = `(คุณศรายุทธ เมรุลัตร์)`;
         }
         if(profile.salesPhone) document.getElementById('salesPhone').value = profile.salesPhone;
+        if(profile.bankAccountInfo) document.getElementById('bankAccountInfo').value = profile.bankAccountInfo;
     }
     
     function saveMyProfile() {
         const profile = {
             salesName: document.getElementById('salesName').value.trim(),
-            salesPhone: document.getElementById('salesPhone').value.trim()
+            salesPhone: document.getElementById('salesPhone').value.trim(),
+            bankAccountInfo: document.getElementById('bankAccountInfo').value.trim()
         };
         localStorage.setItem('hym_my_profile', JSON.stringify(profile));
         document.getElementById('docViewSignSalesName').innerText = `(${profile.salesName || 'คุณศรายุทธ เมรุลัตร์'})`;
-        alert('บันทึกข้อมูลส่วนตัวสำหรับเริ่มต้นแล้ว');
+        runEngine();
+        alert('บันทึกข้อมูลผู้เสนอราคาและเลขบัญชีเริ่มต้นแล้ว');
+    }
+
+    function resetNewDocumentForm() {
+        if(!confirm('ต้องการล้างฟอร์มหน้าแรกเพื่อเริ่มออกเอกสารใบใหม่ใช่หรือไม่?')) return;
+        isEditingOldDoc = false;
+        editingDocNo = '';
+        isDocNoManuallyEdited = false;
+        currentRandomID = Math.floor(100 + Math.random() * 900);
+        
+        document.getElementById('custName').value = '';
+        document.getElementById('custTaxId').value = '';
+        document.getElementById('custAddress').value = '';
+        document.getElementById('custMobile').value = '';
+        document.getElementById('custOfficePhone').value = '';
+        document.getElementById('custEmail').value = '';
+        document.getElementById('custLine').value = '';
+        document.getElementById('costQty').value = '';
+        document.getElementById('costQty2').value = 0;
+        document.getElementById('costSafety').value = 0;
+        document.getElementById('costOutArea').value = 0;
+        document.getElementById('costDiscount').value = 0;
+        document.getElementById('enableWht3').checked = false;
+        document.getElementById('projectStatus').value = 'รออนุมัติ';
+        document.querySelectorAll('.item-row.dynamic-row').forEach(el => el.remove());
+
+        const todayInit = new Date();
+        document.getElementById('docViewDate').innerText = `${todayInit.getDate()}/${todayInit.getMonth() + 1}/${(todayInit.getFullYear() + 543).toString().slice(-2)}`;
+        updateDocType();
+        runEngine();
+        showTab('cost');
     }
 
     function getProductDB() {
@@ -982,26 +1186,29 @@
     }
 
     function showTab(tabName) {
-      ['Cost', 'Quote', 'Archive', 'Customers', 'Products', 'Dashboard', 'Gallery'].forEach(t => {
+      ['Cost', 'Quote', 'Archive', 'Customers', 'Products', 'Dashboard', 'Gallery', 'Employees'].forEach(t => {
         const tabEl = document.getElementById('tab' + t);
         const navEl = document.getElementById('nav' + t);
         if(tabEl) tabEl.classList.add('hidden');
         if(navEl) navEl.className = 'snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex-shrink-0';
       });
 
-      document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.remove('hidden');
-      document.getElementById('nav' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).className = 'snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition flex-shrink-0';
+      const targetKey = tabName.charAt(0).toUpperCase() + tabName.slice(1);
+      document.getElementById('tab' + targetKey).classList.remove('hidden');
+      document.getElementById('nav' + targetKey).className = 'snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition flex-shrink-0';
 
+      if (tabName === 'cost') { renderQuickEmployeeButtons(); runEngine(); }
       if (tabName === 'quote') { runEngine(); setTimeout(scalePaperToFit, 100); }
       if (tabName === 'archive') renderArchiveList();
       if (tabName === 'customers') renderCustomerDB();
       if (tabName === 'products') renderProductDB();
       if (tabName === 'dashboard') renderDashboard();
       if (tabName === 'gallery') renderGallery();
+      if (tabName === 'employees') renderEmployeeDB();
     }
 
     function arabicToThaiBaht(num) {
-      if (!num || isNaN(num) || num === 0) return "ศูนย์บาทถ้วน";
+      if (!num || isNaN(num) || num <= 0) return "ศูนย์บาทถ้วน";
       const numbers = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
       const units = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
       num = parseFloat(num).toFixed(2);
@@ -1010,12 +1217,15 @@
       let intLen = integerPart.length;
       for (let i = 0; i < intLen; i++) {
         let digit = parseInt(integerPart.charAt(i));
-        let pos = intLen - i - 1;
+        let pos = (intLen - i - 1) % 6;
         if (digit !== 0) {
           if (pos === 1 && digit === 1) { thaiText += "สิบ"; } 
           else if (pos === 1 && digit === 2) { thaiText += "ยี่สิบ"; } 
           else if (pos === 0 && digit === 1 && intLen > 1) { thaiText += "เอ็ด"; } 
           else { thaiText += numbers[digit] + units[pos]; }
+        }
+        if ((intLen - i - 1) > 0 && (intLen - i - 1) % 6 === 0) {
+          thaiText += "ล้าน";
         }
       }
       thaiText += "บาท";
@@ -1085,7 +1295,7 @@
 
     function recalcTable() {
         const rows = document.querySelectorAll('.item-row');
-        let quotationSubtotal = 0;
+        let rawSubtotal = 0;
         
         rows.forEach(row => {
             if(row.style.display !== 'none') {
@@ -1093,16 +1303,27 @@
                 const unitPrice = parseFloat(row.querySelector('.row-unit').value) || 0;
                 const rowTotal = qty * unitPrice;
                 row.querySelector('.row-total').innerText = rowTotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
-                quotationSubtotal += rowTotal;
+                rawSubtotal += rowTotal;
             }
         });
 
+        const discount = parseFloat(document.getElementById('costDiscount')?.value) || 0;
+        const afterDiscount = Math.max(0, rawSubtotal - discount);
+
+        const discountRowEl = document.getElementById('docViewDiscountRow');
+        if (discount > 0) {
+            discountRowEl.style.display = 'flex';
+            document.getElementById('docViewDiscount').innerText = `-${discount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        } else {
+            discountRowEl.style.display = 'none';
+        }
+
         const type = document.getElementById('docTypeSelector').value;
         let vat7 = 0;
-        if(type !== 'REC' && type !== 'QT_NOVAT') { vat7 = quotationSubtotal * 0.07; }
-        const grandTotal = quotationSubtotal + vat7;
+        if(type !== 'REC' && type !== 'QT_NOVAT') { vat7 = afterDiscount * 0.07; }
+        const grandTotal = afterDiscount + vat7;
 
-        document.getElementById('docViewSubTotal').innerText = quotationSubtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        document.getElementById('docViewSubTotal').innerText = rawSubtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
         document.getElementById('docViewVat').innerText = vat7.toLocaleString('en-US', { minimumFractionDigits: 2 });
         document.getElementById('docViewGrandTotal').innerText = grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
         document.getElementById('docViewThaiBaht').innerText = `(${arabicToThaiBaht(grandTotal)})`;
@@ -1113,6 +1334,19 @@
         document.getElementById('docViewDepVal').innerText = (grandTotal * (depPct / 100)).toLocaleString('en-US', { minimumFractionDigits: 2 });
         document.getElementById('docViewInst2Val').innerText = (grandTotal * (inst2Pct / 100)).toLocaleString('en-US', { minimumFractionDigits: 2 });
         document.getElementById('docViewCompVal').innerText = (grandTotal * (compPct / 100)).toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+        // คำนวณภาษีหัก ณ ที่จ่าย 3% (คิดจากยอดก่อน VAT)
+        const enableWht = document.getElementById('enableWht3')?.checked;
+        const whtBlock = document.getElementById('docViewWhtBlock');
+        if (enableWht && afterDiscount > 0) {
+            const wht3 = afterDiscount * 0.03;
+            const netPayable = grandTotal - wht3;
+            whtBlock.style.display = 'block';
+            document.getElementById('docViewWhtVal').innerText = `-${wht3.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            document.getElementById('docViewNetPayable').innerText = netPayable.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        } else if (whtBlock) {
+            whtBlock.style.display = 'none';
+        }
     }
 
     function updateDocType() {
@@ -1130,7 +1364,12 @@
       const y = (today.getFullYear() + 543).toString().slice(-2);
       const m = String(today.getMonth() + 1).padStart(2, '0');
       
-      let displayDocNo = isEditingOldDoc ? editingDocNo : `HYM${y}${m}-${currentRandomID}`;
+      let prefix = 'HYM';
+      if (type === 'INV') prefix = 'INV';
+      else if (type === 'REC') prefix = 'REC';
+      else if (type === 'TAX') prefix = 'TAX';
+
+      let displayDocNo = isEditingOldDoc ? editingDocNo : `${prefix}${y}${m}-${currentRandomID}`;
 
       if (type === 'QT_VAT') {
           titleTH.innerText = 'ใบเสนอราคา'; titleEN.innerText = 'Quotation';
@@ -1168,12 +1407,44 @@
         const div = document.createElement('div');
         div.className = 'flex gap-2 items-center worker-item';
         div.innerHTML = `
-            <input type="text" class="flex-1 border rounded-xl p-2 bg-white text-xs worker-name outline-none focus:ring-2 focus:ring-amber-500" placeholder="ชื่อพนักงาน (เช่น นายเอกพงศ์)" value="${name}">
+            <input type="text" list="employeeListOptions" onchange="onWorkerNameInput(this)" class="flex-1 border rounded-xl p-2 bg-white text-xs worker-name outline-none focus:ring-2 focus:ring-amber-500" placeholder="ชื่อพนักงาน (พิมพ์หรือเลือกจากระบบ)" value="${name}">
             <input type="number" class="w-24 sm:w-32 border rounded-xl p-2 bg-white text-xs text-right worker-wage outline-none focus:ring-2 focus:ring-amber-500" placeholder="ค่าแรง" value="${wage}" oninput="runEngine()">
             <button onclick="removeWorkerRow(this)" class="text-red-400 hover:text-red-600 font-bold px-2 text-sm">✕</button>
         `;
         container.appendChild(div);
         runEngine();
+    }
+
+    function onWorkerNameInput(inputEl) {
+        const val = inputEl.value.trim();
+        const employees = JSON.parse(localStorage.getItem('hym_employees') || '[]');
+        const found = employees.find(e => e.name === val);
+        if (found) {
+            const row = inputEl.closest('.worker-item');
+            const wageInput = row.querySelector('.worker-wage');
+            if (wageInput) wageInput.value = found.wage;
+        }
+        runEngine();
+    }
+
+    function quickSelectEmployeeToJob(empId) {
+        const employees = JSON.parse(localStorage.getItem('hym_employees') || '[]');
+        const emp = employees.find(e => e.id === empId);
+        if (!emp) return;
+
+        // ตรวจสอบว่ามีแถวว่างอยู่หรือไม่ ถ้ามีให้ใส่ในแถวว่างก่อน
+        const rows = document.querySelectorAll('.worker-item');
+        for (let r of rows) {
+            const nameEl = r.querySelector('.worker-name');
+            const wageEl = r.querySelector('.worker-wage');
+            if (!nameEl.value.trim()) {
+                nameEl.value = emp.name;
+                wageEl.value = emp.wage;
+                runEngine();
+                return;
+            }
+        }
+        addWorkerRow(emp.name, emp.wage);
     }
 
     function removeWorkerRow(btn) {
@@ -1191,7 +1462,7 @@
       const unitPlate = parseFloat(document.getElementById('unitCostPlate').value) || 0;
       const laborDay = parseFloat(document.getElementById('unitCostLaborDay').value) || 0;
       
-      // ดึงข้อมูลและคำนวณค่าแรงทีมงานใหม่จาก Dynamic List
+      // ดึงข้อมูลและคำนวณค่าแรงทีมงานจาก Dynamic List
       let workerCost = 0;
       let workerDetails = [];
       document.querySelectorAll('.worker-item').forEach(row => {
@@ -1213,11 +1484,13 @@
       const sellTrans = parseFloat(document.getElementById('costSellingTransport').value) || 0;
       const safety = parseFloat(document.getElementById('costSafety').value) || 0;
       const outArea = parseFloat(document.getElementById('costOutArea').value) || 0;
+      const discount = parseFloat(document.getElementById('costDiscount').value) || 0;
+      const enableWht3 = document.getElementById('enableWht3').checked;
+      const projectStatus = document.getElementById('projectStatus').value || 'รออนุมัติ';
 
       const matCost = (qty * (unitPile + unitPlate)) + (qty2 * (unitPile2 + unitPlate));
-      // ปรับปรุงการคำนวณระยะทาง = ระยะทาง x 10
       const totalCost = matCost + laborDay + workerCost + otherCost + (distance * 10);
-      const quotationSubtotal = (qty * sellUnit) + (qty2 * sellUnit2) + sellTrans + safety + outArea;
+      const quotationSubtotal = Math.max(0, (qty * sellUnit) + (qty2 * sellUnit2) + sellTrans + safety + outArea - discount);
       
       const gp = quotationSubtotal - totalCost;
       const gpPct = quotationSubtotal > 0 ? ((gp / quotationSubtotal) * 100).toFixed(1) : 0;
@@ -1243,6 +1516,17 @@
 
       const salesName = document.getElementById('salesName').value || 'คุณศรายุทธ เมรุลัตร์';
       document.getElementById('docViewSignSalesName').innerText = `(${salesName})`;
+
+      // แสดงเลขบัญชีธนาคารบนเอกสาร
+      const bankInfo = document.getElementById('bankAccountInfo').value.trim();
+      const showBank = document.getElementById('showBankOnDoc').checked;
+      const bankLineEl = document.getElementById('docViewBankLine');
+      if (showBank && bankInfo) {
+          bankLineEl.style.display = 'block';
+          bankLineEl.innerText = `- ชำระเงินโอนเข้าบัญชี: ${bankInfo}`;
+      } else {
+          bankLineEl.style.display = 'none';
+      }
 
       const catSelect = document.getElementById('costCategory');
       const catText = catSelect.options[catSelect.selectedIndex]?.text || '';
@@ -1305,21 +1589,24 @@
              tableSubtotal += (parseFloat(row.querySelector('.row-qty').value) || 0) * (parseFloat(row.querySelector('.row-unit').value) || 0);
           }
       });
-      if(type !== 'REC' && type !== 'QT_NOVAT') finalVat = tableSubtotal * 0.07;
+      const netBeforeVat = Math.max(0, tableSubtotal - discount);
+      if(type !== 'REC' && type !== 'QT_NOVAT') finalVat = netBeforeVat * 0.07;
 
       return {
         custName: custName, custAddr: document.getElementById('custAddress').value || '-', custTaxId: document.getElementById('custTaxId').value, 
         custMobile: mobile, custOffice: office, custEmail: email, custLine: lineId,
         salesName: salesName, salesPhone: document.getElementById('salesPhone').value,
+        bankAccountInfo: bankInfo, showBankOnDoc: showBank,
         catValue: document.getElementById('costCategory').value, 
         specValue: document.getElementById('costSizeSpec').value, subDetail: document.getElementById('costSubDetail').value, itemDesc: fullItemDesc, qty: qty, unitSell: sellUnit, 
         specValue2: specSelect2.value, subDetail2: subDetail2, itemDesc2: fullItemDesc2, qty2: qty2, unitSell2: sellUnit2,
-        sellTrans: sellTrans, safety: safety, outArea: outArea,
+        sellTrans: sellTrans, safety: safety, outArea: outArea, discount: discount, enableWht3: enableWht3,
+        projectStatus: projectStatus,
         unitCostPile: unitPile, unitCostPile2: unitPile2, unitCostPlate: unitPlate, unitCostLaborDay: laborDay, 
         workerDetails: workerDetails, unitCostWorker: workerCost, unitCostOther: otherCost,
         costDistance: distance, 
         depPct: depPct, inst2Pct: inst2Pct, compPct: compPct, excessCondition: document.getElementById('excessCondition').value,
-        subTotal: tableSubtotal, vat: finalVat, grandTotal: tableSubtotal + finalVat, 
+        subTotal: netBeforeVat, rawSubTotal: tableSubtotal, vat: finalVat, grandTotal: netBeforeVat + finalVat, 
         docNo: document.getElementById('docViewNo').innerText.trim(), 
         docDate: document.getElementById('docViewDate').innerText.trim(),
         docTitle: document.getElementById('docTitleTH').innerText,
@@ -1337,8 +1624,15 @@
           document.getElementById('pvDesc2').innerText = data.itemDesc2;
       } else { document.getElementById('pvDesc2Row').style.display = 'none'; }
       
-      document.getElementById('pvSub').innerText = `${data.subTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.`;
+      document.getElementById('pvSub').innerText = `${(data.rawSubTotal || data.subTotal).toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.`;
       
+      if (data.discount > 0) {
+          document.getElementById('pvDiscountRow').style.display = 'flex';
+          document.getElementById('pvDiscount').innerText = `-${data.discount.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.`;
+      } else {
+          document.getElementById('pvDiscountRow').style.display = 'none';
+      }
+
       const type = document.getElementById('docTypeSelector').value;
       if(type === 'REC' || type === 'QT_NOVAT') {
          document.getElementById('modalPreviewVatLine').classList.add('hidden');
@@ -1411,20 +1705,52 @@
       isDocNoManuallyEdited = false; 
       
       updateArchiveCount(); 
-      
       renderArchiveList();
       showTab('archive');
       
       alert('บันทึกเอกสารลงประวัติเรียบร้อยแล้ว!');
     }
 
+    function updateArchiveItemStatus(id, newStatus) {
+      let archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
+      const idx = archive.findIndex(x => x.id === id);
+      if (idx > -1) {
+          archive[idx].rawData.projectStatus = newStatus;
+          localStorage.setItem('hym_archive_docs', JSON.stringify(archive));
+          renderArchiveList();
+      }
+    }
+
     function renderArchiveList() {
       const archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
       const container = document.getElementById('archiveRenderContainer');
-      if (archive.length === 0) { container.innerHTML = '<p class="text-center text-slate-400 py-8 font-medium">ยังไม่มีประวัติการออกเอกสาร</p>'; return; }
+      const searchQ = (document.getElementById('archiveSearchInput')?.value || '').trim().toLowerCase();
+      const statusFilter = document.getElementById('archiveStatusFilter')?.value || 'ALL';
+
+      if (archive.length === 0) {
+          container.innerHTML = '<p class="text-center text-slate-400 py-8 font-medium">ยังไม่มีประวัติการออกเอกสาร</p>';
+          return;
+      }
       
-      container.innerHTML = archive.map(item => {
+      const filtered = archive.filter(item => {
+          const d = item.rawData || {};
+          const st = d.projectStatus || 'รออนุมัติ';
+          if (statusFilter !== 'ALL' && st !== statusFilter) return false;
+          if (searchQ) {
+              const hay = `${d.custName || ''} ${d.docNo || ''} ${d.custAddr || ''} ${d.itemDesc || ''}`.toLowerCase();
+              if (!hay.includes(searchQ)) return false;
+          }
+          return true;
+      });
+
+      if (filtered.length === 0) {
+          container.innerHTML = '<p class="text-center text-slate-400 py-6 font-medium">ไม่พบรายการที่ตรงกับคำค้นหา</p>';
+          return;
+      }
+
+      container.innerHTML = filtered.map(item => {
         const d = item.rawData;
+        const st = d.projectStatus || 'รออนุมัติ';
         
         let mainDesc = d.itemDesc;
         let totalQty = (parseFloat(d.qty) || 0) + (parseFloat(d.qty2) || 0);
@@ -1434,20 +1760,36 @@
             totalQty = d.tableRows.reduce((sum, row) => sum + (parseFloat(row.qty) || 0), 0);
         }
 
+        const workerNames = (d.workerDetails || []).map(w => w.name).filter(Boolean).join(', ');
+
         return `
         <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-2 shadow-sm">
-          <div class="flex justify-between items-start">
+          <div class="flex flex-wrap justify-between items-start gap-2">
             <div>
               <span class="font-extrabold text-slate-900 text-sm">${d.custName || '-'}</span>
-              <span class="text-[11px] text-orange-600 font-bold ml-2">(${d.docTitle || ''} - ${d.docNo || ''})</span>
+              <span class="text-[11px] text-orange-600 font-bold ml-1">(${d.docTitle || ''} - ${d.docNo || ''})</span>
             </div>
-            <span class="text-[10px] text-slate-400 font-medium">${item.date}</span>
+            <div class="flex items-center gap-2">
+              <select onchange="updateArchiveItemStatus(${item.id}, this.value)" class="text-[10px] font-bold border rounded-lg px-2 py-1 bg-white text-slate-700">
+                <option value="รออนุมัติ" ${st === 'รออนุมัติ' ? 'selected' : ''}>⏳ รออนุมัติ</option>
+                <option value="มัดจำแล้ว" ${st === 'มัดจำแล้ว' ? 'selected' : ''}>💰 มัดจำแล้ว</option>
+                <option value="กำลังตอก" ${st === 'กำลังตอก' ? 'selected' : ''}>🏗️ กำลังตอก</option>
+                <option value="เสร็จสิ้น" ${st === 'เสร็จสิ้น' ? 'selected' : ''}>✅ เสร็จสิ้น</option>
+                <option value="ยกเลิก" ${st === 'ยกเลิก' ? 'selected' : ''}>❌ ยกเลิก</option>
+              </select>
+              <span class="text-[10px] text-slate-400 font-medium">${item.date}</span>
+            </div>
           </div>
           <p class="text-slate-600 text-xs">📍 ${d.custAddr || '-'}</p>
           <p class="text-slate-700 font-medium text-xs">🏗️ ${mainDesc || 'ไม่มีข้อมูลรายการ'} (จำนวน ${totalQty} หน่วย)</p>
-          <div class="flex justify-between items-center pt-3 border-t border-slate-200 mt-2">
-            <span class="font-bold text-blue-900">ยอดรวม: ${(d.grandTotal || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.</span>
-            <div class="flex gap-2">
+          ${workerNames ? `<p class="text-slate-500 text-[11px]">👷 ทีมช่าง: ${workerNames}</p>` : ''}
+          <div class="flex flex-wrap justify-between items-center gap-2 pt-3 border-t border-slate-200 mt-2">
+            <div>
+              <span class="font-bold text-blue-900">ยอดรวม: ${(d.grandTotal || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })} บ.</span>
+              <span class="text-[10px] text-emerald-700 font-bold ml-2">(กำไร: ${((d.subTotal || 0) - (d.totalCost || 0)).toLocaleString('th-TH')} บ.)</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+                <button onclick="cloneDocToNextStep(${item.id})" class="bg-amber-100 text-amber-800 hover:bg-amber-200 font-bold text-xs px-2.5 py-1.5 rounded-lg transition" title="คัดลอกข้อมูลไปออกใบแจ้งหนี้หรือใบเสร็จ">🔄 ออกบิลต่อ</button>
                 <button onclick="loadArchiveToEdit(${item.id})" class="bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold text-xs px-3 py-1.5 rounded-lg transition">แก้ไข</button>
                 <button onclick="deleteArchiveItem(${item.id})" class="bg-red-50 text-red-600 hover:bg-red-100 font-bold text-xs px-3 py-1.5 rounded-lg transition">ลบ</button>
             </div>
@@ -1456,7 +1798,12 @@
       `}).join('');
     }
 
-    function loadArchiveToEdit(id) {
+    // คัดลอกเอกสารเดิมเพื่อออกใบแจ้งหนี้/ใบเสร็จต่อโดยไม่ทับเลขที่เดิม
+    function cloneDocToNextStep(id) {
+        loadArchiveToEdit(id, true);
+    }
+
+    function loadArchiveToEdit(id, isCloneMode = false) {
         const archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
         const doc = archive.find(x => x.id === id);
         if(!doc) return;
@@ -1473,6 +1820,9 @@
 
         document.getElementById('salesName').value = d.salesName || '';
         document.getElementById('salesPhone').value = d.salesPhone || '';
+        if(d.bankAccountInfo !== undefined) document.getElementById('bankAccountInfo').value = d.bankAccountInfo;
+        if(d.showBankOnDoc !== undefined) document.getElementById('showBankOnDoc').checked = d.showBankOnDoc;
+        document.getElementById('projectStatus').value = d.projectStatus || 'รออนุมัติ';
         
         document.getElementById('costCategory').value = d.catValue;
         onCategorySelectChange();
@@ -1493,6 +1843,8 @@
             document.getElementById('costSellingTransport').value = d.sellTrans;
             document.getElementById('costSafety').value = d.safety || 0;
             document.getElementById('costOutArea').value = d.outArea || 0;
+            document.getElementById('costDiscount').value = d.discount || 0;
+            document.getElementById('enableWht3').checked = !!d.enableWht3;
             
             document.getElementById('unitCostPile').value = d.unitCostPile;
             document.getElementById('unitCostPile2').value = d.unitCostPile2 || 0;
@@ -1505,12 +1857,11 @@
             if (d.workerDetails && d.workerDetails.length > 0) {
                 d.workerDetails.forEach(w => addWorkerRow(w.name, w.wage));
             } else if (d.workerCount > 0) {
-                // รองรับประวัติเก่า
                 for(let i = 0; i < d.workerCount; i++) {
                     addWorkerRow(`คนงาน ${i+1}`, d.workerWage || 0);
                 }
             } else {
-                addWorkerRow('', ''); // แถวเปล่าตั้งต้น 1 แถว
+                addWorkerRow('', '');
             }
             
             document.getElementById('unitCostOther').value = d.unitCostOther || 0;
@@ -1521,22 +1872,30 @@
             document.getElementById('completePct').value = d.compPct || 0;
             document.getElementById('excessCondition').value = d.excessCondition; 
 
-            isEditingOldDoc = true;
-            editingDocNo = d.docNo;
-            isDocNoManuallyEdited = false;
-            
-            document.getElementById('docViewNo').innerText = d.docNo;
-            document.getElementById('docViewDate').innerText = doc.date; 
-            syncSignDates();
-            
             const typeSelector = document.getElementById('docTypeSelector');
-            if(d.docNo.startsWith('HYM') || d.docNo.startsWith('QT') || d.docTitle.includes('ใบเสนอราคา')) {
-                if(d.vat === 0) typeSelector.value = 'QT_NOVAT'; else typeSelector.value = 'QT_VAT';
+            if (isCloneMode) {
+                isEditingOldDoc = false;
+                editingDocNo = '';
+                isDocNoManuallyEdited = false;
+                currentRandomID = Math.floor(100 + Math.random() * 900);
+                typeSelector.value = 'INV'; // ตั้งเป็นใบแจ้งหนี้เริ่มต้นเมื่อกดออกบิลต่อ
+                syncDocType('back');
+            } else {
+                isEditingOldDoc = true;
+                editingDocNo = d.docNo;
+                isDocNoManuallyEdited = false;
+                document.getElementById('docViewNo').innerText = d.docNo;
+                document.getElementById('docViewDate').innerText = doc.date; 
+                syncSignDates();
+                
+                if(d.docNo.startsWith('HYM') || d.docNo.startsWith('QT') || d.docTitle.includes('ใบเสนอราคา')) {
+                    if(d.vat === 0) typeSelector.value = 'QT_NOVAT'; else typeSelector.value = 'QT_VAT';
+                }
+                else if(d.docNo.startsWith('INV')) typeSelector.value = 'INV';
+                else if(d.docTitle.includes('ใบเสร็จรับเงิน') && d.docTitle.includes('ใบกำกับภาษี')) typeSelector.value = 'TAX';
+                else typeSelector.value = 'REC';
+                syncDocType('back'); 
             }
-            else if(d.docNo.startsWith('INV')) typeSelector.value = 'INV';
-            else if(d.docTitle.includes('ใบเสร็จรับเงิน') && d.docTitle.includes('ใบกำกับภาษี')) typeSelector.value = 'TAX';
-            else typeSelector.value = 'REC';
-            syncDocType('back'); 
             
             document.querySelectorAll('.item-row.dynamic-row').forEach(el => el.remove());
             if(d.tableRows && d.tableRows.length > 0) {
@@ -1545,22 +1904,24 @@
                     const tr = document.createElement('tr');
                     tr.className = 'item-row dynamic-row';
                     tr.innerHTML = `
-                        <td class="py-3 px-2 text-center text-slate-400 align-top item-index"></td>
-                        <td class="py-3 px-2 align-top">
-                          <div class="editable-cell font-bold text-slate-800 text-[15px] row-name w-full break-words whitespace-pre-wrap leading-relaxed" contenteditable="true" oninput="recalcTable()">${trData.name}</div>
+                        <td class="py-2 px-2 text-center text-slate-400 align-top item-index"></td>
+                        <td class="py-2 px-2 align-top">
+                          <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">${trData.name}</div>
                         </td>
-                        <td class="py-3 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[15px] row-qty" value="${trData.qty}" oninput="recalcTable()"></td>
-                        <td class="py-3 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[15px] row-unit" value="${trData.unit}" oninput="recalcTable()"></td>
-                        <td class="py-3 px-2 text-right font-mono font-bold text-slate-900 align-top text-[15px] row-total">0.00</td>
-                        <td class="py-3 px-2 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-2">✕</button></td>
+                        <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="${trData.qty}" oninput="recalcTable()"></td>
+                        <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" value="${trData.unit}" oninput="recalcTable()"></td>
+                        <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
+                        <td class="py-2 px-1 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
                     `;
                     tbody.appendChild(tr);
                 });
             }
             updateRowIndices(); recalcTable();
-            alert(`ดึงเอกสารเลขที่ ${d.docNo} มาพร้อมแก้ไขแล้วครับ`); showTab('cost');
+            alert(isCloneMode ? `คัดลอกข้อมูลจาก ${d.docNo} เพื่อสร้างบิลใบใหม่เรียบร้อยแล้ว (เลือกประเภทเอกสารด้านบนได้เลยครับ)` : `ดึงเอกสารเลขที่ ${d.docNo} มาพร้อมแก้ไขแล้วครับ`);
+            showTab('cost');
         }, 50);
     }
+
     function deleteArchiveItem(id) {
       if (confirm('ยืนยันลบเอกสารนี้ออกจากประวัติเครื่อง?')) {
         let archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
@@ -1578,24 +1939,32 @@
 
     function renderDashboard() {
         const archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
+        const filterVal = document.getElementById('dashFilterStatus')?.value || 'ALL';
         let tRev = 0, tCost = 0, tProfit = 0;
         
         const tbody = document.getElementById('dashboardTableBody');
         tbody.innerHTML = '';
         
-        if (archive.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-slate-400 py-6">ยังไม่มีประวัติโครงการ</td></tr>';
+        const filtered = archive.filter(item => {
+            const st = item.rawData?.projectStatus || 'รออนุมัติ';
+            if (filterVal === 'ALL') return st !== 'ยกเลิก';
+            if (filterVal === 'CONFIRMED') return ['มัดจำแล้ว', 'กำลังตอก', 'เสร็จสิ้น'].includes(st);
+            return st === filterVal;
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-slate-400 py-6">ไม่มีข้อมูลโครงการตามตัวกรองที่เลือก</td></tr>';
         }
         
-        archive.forEach(item => {
+        filtered.forEach(item => {
             const d = item.rawData;
             const rev = d.grandTotal || 0;
+            const st = d.projectStatus || 'รออนุมัติ';
             
             let cost = d.totalCost;
             if(cost === undefined) {
                 const matCost = (d.qty * (d.unitCostPile + d.unitCostPlate)) + ((d.qty2||0) * ((d.unitCostPile2||0) + d.unitCostPlate));
                 const wCost = d.unitCostWorker !== undefined ? d.unitCostWorker : ((d.workerCount || 0) * (d.workerWage || 0));
-                // คำนวณระยะทางแบบใหม่ในประวัติเก่าด้วยถ้าเกิดไม่ได้บันทึก totalCost ไว้
                 cost = matCost + d.unitCostLaborDay + wCost + (d.unitCostOther||0) + ((d.costDistance || 0) * 10);
             }
             const profit = rev - cost;
@@ -1609,6 +1978,7 @@
                 <tr class="hover:bg-slate-50 border-b border-slate-100">
                     <td class="p-2 text-[10px] text-slate-500 whitespace-nowrap">${item.date}</td>
                     <td class="p-2"><div class="font-bold text-slate-800 truncate max-w-[150px] sm:max-w-xs">${d.custName}</div><div class="text-[10px] text-slate-400">${d.docNo}</div></td>
+                    <td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">${st}</span></td>
                     <td class="p-2 text-right font-mono font-bold text-blue-700">${rev.toLocaleString('th-TH', {minimumFractionDigits: 2})}</td>
                     <td class="p-2 text-right font-mono text-red-600">${cost.toLocaleString('th-TH', {minimumFractionDigits: 2})}</td>
                     <td class="p-2 text-right font-mono font-bold text-emerald-600">${profit.toLocaleString('th-TH', {minimumFractionDigits: 2})}</td>
@@ -1620,6 +1990,27 @@
         document.getElementById('dashTotalRev').innerText = tRev.toLocaleString('th-TH', {minimumFractionDigits: 2});
         document.getElementById('dashTotalCost').innerText = tCost.toLocaleString('th-TH', {minimumFractionDigits: 2});
         document.getElementById('dashTotalProfit').innerText = tProfit.toLocaleString('th-TH', {minimumFractionDigits: 2});
+    }
+
+    function exportDashboardCSV() {
+        const archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
+        if (archive.length === 0) return alert('ยังไม่มีข้อมูลสำหรับส่งออกครับ');
+        let csv = '\uFEFFวันที่,เลขที่เอกสาร,ประเภท,ชื่อลูกค้า,สถานะ,จำนวนเสาเข็ม,ยอดขายรวม(บาท),ต้นทุนรวม(บาท),กำไร(บาท),รายชื่อช่าง\n';
+        archive.forEach(item => {
+            const d = item.rawData || {};
+            const rev = d.grandTotal || 0;
+            const cost = d.totalCost || 0;
+            const profit = rev - cost;
+            const workers = (d.workerDetails || []).map(w => `${w.name}(${w.wage})`).join(' | ');
+            const qtyTotal = (parseFloat(d.qty)||0) + (parseFloat(d.qty2)||0);
+            csv += `"${item.date}","${d.docNo || ''}","${d.docTitle || ''}","${(d.custName || '').replace(/"/g, '""')}","${d.projectStatus || 'รออนุมัติ'}",${qtyTotal},${rev.toFixed(2)},${cost.toFixed(2)},${profit.toFixed(2)},"${workers}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `รายงานสรุปงาน_หาดใหญ่ไมโครไพล์_${new Date().toLocaleDateString('th-TH')}.csv`;
+        a.click();
     }
 
     function previewGalleryImage(input) {
@@ -1897,6 +2288,222 @@
       }
     }
 
+    // ================= ระบบจัดการฐานข้อมูลและประวัติพนักงาน (แท็บ 8) =================
+    function updateEmployeeBadgeAndDatalist() {
+        const employees = JSON.parse(localStorage.getItem('hym_employees') || '[]');
+        const badge = document.getElementById('empCountBadge');
+        if (badge) badge.innerText = employees.length;
+
+        const datalist = document.getElementById('employeeListOptions');
+        if (datalist) {
+            datalist.innerHTML = employees.map(e => `<option value="${e.name}">ค่าแรง ${e.wage} บ.</option>`).join('');
+        }
+        renderQuickEmployeeButtons();
+    }
+
+    function renderQuickEmployeeButtons() {
+        const employees = JSON.parse(localStorage.getItem('hym_employees') || '[]');
+        const container = document.getElementById('quickEmployeeButtons');
+        if (!container) return;
+        if (employees.length === 0) {
+            container.innerHTML = `<span class="text-[11px] text-amber-700 italic">ยังไม่มีรายชื่อพนักงานในระบบ (กดปุ่ม "จัดการประวัติพนักงาน" เพื่อเพิ่มรายชื่อและค่าแรงประจำ)</span>`;
+            return;
+        }
+        container.innerHTML = employees.map(e => `
+            <button type="button" onclick="quickSelectEmployeeToJob('${e.id}')" class="text-[11px] bg-white hover:bg-orange-50 text-slate-800 border border-amber-300 rounded-xl px-2.5 py-1 font-bold shadow-sm transition flex items-center gap-1">
+                <span>➕ ${e.name}</span>
+                <span class="text-orange-600 font-mono">(${Number(e.wage).toLocaleString()}฿)</span>
+            </button>
+        `).join('');
+    }
+
+    function saveEmployeeDB() {
+        const id = document.getElementById('dbEmpId').value;
+        const name = document.getElementById('dbEmpName').value.trim();
+        const wage = parseFloat(document.getElementById('dbEmpWage').value) || 0;
+        const idCard = document.getElementById('dbEmpIdCard').value.trim();
+        const phone = document.getElementById('dbEmpPhone').value.trim();
+        const note = document.getElementById('dbEmpNote').value.trim();
+
+        if (!name) {
+            alert('กรุณาระบุชื่อพนักงานครับ');
+            document.getElementById('dbEmpName').focus();
+            return;
+        }
+
+        let employees = JSON.parse(localStorage.getItem('hym_employees') || '[]');
+        if (id) {
+            const idx = employees.findIndex(e => e.id === id);
+            if (idx > -1) {
+                employees[idx] = { id, name, wage, idCard, phone, note };
+            }
+        } else {
+            employees.push({
+                id: 'emp_' + Date.now(),
+                name,
+                wage,
+                idCard,
+                phone,
+                note
+            });
+        }
+
+        localStorage.setItem('hym_employees', JSON.stringify(employees));
+        clearEmployeeForm();
+        renderEmployeeDB();
+        updateEmployeeBadgeAndDatalist();
+        alert('บันทึกประวัติพนักงานเรียบร้อยแล้วครับ');
+    }
+
+    function renderEmployeeDB() {
+        const employees = JSON.parse(localStorage.getItem('hym_employees') || '[]');
+        const archive = JSON.parse(localStorage.getItem('hym_archive_docs') || '[]');
+        const container = document.getElementById('employeeDbContainer');
+        const searchQ = (document.getElementById('empSearchInput')?.value || '').trim().toLowerCase();
+
+        updateEmployeeBadgeAndDatalist();
+
+        if (employees.length === 0) {
+            container.innerHTML = '<p class="text-center text-slate-400 py-8 font-medium">ยังไม่มีประวัติพนักงานในระบบ กรุณาเพิ่มข้อมูลด้านบน</p>';
+            return;
+        }
+
+        // คำนวณสถิติการออกงานและค่าแรงสะสมของพนักงานแต่ละคนจากประวัติเอกสาร
+        const statsMap = {};
+        archive.forEach(item => {
+            const d = item.rawData || {};
+            if (d.projectStatus === 'ยกเลิก') return;
+            (d.workerDetails || []).forEach(w => {
+                const wName = (w.name || '').trim();
+                if (!wName) return;
+                if (!statsMap[wName]) statsMap[wName] = { jobs: 0, totalWage: 0 };
+                statsMap[wName].jobs += 1;
+                statsMap[wName].totalWage += (parseFloat(w.wage) || 0);
+            });
+        });
+
+        const filtered = employees.filter(e => {
+            if (!searchQ) return true;
+            return `${e.name} ${e.idCard || ''} ${e.phone || ''} ${e.note || ''}`.toLowerCase().includes(searchQ);
+        });
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<p class="text-center text-slate-400 py-6">ไม่พบรายชื่อพนักงานที่ค้นหา</p>';
+            return;
+        }
+
+        container.innerHTML = filtered.map(e => {
+            const st = statsMap[e.name] || { jobs: 0, totalWage: 0 };
+            return `
+            <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+              <div class="space-y-1 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="font-extrabold text-slate-900 text-sm">👷 ${e.name}</span>
+                  <span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold text-[11px]">ค่าแรง: ${Number(e.wage).toLocaleString('th-TH')} บ.</span>
+                  <span class="bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full font-bold text-[10px]">ออกงานสะสม: ${st.jobs} งาน (รวม ${st.totalWage.toLocaleString('th-TH')} บ.)</span>
+                </div>
+                <div class="text-[11px] text-slate-600 grid grid-cols-1 sm:grid-cols-2 gap-1 pt-1">
+                  <div><span class="font-semibold text-slate-500">เลขบัตรประชาชน:</span> <span class="font-mono font-bold text-slate-800">${e.idCard || '-'}</span></div>
+                  <div><span class="font-semibold text-slate-500">เบอร์โทร:</span> ${e.phone || '-'}</div>
+                </div>
+                <div class="text-[11px] text-amber-900 bg-amber-50/80 border border-amber-200/80 rounded-xl p-2 mt-1">
+                  <span class="font-bold">หมายเหตุ:</span> ${e.note || '-'}
+                </div>
+              </div>
+              <div class="flex sm:flex-col gap-1.5 shrink-0">
+                <button onclick="quickSelectEmployeeToJob('${e.id}'); showTab('cost');" class="bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1.5 rounded-xl font-bold transition text-xs">➕ ดึงเข้าใบงาน</button>
+                <div class="flex gap-1.5">
+                  <button onclick="editEmployee('${e.id}')" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-xl font-bold transition text-xs">แก้ไข</button>
+                  <button onclick="deleteEmployee('${e.id}')" class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-xl font-bold transition text-xs">ลบ</button>
+                </div>
+              </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function editEmployee(id) {
+        const emp = JSON.parse(localStorage.getItem('hym_employees') || '[]').find(e => e.id === id);
+        if (!emp) return;
+        document.getElementById('dbEmpId').value = emp.id;
+        document.getElementById('dbEmpName').value = emp.name;
+        document.getElementById('dbEmpWage').value = emp.wage;
+        document.getElementById('dbEmpIdCard').value = emp.idCard || '';
+        document.getElementById('dbEmpPhone').value = emp.phone || '';
+        document.getElementById('dbEmpNote').value = emp.note || '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteEmployee(id) {
+        if (confirm('ยืนยันการลบประวัติพนักงานท่านนี้ออกจากระบบ?')) {
+            let employees = JSON.parse(localStorage.getItem('hym_employees') || '[]');
+            employees = employees.filter(e => e.id !== id);
+            localStorage.setItem('hym_employees', JSON.stringify(employees));
+            renderEmployeeDB();
+            updateEmployeeBadgeAndDatalist();
+        }
+    }
+
+    function clearEmployeeForm() {
+        document.getElementById('dbEmpId').value = '';
+        document.getElementById('dbEmpName').value = '';
+        document.getElementById('dbEmpWage').value = '500';
+        document.getElementById('dbEmpIdCard').value = '';
+        document.getElementById('dbEmpPhone').value = '';
+        document.getElementById('dbEmpNote').value = '';
+    }
+
+    // ================= ระบบสำรองและกู้คืนข้อมูล (Backup & Restore JSON) =================
+    function openBackupModal() { document.getElementById('modalBackup').classList.remove('hidden'); }
+    function closeBackupModal() { document.getElementById('modalBackup').classList.add('hidden'); }
+
+    function exportFullBackupJSON() {
+        const backupData = {
+            version: '2.0',
+            exportedAt: new Date().toISOString(),
+            hym_archive_docs: JSON.parse(localStorage.getItem('hym_archive_docs') || '[]'),
+            hym_customers: JSON.parse(localStorage.getItem('hym_customers') || '[]'),
+            hym_products: getProductDB(),
+            hym_employees: JSON.parse(localStorage.getItem('hym_employees') || '[]'),
+            hym_gallery: JSON.parse(localStorage.getItem('hym_gallery') || '[]'),
+            hym_my_profile: JSON.parse(localStorage.getItem('hym_my_profile') || '{}')
+        };
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `HYM_Backup_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+    }
+
+    function importFullBackupJSON(input) {
+        if (!input.files || !input.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (!confirm('ยืนยันการกู้คืนข้อมูล? ข้อมูลปัจจุบันในเครื่องจะถูกแทนที่ด้วยไฟล์สำรองนี้')) return;
+                if (data.hym_archive_docs) localStorage.setItem('hym_archive_docs', JSON.stringify(data.hym_archive_docs));
+                if (data.hym_customers) localStorage.setItem('hym_customers', JSON.stringify(data.hym_customers));
+                if (data.hym_products) localStorage.setItem('hym_products', JSON.stringify(data.hym_products));
+                if (data.hym_employees) localStorage.setItem('hym_employees', JSON.stringify(data.hym_employees));
+                if (data.hym_gallery) localStorage.setItem('hym_gallery', JSON.stringify(data.hym_gallery));
+                if (data.hym_my_profile) localStorage.setItem('hym_my_profile', JSON.stringify(data.hym_my_profile));
+
+                initProductDropdowns();
+                loadMyProfile();
+                updateArchiveCount();
+                updateEmployeeBadgeAndDatalist();
+                renderArchiveList();
+                closeBackupModal();
+                alert('กู้คืนข้อมูลทั้งหมดสำเร็จเรียบร้อยแล้วครับ!');
+            } catch (err) {
+                alert('ไฟล์ไม่ถูกต้อง กรุณาเลือกไฟล์ .json ที่สำรองจากระบบนี้เท่านั้นครับ');
+            }
+        };
+        reader.readAsText(input.files[0]);
+    }
+
     function getPdfBlobAndFilename() {
       const element = document.getElementById('quotationPaper');
       const name = document.getElementById('custName').value || 'Customer';
@@ -1922,12 +2529,8 @@
 
     function exportQuotationPDF() {
       const { element, opt } = getPdfBlobAndFilename();
-      
-      // ปลดการย่อสเกลชั่วคราวเพื่อให้กระดาษกลับมาขนาด A4 เต็ม 100%
       element.style.transform = 'none';
-      
       html2pdf().set(opt).from(element).save().then(() => {
-          // คืนค่าการย่อสเกลให้แสดงบนมือถือตามเดิม
           scalePaperToFit();
       });
     }
@@ -1937,7 +2540,6 @@
       const d = runEngine();
       const shareText = `📋 *${d.docTitle} บจก.หาดใหญ่ ไมโครไพล์*\n📄 เลขที่: ${d.docNo}\n👤 นามลูกค้า: ${d.custName}\n📍 สถานที่: ${d.custAddr}\n🏗️ งาน: ${d.itemDesc} ${d.itemDesc2 ? 'และ ' + d.itemDesc2 : ''} (รวม ${d.qty + d.qty2} ต้น)\n💰 ยอดสุทธิ: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\nสอบถามเพิ่มเติม โทร. 080-4549659`;
 
-      // ปลดการย่อสเกลชั่วคราวเพื่อให้กระดาษกลับมาขนาด A4 เต็ม 100%
       element.style.transform = 'none';
 
       try {
@@ -1945,7 +2547,6 @@
         const pdfBlob = await worker.outputPdf('blob');
         const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
 
-        // เมื่อแคปหน้าเสร็จแล้ว คืนค่าสเกลกลับทันที
         scalePaperToFit();
 
         if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
@@ -1985,6 +2586,7 @@
     syncDocType('front'); 
     renderArchiveList();
     updateArchiveCount();
+    updateEmployeeBadgeAndDatalist();
     runEngine();
     syncSignDates(); 
   </script>
