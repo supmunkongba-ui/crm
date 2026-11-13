@@ -302,11 +302,29 @@
           <div><label class="block font-semibold text-amber-900 mb-1">เพลท+เชื่อม/ต้น</label><input type="number" id="unitCostPlate" placeholder="450" value="450" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right"></div>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs pb-3 border-b border-amber-200">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs pb-3 border-b border-amber-200">
             <div><label class="block font-semibold text-amber-900 mb-1">ค่าแรงเครื่องจักร (เหมา)</label><input type="number" id="unitCostLaborDay" placeholder="7500" value="7500" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right font-medium"></div>
-            <div><label class="block font-semibold text-amber-900 mb-1">จำนวนคนงาน (คน)</label><input type="number" id="workerCount" placeholder="0" value="0" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right font-medium"></div>
-            <div><label class="block font-semibold text-amber-900 mb-1">ค่าแรง/คน/วัน (บ.)</label><input type="number" id="workerWage" placeholder="500" value="500" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right font-medium"></div>
             <div><label class="block font-semibold text-amber-900 mb-1">ค่าใช้จ่ายอื่นๆ (บ.)</label><input type="number" id="unitCostOther" placeholder="0" value="0" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right font-medium"></div>
+        </div>
+        
+        <!-- ส่วนจัดการค่าแรงพนักงาน (แบบอิสระ) -->
+        <div class="pb-3 border-b border-amber-200">
+            <div class="flex justify-between items-center mb-2 mt-1">
+                <label class="block font-semibold text-amber-900 text-xs">👷 รายชื่อพนักงาน และ ค่าแรงที่คิดในงานนี้</label>
+                <button onclick="addWorkerRow()" class="text-[10px] bg-amber-200 hover:bg-amber-300 text-amber-900 px-3 py-1.5 rounded-lg font-bold shadow-sm transition">➕ เพิ่มพนักงาน</button>
+            </div>
+            <div id="workersContainer" class="space-y-2">
+                <!-- แถวพนักงานจะถูกเพิ่มที่นี่ผ่าน JavaScript -->
+                <div class="flex gap-2 items-center worker-item">
+                    <input type="text" class="flex-1 border rounded-xl p-2 bg-white text-xs worker-name outline-none focus:ring-2 focus:ring-amber-500" placeholder="ชื่อพนักงาน (เช่น นายเอกพงศ์)">
+                    <input type="number" class="w-24 sm:w-32 border rounded-xl p-2 bg-white text-xs text-right worker-wage outline-none focus:ring-2 focus:ring-amber-500" placeholder="ค่าแรง" value="500" oninput="runEngine()">
+                    <button onclick="removeWorkerRow(this)" class="text-red-400 hover:text-red-600 font-bold px-2 text-sm">✕</button>
+                </div>
+            </div>
+            <div class="mt-2.5 text-right text-xs bg-amber-100/50 p-2 rounded-xl">
+                <span class="font-semibold text-amber-900">รวมค่าแรงพนักงาน:</span>
+                <span id="sumWorkerCost" class="font-bold text-red-600 ml-2 text-sm">500</span> <span class="text-amber-900">บาท</span>
+            </div>
         </div>
         
         <div class="bg-white p-4 rounded-xl border border-amber-200 grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
@@ -1144,6 +1162,25 @@
       recalcTable();
     }
 
+    // ฟังก์ชันจัดการเพิ่ม/ลบรายชื่อพนักงานในหน้าแรก
+    function addWorkerRow(name = '', wage = '500') {
+        const container = document.getElementById('workersContainer');
+        const div = document.createElement('div');
+        div.className = 'flex gap-2 items-center worker-item';
+        div.innerHTML = `
+            <input type="text" class="flex-1 border rounded-xl p-2 bg-white text-xs worker-name outline-none focus:ring-2 focus:ring-amber-500" placeholder="ชื่อพนักงาน (เช่น นายเอกพงศ์)" value="${name}">
+            <input type="number" class="w-24 sm:w-32 border rounded-xl p-2 bg-white text-xs text-right worker-wage outline-none focus:ring-2 focus:ring-amber-500" placeholder="ค่าแรง" value="${wage}" oninput="runEngine()">
+            <button onclick="removeWorkerRow(this)" class="text-red-400 hover:text-red-600 font-bold px-2 text-sm">✕</button>
+        `;
+        container.appendChild(div);
+        runEngine();
+    }
+
+    function removeWorkerRow(btn) {
+        btn.parentElement.remove();
+        runEngine();
+    }
+
     function runEngine() {
       const qty = parseFloat(document.getElementById('costQty').value) || 0;
       const qty2 = parseFloat(document.getElementById('costQty2').value) || 0;
@@ -1154,10 +1191,20 @@
       const unitPlate = parseFloat(document.getElementById('unitCostPlate').value) || 0;
       const laborDay = parseFloat(document.getElementById('unitCostLaborDay').value) || 0;
       
-      // คำนวณค่าแรงคนงานจากจำนวนคน x ค่าแรง/วัน
-      const workerCount = parseFloat(document.getElementById('workerCount').value) || 0;
-      const workerWage = parseFloat(document.getElementById('workerWage').value) || 0;
-      const workerCost = workerCount * workerWage;
+      // ดึงข้อมูลและคำนวณค่าแรงทีมงานใหม่จาก Dynamic List
+      let workerCost = 0;
+      let workerDetails = [];
+      document.querySelectorAll('.worker-item').forEach(row => {
+          const name = row.querySelector('.worker-name').value.trim();
+          const wage = parseFloat(row.querySelector('.worker-wage').value) || 0;
+          workerCost += wage;
+          if (name || wage > 0) {
+              workerDetails.push({ name, wage });
+          }
+      });
+      
+      const sumWorkerDisplay = document.getElementById('sumWorkerCost');
+      if (sumWorkerDisplay) { sumWorkerDisplay.innerText = workerCost.toLocaleString('th-TH'); }
       
       const otherCost = parseFloat(document.getElementById('unitCostOther').value) || 0;
       
@@ -1248,7 +1295,7 @@
       
       updateRowIndices();
       recalcTable();
-      syncSignDates(); // อัปเดตวันที่ใต้ลายเซ็น
+      syncSignDates(); 
 
       const type = document.getElementById('docTypeSelector').value;
       let finalVat = 0;
@@ -1269,7 +1316,7 @@
         specValue2: specSelect2.value, subDetail2: subDetail2, itemDesc2: fullItemDesc2, qty2: qty2, unitSell2: sellUnit2,
         sellTrans: sellTrans, safety: safety, outArea: outArea,
         unitCostPile: unitPile, unitCostPile2: unitPile2, unitCostPlate: unitPlate, unitCostLaborDay: laborDay, 
-        workerCount: workerCount, workerWage: workerWage, unitCostWorker: workerCost, unitCostOther: otherCost,
+        workerDetails: workerDetails, unitCostWorker: workerCost, unitCostOther: otherCost,
         costDistance: distance, 
         depPct: depPct, inst2Pct: inst2Pct, compPct: compPct, excessCondition: document.getElementById('excessCondition').value,
         subTotal: tableSubtotal, vat: finalVat, grandTotal: tableSubtotal + finalVat, 
@@ -1365,7 +1412,6 @@
       
       updateArchiveCount(); 
       
-      // อัปเดตและแสดงหน้าประวัติทันที
       renderArchiveList();
       showTab('archive');
       
@@ -1380,7 +1426,6 @@
       container.innerHTML = archive.map(item => {
         const d = item.rawData;
         
-        // พยายามดึงชื่อรายการหลักมาแสดง ถ้าว่างเปล่าให้ดึงจากรายการอิสระ (tableRows)
         let mainDesc = d.itemDesc;
         let totalQty = (parseFloat(d.qty) || 0) + (parseFloat(d.qty2) || 0);
         
@@ -1454,9 +1499,19 @@
             document.getElementById('unitCostPlate').value = d.unitCostPlate;
             document.getElementById('unitCostLaborDay').value = d.unitCostLaborDay;
             
-            // โหลดข้อมูลช่องคนงานใหม่
-            document.getElementById('workerCount').value = d.workerCount !== undefined ? d.workerCount : 0;
-            document.getElementById('workerWage').value = d.workerWage !== undefined ? d.workerWage : 500;
+            // โหลดข้อมูลคนงานกลับเข้า Dynamic List
+            const workersContainer = document.getElementById('workersContainer');
+            workersContainer.innerHTML = '';
+            if (d.workerDetails && d.workerDetails.length > 0) {
+                d.workerDetails.forEach(w => addWorkerRow(w.name, w.wage));
+            } else if (d.workerCount > 0) {
+                // รองรับประวัติเก่า
+                for(let i = 0; i < d.workerCount; i++) {
+                    addWorkerRow(`คนงาน ${i+1}`, d.workerWage || 0);
+                }
+            } else {
+                addWorkerRow('', ''); // แถวเปล่าตั้งต้น 1 แถว
+            }
             
             document.getElementById('unitCostOther').value = d.unitCostOther || 0;
             document.getElementById('costDistance').value = d.costDistance;
@@ -1931,7 +1986,7 @@
     renderArchiveList();
     updateArchiveCount();
     runEngine();
-    syncSignDates(); // ซิงค์วันที่ใต้ลายเซ็นครั้งแรกเมื่อเปิดหน้า
+    syncSignDates(); 
   </script>
 </body>
 </html>
