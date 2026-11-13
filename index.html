@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" translate="no" class="notranslate">
 <head>
   <meta charset="UTF-8">
+  <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ระบบคำนวณต้นทุนและเอกสาร - หาดใหญ่ไมโครไพล์</title>
   
@@ -14,7 +15,19 @@
     
     * {
       font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-      letter-spacing: 0px !important;
+      letter-spacing: normal !important;
+      font-kerning: normal;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ซ่อนลูกศรขึ้น-ลงของ input number บน Notebook ที่ทำให้ตัวเลขเบี้ยว */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
     }
     
     /* ล็อกขนาดกระดาษ A4 ให้ตายตัว 100% */
@@ -25,7 +38,7 @@
       height: 1122px !important; 
       min-height: 1122px !important;
       max-height: 1122px !important;
-      margin: 0 auto;
+      margin: 0;
       background: #ffffff;
       color: #1e293b;
       box-sizing: border-box;
@@ -34,45 +47,75 @@
       overflow: hidden !important; 
     }
     
-    /* สร้างกรอบให้กระดาษ ย่อส่วน (Scale) ให้พอดีจอมือถือ */
+    /* กรอบนอกรองรับทั้งหน้าจอมือถือและ Notebook โดยไม่ตัดขอบซ้าย */
     .paper-wrapper {
       width: 100%;
-      display: flex;
-      justify-content: center;
       background: rgba(203, 213, 225, 0.3);
       padding: 1rem 0;
       border-radius: 0.75rem;
       border: 1px solid #e2e8f0;
       position: relative;
       z-index: 10;
-      overflow: hidden; 
+      overflow-x: auto;
+      overflow-y: hidden;
     }
 
-    /* คลาสนี้จะถูกใช้ด้วย Javascript เพื่อย่อขนาดกระดาษบนจอมือถือ */
+    /* กล่องคุมสัดส่วนการย่อขยายให้อยู่กึ่งกลางเสมอ */
+    #paperStage {
+      margin: 0 auto;
+      position: relative;
+    }
+
     .scale-paper {
-        transform-origin: top center;
+      transform-origin: top left;
+    }
+
+    /* โหมดกำลังสร้าง PDF บังคับตำแหน่งซ้ายบนสุด ไม่ให้ขอบซ้ายแหว่ง */
+    .pdf-capture-mode {
+      overflow: visible !important;
+      padding: 0 !important;
+      border: none !important;
+      background: #ffffff !important;
+    }
+    .pdf-capture-mode #paperStage {
+      width: 794px !important;
+      height: 1122px !important;
+      margin: 0 !important;
+    }
+    .pdf-capture-mode .scale-paper {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    .pdf-capture-mode .no-print-element {
+      display: none !important;
     }
 
     canvas { touch-action: none; } 
 
     .editable-cell {
-        border: 1px dashed transparent; background: transparent; outline: none;
-        transition: border-color 0.2s;
-        width: 100%;
+      border: 1px dashed transparent;
+      background: transparent;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
     }
-    .editable-cell:hover, .editable-cell:focus { border-color: #cbd5e1; background: #f8fafc; }
+    .editable-cell:hover, .editable-cell:focus {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
 
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     
     #quotationPaper, #quotationPaper * {
-        letter-spacing: normal !important;
-        word-spacing: normal !important;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      font-feature-settings: "liga" 1, "clig" 1;
     }
     
     nav {
-        position: relative;
-        z-index: 50;
+      position: relative;
+      z-index: 50;
     }
 
     @media print {
@@ -81,30 +124,32 @@
       #quotationControls, nav, header { display: none !important; }
       #tabQuote { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
       
-      .paper-wrapper {
-          overflow: visible !important;
-          background: transparent !important;
-          padding: 0 !important;
-          border: none !important;
+      .paper-wrapper, #paperStage {
+        overflow: visible !important;
+        background: transparent !important;
+        padding: 0 !important;
+        border: none !important;
+        width: 794px !important;
+        height: 1122px !important;
+        margin: 0 !important;
       }
       
-      /* ยกเลิกการย่อขนาดตอน Print ให้เป็น 100% เสมอ */
       .scale-paper {
-          transform: none !important;
+        transform: none !important;
       }
 
       .paper-a4-fixed { 
-          box-shadow: none !important; 
-          margin: 0; 
-          width: 794px !important;
-          height: 1122px !important;
-          page-break-inside: avoid !important;
-          page-break-after: avoid !important;
-          page-break-before: avoid !important;
+        box-shadow: none !important; 
+        margin: 0; 
+        width: 794px !important;
+        height: 1122px !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
       }
       
       tr, td, th, table, div.grid {
-          page-break-inside: avoid !important;
+        page-break-inside: avoid !important;
       }
       
       .no-print-element { display: none !important; } 
@@ -134,7 +179,7 @@
           <h1 class="text-[15px] sm:text-xl font-black text-slate-900 leading-tight truncate">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h1>
           <p class="truncate">12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
           <p class="truncate">เลขประจำตัวผู้เสียภาษี : 0-9055-62001-69-3</p>
-          <p class="text-orange-600 font-bold tracking-wide mt-1 truncate">โทร. 080-4549659, 089-653-6312</p>
+          <p class="text-orange-600 font-bold mt-1 truncate">โทร. 080-4549659, 089-653-6312</p>
         </div>
       </div>
       <!-- ปุ่มลัดสำรองข้อมูล & เคลียร์ฟอร์ม -->
@@ -431,14 +476,28 @@
         <input type="hidden" id="docTypeSelectorQuote">
         <input type="hidden" id="docTypeSelector">
 
+        <!-- แถบจัดการเพิ่ม/ลบรายการอิสระ (ย้ายออกจากตัวกระดาษรายงานเพื่อไม่ให้มีปุ่มกากบาทสีแดงติดไปในเอกสาร) -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+          <span class="text-xs font-bold text-slate-600">🛠️ จัดการตารางรายการ:</span>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="addNewRow()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-3 rounded-xl border border-slate-300 transition">
+              ➕ เพิ่มรายการอิสระ
+            </button>
+            <button onclick="removeLastDynamicRow()" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-bold py-1.5 px-3 rounded-xl border border-red-200 transition">
+              🗑️ ลบรายการอิสระล่าสุด
+            </button>
+          </div>
+        </div>
+
         <div class="grid grid-cols-3 gap-2">
           <button onclick="openSignatureModal('sales')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ ฝั่งซ้าย</button>
           <button onclick="openSignatureModal('issuer')" class="bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ ตรงกลาง</button>
           <button onclick="openSignatureModal('customer')" class="bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ ฝั่งขวา</button>
         </div>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-3 gap-2">
           <button onclick="saveQuotationToArchive()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">💾 บันทึกประวัติ</button>
           <button onclick="exportQuotationPDF()" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">📥 โหลด PDF</button>
+          <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">🖨️ พิมพ์ / บันทึก PDF</button>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <button onclick="shareDocument('line')" class="bg-[#06C755] hover:bg-[#05b34c] text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">💬 แนบ PDF เข้า LINE</button>
@@ -446,252 +505,244 @@
         </div>
       </div>
 
-      <!-- Wrapper บังคับไม่ให้กระดาษหดตัว และย่อส่วนให้พอดีจอ -->
+      <!-- Wrapper บังคับไม่ให้กระดาษหดตัว และย่อส่วนให้พอดีจอทั้งมือถือและ Notebook -->
       <div id="paperWrapper" class="paper-wrapper">
-        
-        <!-- กระดาษ A4 -->
-        <div id="quotationPaper" class="paper-a4-fixed p-8 sm:p-12 shadow-xl flex flex-col scale-paper">
-          
-          <!-- HEADER: โลโก้ซ้าย ป้ายเอกสารและเลขที่อยู่ขวาบน -->
-          <div class="flex flex-row items-start justify-between pb-3 mb-3 border-b border-slate-200 w-full gap-4">
-            <!-- ซ้าย: โลโก้และข้อมูลบริษัท -->
-            <div class="flex flex-row items-center gap-4 flex-1">
-              <div class="h-20 w-auto flex items-center justify-center p-1 rounded-2xl bg-white border border-slate-100 relative shrink-0">
-                <img src="A0117C09-C98C-43EC-BBD2-DA96A41B05D4.png" 
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
-                     alt="โลโก้ หาดใหญ่ ไมโครไพล์" 
-                     class="h-full w-auto object-contain rounded-lg relative z-10 bg-white">
-                <div style="display: none;" class="w-20 h-full bg-slate-800 text-white flex-col items-center justify-center rounded-lg font-black text-xl leading-none">
-                   <span class="text-orange-500">H Y</span>
-                   <span class="text-white">M</span>
+        <div id="paperStage">
+          <!-- กระดาษ A4 -->
+          <div id="quotationPaper" class="paper-a4-fixed p-8 sm:p-10 shadow-xl flex flex-col scale-paper">
+            
+            <!-- HEADER: โลโก้ซ้าย ป้ายเอกสารและเลขที่อยู่ขวาบน -->
+            <div class="flex flex-row items-start justify-between pb-3 mb-3 border-b border-slate-200 w-full gap-4">
+              <!-- ซ้าย: โลโก้และข้อมูลบริษัท -->
+              <div class="flex flex-row items-center gap-4 flex-1">
+                <div class="h-20 w-auto flex items-center justify-center p-1 rounded-2xl bg-white border border-slate-100 relative shrink-0">
+                  <img src="A0117C09-C98C-43EC-BBD2-DA96A41B05D4.png" 
+                       onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                       alt="โลโก้ หาดใหญ่ ไมโครไพล์" 
+                       class="h-full w-auto object-contain rounded-lg relative z-10 bg-white">
+                  <div style="display: none;" class="w-20 h-full bg-slate-800 text-white flex-col items-center justify-center rounded-lg font-black text-xl leading-none">
+                     <span class="text-orange-500">H Y</span>
+                     <span class="text-white">M</span>
+                  </div>
+                </div>
+                <div class="text-[13px] text-slate-700 leading-snug">
+                  <h2 class="text-[22px] font-black text-slate-900 mb-1">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h2>
+                  <p>12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
+                  <p>เลขประจำตัวผู้เสียภาษี : 0-9055-62001-69-3</p>
+                  <p class="font-semibold text-orange-700">โทร. 080-4549659, 089-6536312</p>
                 </div>
               </div>
-              <div class="text-[13px] text-slate-700 leading-snug">
-                <h2 class="text-[22px] font-black text-slate-900 mb-1">บริษัท หาดใหญ่ ไมโครไพล์ จำกัด</h2>
-                <p>12 หมู่ 2 ต.ควนลัง อ.หาดใหญ่ จ.สงขลา 90110</p>
-                <p>เลขประจำตัวผู้เสียภาษี : 0-9055-62001-69-3</p>
-                <p class="font-semibold text-orange-700">โทร. 080-4549659, 089-6536312</p>
+              
+              <!-- ขวา: ป้ายเอกสาร และ เลขที่/วันที่ -->
+              <div class="flex flex-col items-end gap-2 shrink-0">
+                <div class="bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-800 px-6 py-1.5 rounded-2xl shadow-sm flex flex-col items-center justify-center w-full">
+                  <h2 class="text-xl font-extrabold" id="docTitleTH">ใบเสนอราคา</h2>
+                  <p class="text-[10px] font-black opacity-70 uppercase" id="docTitleEN">Quotation</p>
+                </div>
+                <div class="text-[13px] space-y-1 bg-slate-50 p-2.5 rounded-2xl border border-slate-100 w-full min-w-[200px]">
+                  <div class="flex justify-between items-center border-b border-slate-200 pb-1">
+                    <span class="font-bold text-slate-500 whitespace-nowrap">เลขที่ :</span> 
+                    <span class="font-bold text-slate-900 editable-cell px-1 outline-none text-right flex-1 ml-2" id="docViewNo" contenteditable="true" oninput="isDocNoManuallyEdited = true">HYM</span>
+                  </div>
+                  <div class="flex justify-between items-center pt-0.5">
+                    <span class="font-bold text-slate-500 whitespace-nowrap">วันที่ :</span> 
+                    <span class="font-medium text-slate-900 editable-cell px-1 outline-none text-right flex-1 ml-2" id="docViewDate" contenteditable="true" oninput="syncSignDates()">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ข้อมูลลูกค้า -->
+            <div class="border-[0.5px] border-slate-300 rounded-3xl p-3 mb-3 text-[13px] text-slate-700 bg-white shadow-sm w-full">
+              <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
+                <div class="font-bold text-slate-600">นามลูกค้า :</div>
+                <div class="font-bold text-slate-900 text-[14px]" id="docViewCustName">-</div>
+              </div>
+              <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
+                <div class="font-bold text-slate-600">ที่อยู่/สถานที่ :</div>
+                <div class="text-slate-800 leading-snug" id="docViewCustAddr">-</div>
+              </div>
+              <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
+                <div class="font-bold text-slate-600">ข้อมูลติดต่อ :</div>
+                <div class="text-slate-800 leading-snug" id="docViewCustContact">-</div>
+              </div>
+              <div class="grid grid-cols-[100px_1fr] gap-2 items-center">
+                <div class="font-bold text-slate-600">เลขผู้เสียภาษี :</div>
+                <div class="flex items-center gap-4">
+                  <span class="font-mono text-slate-900 font-bold" id="docViewCustTax">-</span>
+                  <label class="flex items-center space-x-1"><input type="checkbox" checked disabled class="accent-slate-400 w-3 h-3"> <span class="text-slate-500 text-[11px]">สำนักงานใหญ่</span></label>
+                  <label class="flex items-center space-x-1"><input type="checkbox" disabled class="w-3 h-3"> <span class="text-slate-400 text-[11px]">สาขา..........</span></label>
+                </div>
+              </div>
+            </div>
+
+            <!-- ตารางรายการ (ไม่มีคอลัมน์ปุ่มกากบาทสีแดงในเอกสาร) -->
+            <div class="mb-2 rounded-3xl border-[0.5px] border-slate-300 bg-white p-2 shadow-sm flex-1">
+              <table class="w-full text-[13px] text-left border-none" style="border-spacing: 0;" id="invoiceTable">
+                <thead class="bg-slate-50/80 text-slate-700">
+                  <tr>
+                    <th class="py-2 px-2 text-center w-[48px] font-bold rounded-l-2xl">ลำดับ</th>
+                    <th class="py-2 px-2 font-bold">รายการ</th>
+                    <th class="py-2 px-2 text-center w-[75px] font-bold">จำนวน</th> 
+                    <th class="py-2 px-2 text-right w-[100px] font-bold">ราคา/หน่วย</th> 
+                    <th class="py-2 px-2 text-right w-[110px] font-bold rounded-r-2xl">จำนวนเงิน</th> 
+                  </tr>
+                </thead>
+                <tbody class="border-none" id="invoiceTbody">
+                  <!-- แถวที่ 1 (หลัก) -->
+                  <tr class="item-row" id="rowItem1">
+                    <td class="py-2 px-2 text-center text-slate-400 align-top item-index">1</td>
+                    <td class="py-2 px-2 align-top">
+                      <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" id="docViewItemName" contenteditable="true" oninput="recalcTable()">-</div>
+                    </td>
+                    <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" id="docViewItemQty" value="0" readonly oninput="recalcTable()"></td>
+                    <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewItemUnitRaw" value="0" readonly oninput="recalcTable()"></td>
+                    <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total" id="docViewItemTotal">0.00</td>
+                  </tr>
+                  <!-- แถวที่ 2 (รายการเสริม/ถ้ามี) -->
+                  <tr class="item-row" id="rowItem2" style="display:none;">
+                    <td class="py-2 px-2 text-center text-slate-400 align-top item-index">2</td>
+                    <td class="py-2 px-2 align-top">
+                      <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" id="docViewItemName2" contenteditable="true" oninput="recalcTable()">-</div>
+                    </td>
+                    <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" id="docViewItemQty2" value="0" readonly oninput="recalcTable()"></td>
+                    <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewItemUnitRaw2" value="0" readonly oninput="recalcTable()"></td>
+                    <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total" id="docViewItemTotal2">0.00</td>
+                  </tr>
+                  <!-- แถวค่าย้าย -->
+                  <tr class="item-row" id="rowTrans">
+                    <td class="py-2 px-2 text-center text-slate-400 align-top item-index">3</td>
+                    <td class="py-2 px-2 align-top">
+                      <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าย้ายเครื่องจักรและอุปกรณ์</div>
+                    </td>
+                    <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
+                    <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewTransUnitRaw" value="0" oninput="recalcTable()"></td>
+                    <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
+                  </tr>
+                  <!-- แถวค่าเซฟตี้ -->
+                  <tr class="item-row" id="rowSafety" style="display:none;">
+                    <td class="py-2 px-2 text-center text-slate-400 align-top item-index">4</td>
+                    <td class="py-2 px-2 align-top">
+                      <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าเซฟตี้ (Safety)</div>
+                    </td>
+                    <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
+                    <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewSafetyUnitRaw" oninput="recalcTable()"></td>
+                    <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
+                  </tr>
+                  <!-- แถวค่าดำเนินการนอกพื้นที่ -->
+                  <tr class="item-row" id="rowOutArea" style="display:none;">
+                    <td class="py-2 px-2 text-center text-slate-400 align-top item-index">5</td>
+                    <td class="py-2 px-2 align-top">
+                      <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าดำเนินการนอกพื้นที่</div>
+                    </td>
+                    <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
+                    <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewOutAreaUnitRaw" oninput="recalcTable()"></td>
+                    <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- สรุปยอดและเงื่อนไข -->
+            <div class="flex flex-row justify-between items-start gap-4 mb-2 mt-auto shrink-0">
+              <div class="w-[60%] space-y-1">
+                <div class="bg-slate-50/50 border-[0.5px] border-slate-300 p-2 rounded-3xl" id="docViewConditionBlock">
+                  <div class="text-[12px] font-bold text-slate-800 mb-1 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> เงื่อนไขการแบ่งชำระเงิน</div>
+                  <div class="space-y-1 text-[11px]">
+                    <div class="flex justify-between items-center text-slate-600"><span>งวดที่ 1 (มัดจำ) <span class="font-bold text-slate-900 ml-1" id="docViewDepPct">60%</span></span><span class="font-mono font-bold text-slate-900" id="docViewDepVal">0.00</span></div>
+                    <div class="flex justify-between items-center border-t border-slate-200/60 pt-1 text-slate-600" id="docViewInst2Row"><span>งวดที่ 2 (เข้าพื้นที่หน้างาน) <span class="font-bold text-slate-900 ml-1" id="docViewInst2Pct">40%</span></span><span class="font-mono font-bold text-slate-900" id="docViewInst2Val">0.00</span></div>
+                    <div class="flex justify-between items-center border-t border-slate-200/60 pt-1 text-slate-600" id="docViewCompRow" style="display:none;"><span>งวดที่ 3 (งานเสร็จสิ้น) <span class="font-bold text-slate-900 ml-1" id="docViewCompPct">0%</span></span><span class="font-mono font-bold text-slate-900" id="docViewCompVal">0.00</span></div>
+                  </div>
+                </div>
+                <div class="px-2 pt-0.5">
+                  <div class="text-[11px] font-bold text-slate-800 mb-0.5 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span> เงื่อนไขหน้างาน / หมายเหตุ</div>
+                  <div class="text-[10px] text-slate-500 space-y-0.5 leading-snug pl-3 border-l-2 border-slate-200">
+                    <p>- พื้นที่หน้างานต้องปรับให้พร้อมทำงาน และลำเลียงวัสดุเข้าได้</p>
+                    <p>- หลังจากชำระมัดจำ 5-7 วัน ทีมงานเตรียมเข้าพื้นที่หน้างาน</p>
+                    <p>- ผู้ว่าจ้างจัดเตรียมกระแสไฟฟ้าและน้ำประปาไว้ให้พร้อมใช้งาน</p>
+                    <p class="text-red-600 font-bold mt-0.5 break-words whitespace-normal" id="docViewExcessCondition">- ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม.</p>
+                    <p class="text-blue-800 font-bold mt-0.5 break-words whitespace-normal" id="docViewBankLine" style="display:none;"></p>
+                  </div>
+                </div>
+                <div class="bg-blue-50/40 p-2 rounded-2xl border-[0.5px] border-blue-200 flex flex-row items-center gap-2 text-[12px] mt-1">
+                  <span class="font-bold text-slate-600 whitespace-nowrap">ตัวอักษร:</span>
+                  <span class="text-blue-900 font-bold" id="docViewThaiBaht">(ศูนย์บาทถ้วน)</span>
+                </div>
+              </div>
+
+              <div class="w-[38%] bg-slate-50/50 p-3 rounded-3xl border-[0.5px] border-slate-300 self-end shadow-sm">
+                <div class="space-y-1 text-[12px]">
+                  <div class="flex justify-between items-center text-slate-600">
+                    <span class="font-semibold">รวมเป็นเงิน</span>
+                    <span class="font-mono font-bold text-slate-900" id="docViewSubTotal">0.00</span>
+                  </div>
+                  <div class="flex justify-between items-center text-red-600" id="docViewDiscountRow" style="display:none;">
+                    <span class="font-semibold">หักส่วนลด</span>
+                    <span class="font-mono font-bold" id="docViewDiscount">0.00</span>
+                  </div>
+                  <div class="flex justify-between items-center text-slate-600" id="docViewVatRow">
+                    <span class="font-semibold">ภาษีมูลค่าเพิ่ม (7%)</span>
+                    <span class="font-mono font-bold text-slate-900" id="docViewVat">0.00</span>
+                  </div>
+                </div>
+                <div class="mt-2 pt-2 border-t-[1.5px] border-slate-200 flex justify-between items-end">
+                  <span class="text-[11px] font-black text-slate-900">ยอดสุทธิรวมทั้งสิ้น</span>
+                  <span class="text-[15px] font-mono font-extrabold text-blue-700" id="docViewGrandTotal">0.00</span>
+                </div>
+                <!-- แถวแสดงภาษีหัก ณ ที่จ่าย 3% (ถ้าติ๊กเลือก) -->
+                <div id="docViewWhtBlock" style="display:none;" class="mt-1.5 pt-1.5 border-t border-dashed border-slate-300 text-[10px] space-y-0.5">
+                  <div class="flex justify-between text-slate-500">
+                    <span>หัก ณ ที่จ่าย 3% (ก่อน VAT)</span>
+                    <span class="font-mono font-semibold text-red-600" id="docViewWhtVal">-0.00</span>
+                  </div>
+                  <div class="flex justify-between font-bold text-emerald-700">
+                    <span>ยอดโอนชำระจริง</span>
+                    <span class="font-mono" id="docViewNetPayable">0.00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ช่องลงนาม -->
+            <div class="grid grid-cols-3 gap-6 pt-2 border-t border-slate-200 text-xs text-center shrink-0 mt-2">
+              
+              <!-- ผู้เสนอราคา -->
+              <div class="flex flex-col items-center">
+                <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
+                  <img id="imgSignSales" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" class="max-h-10 max-w-full object-contain">
+                  <span id="placeholderSignSales" class="text-slate-300 italic absolute bottom-0.5 text-[9px] hidden">(ลายเซ็น)</span>
+                </div>
+                <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignSales">ผู้เสนอราคา</span></div>
+                <div class="text-slate-700 mb-0.5 font-medium text-[10px]" id="docViewSignSalesName">(คุณศรายุทธ เมรุลัตร์)</div>
+                <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
+              </div>
+              
+              <!-- ผู้รับจ้าง -->
+              <div class="flex flex-col items-center">
+                <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
+                  <img id="imgSignIssuer" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" class="max-h-10 max-w-full object-contain">
+                  <span id="placeholderSignIssuer" class="text-slate-300 italic absolute bottom-0.5 text-[9px] hidden">(ลายเซ็น)</span>
+                </div>
+                <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignIssuer">ผู้รับจ้าง</span></div>
+                <div class="text-slate-700 mb-0.5 font-medium text-[10px]">(คุณศรายุทธ เมรุลัตร์)</div>
+                <div class="text-slate-800 font-bold mb-0.5 text-[9px]">บจก.หาดใหญ่ ไมโครไพล์</div>
+                <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
+              </div>
+              
+              <!-- ผู้ว่าจ้าง (ลูกค้าเซ็น) -->
+              <div class="flex flex-col items-center">
+                <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
+                  <img id="imgSignCustomer" src="" class="max-h-10 max-w-full hidden object-contain">
+                  <span id="placeholderSignCustomer" class="text-slate-300 italic absolute bottom-0.5 text-[9px]">(ลายเซ็น)</span>
+                </div>
+                <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignCustomer">ผู้ว่าจ้าง</span></div>
+                <div class="text-slate-700 mb-0.5 font-medium text-[10px]" id="docViewSignCustName">(........................................)</div>
+                <div class="text-slate-800 font-bold mb-0.5 text-[9px] opacity-0">.</div>
+                <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
               </div>
             </div>
             
-            <!-- ขวา: ป้ายเอกสาร และ เลขที่/วันที่ -->
-            <div class="flex flex-col items-end gap-2 shrink-0">
-              <div class="bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-800 px-6 py-1.5 rounded-2xl shadow-sm flex flex-col items-center justify-center w-full">
-                <h2 class="text-xl font-extrabold" id="docTitleTH">ใบเสนอราคา</h2>
-                <p class="text-[10px] font-black opacity-70 uppercase" id="docTitleEN">Quotation</p>
-              </div>
-              <div class="text-[13px] space-y-1 bg-slate-50 p-2.5 rounded-2xl border border-slate-100 w-full min-w-[200px]">
-                <div class="flex justify-between items-center border-b border-slate-200 pb-1">
-                  <span class="font-bold text-slate-500 whitespace-nowrap">เลขที่ :</span> 
-                  <span class="font-bold text-slate-900 editable-cell px-1 outline-none text-right flex-1 ml-2" id="docViewNo" contenteditable="true" oninput="isDocNoManuallyEdited = true">HYM</span>
-                </div>
-                <div class="flex justify-between items-center pt-0.5">
-                  <span class="font-bold text-slate-500 whitespace-nowrap">วันที่ :</span> 
-                  <span class="font-medium text-slate-900 editable-cell px-1 outline-none text-right flex-1 ml-2" id="docViewDate" contenteditable="true" oninput="syncSignDates()">-</span>
-                </div>
-              </div>
-            </div>
           </div>
-
-          <!-- ข้อมูลลูกค้า -->
-          <div class="border-[0.5px] border-slate-300 rounded-3xl p-3 mb-3 text-[13px] text-slate-700 bg-white shadow-sm w-full">
-            <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
-              <div class="font-bold text-slate-600">นามลูกค้า :</div>
-              <div class="font-bold text-slate-900 text-[14px]" id="docViewCustName">-</div>
-            </div>
-            <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
-              <div class="font-bold text-slate-600">ที่อยู่/สถานที่ :</div>
-              <div class="text-slate-800 leading-snug" id="docViewCustAddr">-</div>
-            </div>
-            <div class="grid grid-cols-[100px_1fr] gap-2 mb-1">
-              <div class="font-bold text-slate-600">ข้อมูลติดต่อ :</div>
-              <div class="text-slate-800 leading-snug" id="docViewCustContact">-</div>
-            </div>
-            <div class="grid grid-cols-[100px_1fr] gap-2 items-center">
-              <div class="font-bold text-slate-600">เลขผู้เสียภาษี :</div>
-              <div class="flex items-center gap-4">
-                <span class="font-mono text-slate-900 font-bold" id="docViewCustTax">-</span>
-                <label class="flex items-center space-x-1"><input type="checkbox" checked disabled class="accent-slate-400 w-3 h-3"> <span class="text-slate-500 text-[11px]">สำนักงานใหญ่</span></label>
-                <label class="flex items-center space-x-1"><input type="checkbox" disabled class="w-3 h-3"> <span class="text-slate-400 text-[11px]">สาขา..........</span></label>
-              </div>
-            </div>
-          </div>
-
-          <!-- ตารางรายการ -->
-          <div class="mb-2 rounded-3xl border-[0.5px] border-slate-300 bg-white p-2 shadow-sm flex-1">
-            <table class="w-full text-[13px] text-left border-none" style="border-spacing: 0;" id="invoiceTable">
-              <thead class="bg-slate-50/80 text-slate-700">
-                <tr>
-                  <th class="py-2 px-2 text-center w-10 font-bold rounded-l-2xl">ลำดับ</th>
-                  <th class="py-2 px-2 font-bold">รายการ</th>
-                  <th class="py-2 px-2 text-center w-[60px] font-bold">จำนวน</th> 
-                  <th class="py-2 px-2 text-right w-[80px] font-bold">ราคา/หน่วย</th> 
-                  <th class="py-2 px-2 text-right w-[90px] font-bold">จำนวนเงิน</th> 
-                  <th class="py-2 px-1 w-6 no-print-element rounded-r-2xl"></th>
-                </tr>
-              </thead>
-              <tbody class="border-none" id="invoiceTbody">
-                <!-- แถวที่ 1 (หลัก) ห้ามลบ -->
-                <tr class="item-row" id="rowItem1">
-                  <td class="py-2 px-2 text-center text-slate-400 align-top item-index">1</td>
-                  <td class="py-2 px-2 align-top">
-                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" id="docViewItemName" contenteditable="true" oninput="recalcTable()">-</div>
-                  </td>
-                  <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" id="docViewItemQty" value="0" readonly oninput="recalcTable()"></td>
-                  <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewItemUnitRaw" value="0" readonly oninput="recalcTable()"></td>
-                  <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total" id="docViewItemTotal">0.00</td>
-                  <td class="py-2 px-1 text-center align-top no-print-element"></td>
-                </tr>
-                <!-- แถวที่ 2 (รายการเสริม/ถ้ามี) -->
-                <tr class="item-row" id="rowItem2" style="display:none;">
-                  <td class="py-2 px-2 text-center text-slate-400 align-top item-index">2</td>
-                  <td class="py-2 px-2 align-top">
-                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" id="docViewItemName2" contenteditable="true" oninput="recalcTable()">-</div>
-                  </td>
-                  <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" id="docViewItemQty2" value="0" readonly oninput="recalcTable()"></td>
-                  <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewItemUnitRaw2" value="0" readonly oninput="recalcTable()"></td>
-                  <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total" id="docViewItemTotal2">0.00</td>
-                  <td class="py-2 px-1 text-center align-top no-print-element"></td>
-                </tr>
-                <!-- แถวค่าย้าย -->
-                <tr class="item-row" id="rowTrans">
-                  <td class="py-2 px-2 text-center text-slate-400 align-top item-index">3</td>
-                  <td class="py-2 px-2 align-top">
-                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าย้ายเครื่องจักรและอุปกรณ์</div>
-                  </td>
-                  <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
-                  <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewTransUnitRaw" value="0" oninput="recalcTable()"></td>
-                  <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
-                  <td class="py-2 px-1 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
-                </tr>
-                <!-- แถวค่าเซฟตี้ -->
-                <tr class="item-row" id="rowSafety" style="display:none;">
-                  <td class="py-2 px-2 text-center text-slate-400 align-top item-index">4</td>
-                  <td class="py-2 px-2 align-top">
-                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าเซฟตี้ (Safety)</div>
-                  </td>
-                  <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
-                  <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewSafetyUnitRaw" oninput="recalcTable()"></td>
-                  <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
-                  <td class="py-2 px-1 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
-                </tr>
-                <!-- แถวค่าดำเนินการนอกพื้นที่ -->
-                <tr class="item-row" id="rowOutArea" style="display:none;">
-                  <td class="py-2 px-2 text-center text-slate-400 align-top item-index">5</td>
-                  <td class="py-2 px-2 align-top">
-                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าดำเนินการนอกพื้นที่</div>
-                  </td>
-                  <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
-                  <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewOutAreaUnitRaw" oninput="recalcTable()"></td>
-                  <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
-                  <td class="py-2 px-1 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="mb-2 text-right no-print-element pr-4">
-              <button onclick="addNewRow()" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-1 px-3 rounded-lg border border-slate-300 transition">➕ เพิ่มรายการอิสระ</button>
-          </div>
-
-          <!-- สรุปยอดและเงื่อนไข -->
-          <div class="flex flex-row justify-between items-start gap-4 mb-2 mt-auto shrink-0">
-            <div class="w-[60%] space-y-1">
-              <div class="bg-slate-50/50 border-[0.5px] border-slate-300 p-2 rounded-3xl" id="docViewConditionBlock">
-                <div class="text-[12px] font-bold text-slate-800 mb-1 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> เงื่อนไขการแบ่งชำระเงิน</div>
-                <div class="space-y-1 text-[11px]">
-                  <div class="flex justify-between items-center text-slate-600"><span>งวดที่ 1 (มัดจำ) <span class="font-bold text-slate-900 ml-1" id="docViewDepPct">60%</span></span><span class="font-mono font-bold text-slate-900" id="docViewDepVal">0.00</span></div>
-                  <div class="flex justify-between items-center border-t border-slate-200/60 pt-1 text-slate-600" id="docViewInst2Row"><span>งวดที่ 2 (เข้าพื้นที่หน้างาน) <span class="font-bold text-slate-900 ml-1" id="docViewInst2Pct">40%</span></span><span class="font-mono font-bold text-slate-900" id="docViewInst2Val">0.00</span></div>
-                  <div class="flex justify-between items-center border-t border-slate-200/60 pt-1 text-slate-600" id="docViewCompRow" style="display:none;"><span>งวดที่ 3 (งานเสร็จสิ้น) <span class="font-bold text-slate-900 ml-1" id="docViewCompPct">0%</span></span><span class="font-mono font-bold text-slate-900" id="docViewCompVal">0.00</span></div>
-                </div>
-              </div>
-              <div class="px-2 pt-0.5">
-                <div class="text-[11px] font-bold text-slate-800 mb-0.5 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span> เงื่อนไขหน้างาน / หมายเหตุ</div>
-                <div class="text-[10px] text-slate-500 space-y-0.5 leading-snug pl-3 border-l-2 border-slate-200">
-                  <p>- พื้นที่หน้างานต้องปรับให้พร้อมทำงาน และลำเลียงวัสดุเข้าได้</p>
-                  <p>- หลังจากชำระมัดจำ 5-7 วัน ทีมงานเตรียมเข้าพื้นที่หน้างาน</p>
-                  <p>- ผู้ว่าจ้างจัดเตรียมกระแสไฟฟ้าและน้ำประปาไว้ให้พร้อมใช้งาน</p>
-                  <p class="text-red-600 font-bold mt-0.5 break-words whitespace-normal" id="docViewExcessCondition">- ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม.</p>
-                  <p class="text-blue-800 font-bold mt-0.5 break-words whitespace-normal" id="docViewBankLine" style="display:none;"></p>
-                </div>
-              </div>
-              <div class="bg-blue-50/40 p-2 rounded-2xl border-[0.5px] border-blue-200 flex flex-row items-center gap-2 text-[12px] mt-1">
-                <span class="font-bold text-slate-600 whitespace-nowrap">ตัวอักษร:</span>
-                <span class="text-blue-900 font-bold" id="docViewThaiBaht">(ศูนย์บาทถ้วน)</span>
-              </div>
-            </div>
-
-            <div class="w-[38%] bg-slate-50/50 p-3 rounded-3xl border-[0.5px] border-slate-300 self-end shadow-sm">
-              <div class="space-y-1 text-[12px]">
-                <div class="flex justify-between items-center text-slate-600">
-                  <span class="font-semibold">รวมเป็นเงิน</span>
-                  <span class="font-mono font-bold text-slate-900" id="docViewSubTotal">0.00</span>
-                </div>
-                <div class="flex justify-between items-center text-red-600" id="docViewDiscountRow" style="display:none;">
-                  <span class="font-semibold">หักส่วนลด</span>
-                  <span class="font-mono font-bold" id="docViewDiscount">0.00</span>
-                </div>
-                <div class="flex justify-between items-center text-slate-600" id="docViewVatRow">
-                  <span class="font-semibold">ภาษีมูลค่าเพิ่ม (7%)</span>
-                  <span class="font-mono font-bold text-slate-900" id="docViewVat">0.00</span>
-                </div>
-              </div>
-              <div class="mt-2 pt-2 border-t-[1.5px] border-slate-200 flex justify-between items-end">
-                <span class="text-[11px] font-black text-slate-900">ยอดสุทธิรวมทั้งสิ้น</span>
-                <span class="text-[15px] font-mono font-extrabold text-blue-700" id="docViewGrandTotal">0.00</span>
-              </div>
-              <!-- แถวแสดงภาษีหัก ณ ที่จ่าย 3% (ถ้าติ๊กเลือก) -->
-              <div id="docViewWhtBlock" style="display:none;" class="mt-1.5 pt-1.5 border-t border-dashed border-slate-300 text-[10px] space-y-0.5">
-                <div class="flex justify-between text-slate-500">
-                  <span>หัก ณ ที่จ่าย 3% (ก่อน VAT)</span>
-                  <span class="font-mono font-semibold text-red-600" id="docViewWhtVal">-0.00</span>
-                </div>
-                <div class="flex justify-between font-bold text-emerald-700">
-                  <span>ยอดโอนชำระจริง</span>
-                  <span class="font-mono" id="docViewNetPayable">0.00</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ช่องลงนาม -->
-          <div class="grid grid-cols-3 gap-6 pt-2 border-t border-slate-200 text-xs text-center shrink-0 mt-2">
-            
-            <!-- ผู้เสนอราคา -->
-            <div class="flex flex-col items-center">
-              <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
-                <img id="imgSignSales" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" class="max-h-10 max-w-full object-contain">
-                <span id="placeholderSignSales" class="text-slate-300 italic absolute bottom-0.5 text-[9px] hidden">(ลายเซ็น)</span>
-              </div>
-              <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignSales">ผู้เสนอราคา</span></div>
-              <div class="text-slate-700 mb-0.5 font-medium text-[10px]" id="docViewSignSalesName">(คุณศรายุทธ เมรุลัตร์)</div>
-              <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
-            </div>
-            
-            <!-- ผู้รับจ้าง -->
-            <div class="flex flex-col items-center">
-              <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
-                <img id="imgSignIssuer" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" class="max-h-10 max-w-full object-contain">
-                <span id="placeholderSignIssuer" class="text-slate-300 italic absolute bottom-0.5 text-[9px] hidden">(ลายเซ็น)</span>
-              </div>
-              <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignIssuer">ผู้รับจ้าง</span></div>
-              <div class="text-slate-700 mb-0.5 font-medium text-[10px]">(คุณศรายุทธ เมรุลัตร์)</div>
-              <div class="text-slate-800 font-bold mb-0.5 text-[9px]">บจก.หาดใหญ่ ไมโครไพล์</div>
-              <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
-            </div>
-            
-            <!-- ผู้ว่าจ้าง (ลูกค้าเซ็น) -->
-            <div class="flex flex-col items-center">
-              <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
-                <img id="imgSignCustomer" src="" class="max-h-10 max-w-full hidden object-contain">
-                <span id="placeholderSignCustomer" class="text-slate-300 italic absolute bottom-0.5 text-[9px]">(ลายเซ็น)</span>
-              </div>
-              <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignCustomer">ผู้ว่าจ้าง</span></div>
-              <div class="text-slate-700 mb-0.5 font-medium text-[10px]" id="docViewSignCustName">(........................................)</div>
-              <div class="text-slate-800 font-bold mb-0.5 text-[9px] opacity-0">.</div>
-              <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
-            </div>
-          </div>
-          
         </div>
       </div>
     </section>
@@ -882,7 +933,7 @@
         </div>
     </section>
 
-    <!-- ================= แท็บ 8: ประวัติและฐานข้อมูลพนักงาน (ใหม่) ================= -->
+    <!-- ================= แท็บ 8: ประวัติและฐานข้อมูลพนักงาน ================= -->
     <section id="tabEmployees" class="hidden no-print space-y-4">
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex justify-between items-center border-b pb-2">
@@ -973,7 +1024,7 @@
         <h3 class="font-bold text-sm text-slate-900" id="signatureModalTitle">ลงลายมือชื่อ</h3>
         <button onclick="closeSignatureModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
       </div>
-      <p class="text-xs text-slate-500 font-medium">ใช้นิ้วลากเซ็นชื่อลงในกรอบด้านล่าง</p>
+      <p class="text-xs text-slate-500 font-medium">ใช้นิ้วหรือเมาส์ลากเซ็นชื่อลงในกรอบด้านล่าง</p>
       <div class="border-2 border-dashed border-slate-400 rounded-xl bg-slate-50 flex justify-center p-1 overflow-hidden" style="touch-action: none;">
         <canvas id="padCanvas" width="340" height="200" class="bg-white rounded shadow-sm"></canvas>
       </div>
@@ -1013,22 +1064,26 @@
   </div>
 
   <script>
-    // สคริปต์ปรับย่อขนาดกระดาษอัตโนมัติให้พอดีหน้าจอมือถือ (แต่ขนาด Print ยังเป็น A4 เสมอ)
+    // สคริปต์ปรับย่อขนาดกระดาษอัตโนมัติให้พอดีทั้งหน้าจอมือถือและ Notebook โดยไม่ตัดขอบซ้าย
     function scalePaperToFit() {
         const wrapper = document.getElementById('paperWrapper');
+        const stage = document.getElementById('paperStage');
         const paper = document.getElementById('quotationPaper');
-        if(!wrapper || !paper) return;
+        if(!wrapper || !stage || !paper) return;
         
-        const availableWidth = wrapper.clientWidth - 32; 
+        const availableWidth = wrapper.clientWidth - 24; 
         const paperWidth = 794;
+        const paperHeight = 1122;
         
-        if (availableWidth < paperWidth) {
+        if (availableWidth > 0 && availableWidth < paperWidth) {
             const scale = availableWidth / paperWidth;
             paper.style.transform = `scale(${scale})`;
-            wrapper.style.height = `${(1122 * scale) + 32}px`;
+            stage.style.width = `${Math.floor(paperWidth * scale)}px`;
+            stage.style.height = `${Math.floor(paperHeight * scale)}px`;
         } else {
             paper.style.transform = 'none';
-            wrapper.style.height = 'auto';
+            stage.style.width = `${paperWidth}px`;
+            stage.style.height = `${paperHeight}px`;
         }
     }
     window.addEventListener('resize', scalePaperToFit);
@@ -1198,7 +1253,7 @@
       document.getElementById('nav' + targetKey).className = 'snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition flex-shrink-0';
 
       if (tabName === 'cost') { renderQuickEmployeeButtons(); runEngine(); }
-      if (tabName === 'quote') { runEngine(); setTimeout(scalePaperToFit, 100); }
+      if (tabName === 'quote') { runEngine(); setTimeout(scalePaperToFit, 50); }
       if (tabName === 'archive') renderArchiveList();
       if (tabName === 'customers') renderCustomerDB();
       if (tabName === 'products') renderProductDB();
@@ -1265,23 +1320,21 @@
             <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
             <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" value="0" oninput="recalcTable()"></td>
             <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
-            <td class="py-2 px-1 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
         `;
         tbody.appendChild(newRow);
         updateRowIndices();
         recalcTable();
     }
 
-    function deleteRow(btn) {
-        const row = btn.closest('tr');
-        if (row.id === 'rowTrans') { document.getElementById('costSellingTransport').value = 0; runEngine(); }
-        else if (row.id === 'rowSafety') { document.getElementById('costSafety').value = 0; runEngine(); }
-        else if (row.id === 'rowOutArea') { document.getElementById('costOutArea').value = 0; runEngine(); }
-        else {
-            row.remove();
-            updateRowIndices();
-            recalcTable();
+    function removeLastDynamicRow() {
+        const dynamicRows = document.querySelectorAll('.item-row.dynamic-row');
+        if (dynamicRows.length === 0) {
+            alert('ไม่มีรายการอิสระที่เพิ่มไว้ให้ลบครับ (ส่วนค่าย้าย/เซฟตี้ สามารถใส่ค่าเป็น 0 ในหน้าข้อมูลเพื่อซ่อนได้ครับ)');
+            return;
         }
+        dynamicRows[dynamicRows.length - 1].remove();
+        updateRowIndices();
+        recalcTable();
     }
 
     function updateRowIndices() {
@@ -1432,7 +1485,6 @@
         const emp = employees.find(e => e.id === empId);
         if (!emp) return;
 
-        // ตรวจสอบว่ามีแถวว่างอยู่หรือไม่ ถ้ามีให้ใส่ในแถวว่างก่อน
         const rows = document.querySelectorAll('.worker-item');
         for (let r of rows) {
             const nameEl = r.querySelector('.worker-name');
@@ -1462,7 +1514,6 @@
       const unitPlate = parseFloat(document.getElementById('unitCostPlate').value) || 0;
       const laborDay = parseFloat(document.getElementById('unitCostLaborDay').value) || 0;
       
-      // ดึงข้อมูลและคำนวณค่าแรงทีมงานจาก Dynamic List
       let workerCost = 0;
       let workerDetails = [];
       document.querySelectorAll('.worker-item').forEach(row => {
@@ -1517,7 +1568,6 @@
       const salesName = document.getElementById('salesName').value || 'คุณศรายุทธ เมรุลัตร์';
       document.getElementById('docViewSignSalesName').innerText = `(${salesName})`;
 
-      // แสดงเลขบัญชีธนาคารบนเอกสาร
       const bankInfo = document.getElementById('bankAccountInfo').value.trim();
       const showBank = document.getElementById('showBankOnDoc').checked;
       const bankLineEl = document.getElementById('docViewBankLine');
@@ -1672,7 +1722,7 @@
     function closeSignatureModal() { document.getElementById('modalSignature').classList.add('hidden'); }
     function clearPad() { if (sigPad) sigPad.clear(); }
     function savePadSignature() {
-      if (sigPad.isEmpty()) return alert('กรุณาใช้นิ้วเซ็นชื่อในกรอบก่อนกดบันทึกครับ');
+      if (sigPad.isEmpty()) return alert('กรุณาเซ็นชื่อในกรอบก่อนกดบันทึกครับ');
       const dataUrl = sigPad.toDataURL('image/png');
       const el = currentSignRole === 'sales' ? 'imgSignSales' : currentSignRole === 'issuer' ? 'imgSignIssuer' : 'imgSignCustomer';
       const pl = currentSignRole === 'sales' ? 'placeholderSignSales' : currentSignRole === 'issuer' ? 'placeholderSignIssuer' : 'placeholderSignCustomer';
@@ -1798,7 +1848,6 @@
       `}).join('');
     }
 
-    // คัดลอกเอกสารเดิมเพื่อออกใบแจ้งหนี้/ใบเสร็จต่อโดยไม่ทับเลขที่เดิม
     function cloneDocToNextStep(id) {
         loadArchiveToEdit(id, true);
     }
@@ -1851,7 +1900,6 @@
             document.getElementById('unitCostPlate').value = d.unitCostPlate;
             document.getElementById('unitCostLaborDay').value = d.unitCostLaborDay;
             
-            // โหลดข้อมูลคนงานกลับเข้า Dynamic List
             const workersContainer = document.getElementById('workersContainer');
             workersContainer.innerHTML = '';
             if (d.workerDetails && d.workerDetails.length > 0) {
@@ -1878,7 +1926,7 @@
                 editingDocNo = '';
                 isDocNoManuallyEdited = false;
                 currentRandomID = Math.floor(100 + Math.random() * 900);
-                typeSelector.value = 'INV'; // ตั้งเป็นใบแจ้งหนี้เริ่มต้นเมื่อกดออกบิลต่อ
+                typeSelector.value = 'INV';
                 syncDocType('back');
             } else {
                 isEditingOldDoc = true;
@@ -1911,7 +1959,6 @@
                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="${trData.qty}" oninput="recalcTable()"></td>
                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" value="${trData.unit}" oninput="recalcTable()"></td>
                         <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
-                        <td class="py-2 px-1 text-center align-top no-print-element"><button onclick="deleteRow(this)" class="text-red-400 hover:text-red-600 font-bold px-1">✕</button></td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -2368,7 +2415,6 @@
             return;
         }
 
-        // คำนวณสถิติการออกงานและค่าแรงสะสมของพนักงานแต่ละคนจากประวัติเอกสาร
         const statsMap = {};
         archive.forEach(item => {
             const d = item.rawData || {};
@@ -2504,6 +2550,39 @@
         reader.readAsText(input.files[0]);
     }
 
+    // เตรียม DOM ของกระดาษก่อนสร้าง PDF เพื่อป้องกันตัวเลขใน input แหว่งและป้องกันสระลอย
+    function preparePaperForPdfCapture() {
+      const wrapper = document.getElementById('paperWrapper');
+      const paper = document.getElementById('quotationPaper');
+      wrapper.classList.add('pdf-capture-mode');
+      paper.style.transform = 'none';
+
+      // แปลง input number ในตารางเป็น span ชั่วคราวเพื่อให้ html2canvas วาดตัวเลขได้คมชัดไม่ตกขอบ
+      const tempSpans = [];
+      paper.querySelectorAll('input.editable-cell').forEach(inp => {
+        const span = document.createElement('div');
+        span.className = inp.className + ' pdf-temp-span';
+        const rawVal = parseFloat(inp.value) || 0;
+        if (inp.classList.contains('row-unit')) {
+          span.innerText = rawVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        } else {
+          span.innerText = inp.value;
+        }
+        inp.style.display = 'none';
+        inp.parentNode.insertBefore(span, inp);
+        tempSpans.push({ inp, span });
+      });
+
+      return function restorePaperAfterCapture() {
+        tempSpans.forEach(({ inp, span }) => {
+          inp.style.display = '';
+          span.remove();
+        });
+        wrapper.classList.remove('pdf-capture-mode');
+        scalePaperToFit();
+      };
+    }
+
     function getPdfBlobAndFilename() {
       const element = document.getElementById('quotationPaper');
       const name = document.getElementById('custName').value || 'Customer';
@@ -2511,14 +2590,18 @@
       const filename = `${docType}_HYM_${name}.pdf`;
       
       const opt = {
-        margin:       [4, 4, 4, 4],
+        margin:       0,
         filename:     filename,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { 
           scale: 2, 
           useCORS: true, 
-          letterRendering: true,
-          scrollY: 0
+          letterRendering: false,
+          scrollX: 0,
+          scrollY: 0,
+          width: 794,
+          height: 1122,
+          windowWidth: 1024
         },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
         pagebreak:    { mode: 'avoid-all' }
@@ -2527,27 +2610,35 @@
       return { element, opt, filename };
     }
 
-    function exportQuotationPDF() {
+    async function exportQuotationPDF() {
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
       const { element, opt } = getPdfBlobAndFilename();
-      element.style.transform = 'none';
-      html2pdf().set(opt).from(element).save().then(() => {
-          scalePaperToFit();
-      });
+      const restore = preparePaperForPdfCapture();
+      try {
+        await html2pdf().set(opt).from(element).save();
+      } finally {
+        restore();
+      }
     }
     
     async function shareDocument(type) {
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
       const { element, opt, filename } = getPdfBlobAndFilename();
       const d = runEngine();
       const shareText = `📋 *${d.docTitle} บจก.หาดใหญ่ ไมโครไพล์*\n📄 เลขที่: ${d.docNo}\n👤 นามลูกค้า: ${d.custName}\n📍 สถานที่: ${d.custAddr}\n🏗️ งาน: ${d.itemDesc} ${d.itemDesc2 ? 'และ ' + d.itemDesc2 : ''} (รวม ${d.qty + d.qty2} ต้น)\n💰 ยอดสุทธิ: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\nสอบถามเพิ่มเติม โทร. 080-4549659`;
 
-      element.style.transform = 'none';
+      const restore = preparePaperForPdfCapture();
 
       try {
         const worker = html2pdf().set(opt).from(element);
         const pdfBlob = await worker.outputPdf('blob');
         const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
 
-        scalePaperToFit();
+        restore();
 
         if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
           await navigator.share({
@@ -2556,9 +2647,9 @@
             text: shareText
           });
         } else {
-          html2pdf().set(opt).from(element).save().then(() => {
-              scalePaperToFit();
-          });
+          const restoreSave = preparePaperForPdfCapture();
+          await html2pdf().set(opt).from(element).save();
+          restoreSave();
           if (type === 'line') {
             window.open(`https://line.me/R/msg/text/?text=${encodeURIComponent(shareText)}`, '_blank');
           } else {
@@ -2568,8 +2659,8 @@
           alert('อุปกรณ์บันทึกไฟล์ PDF ลงเครื่องเรียบร้อยแล้ว ท่านสามารถกดแนบไฟล์ PDF ส่งในห้องแชทได้ทันทีครับ');
         }
       } catch (err) {
-        scalePaperToFit();
-        exportQuotationPDF();
+        restore();
+        await exportQuotationPDF();
         if (type === 'line') {
           window.open(`https://line.me/R/msg/text/?text=${encodeURIComponent(shareText)}`, '_blank');
         } else {
