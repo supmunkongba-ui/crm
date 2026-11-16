@@ -160,7 +160,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 p-2 sm:p-5 relative">
 
-  <div class="max-w-4xl mx-auto space-y-4">
+  <div id="appMainContainer" class="max-w-4xl mx-auto space-y-4">
     
     <!-- ส่วนหัวโปรแกรม -->
     <header class="no-print bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-row items-center justify-between gap-4 sm:gap-6 overflow-hidden">
@@ -732,7 +732,7 @@
               <!-- ผู้ว่าจ้าง (ลูกค้าเซ็น) -->
               <div class="flex flex-col items-center">
                 <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
-                  <img id="imgSignCustomer" src="" class="max-h-10 max-w-full hidden object-contain">
+                  <img id="imgSignCustomer" class="max-h-10 max-w-full hidden object-contain">
                   <span id="placeholderSignCustomer" class="text-slate-300 italic absolute bottom-0.5 text-[9px]">(ลายเซ็น)</span>
                 </div>
                 <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignCustomer">ผู้ว่าจ้าง</span></div>
@@ -2550,95 +2550,120 @@
         reader.readAsText(input.files[0]);
     }
 
-    // เตรียม DOM ของกระดาษก่อนสร้าง PDF เพื่อป้องกันตัวเลขใน input แหว่งและป้องกันสระลอย
-    function preparePaperForPdfCapture() {
-      const wrapper = document.getElementById('paperWrapper');
-      const paper = document.getElementById('quotationPaper');
-      wrapper.classList.add('pdf-capture-mode');
-      paper.style.transform = 'none';
+    // สร้างสำเนากระดาษ A4 ที่พิกัดซ้ายบนสุด (0,0) เพื่อป้องกันหน้าขาวบนมือถือเวลาเลื่อนหน้าจอ
+    async function renderPaperToPdfWorker(filename) {
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
+      runEngine();
 
-      // แปลง input number ในตารางเป็น span ชั่วคราวเพื่อให้ html2canvas วาดตัวเลขได้คมชัดไม่ตกขอบ
-      const tempSpans = [];
-      paper.querySelectorAll('input.editable-cell').forEach(inp => {
-        const span = document.createElement('div');
-        span.className = inp.className + ' pdf-temp-span';
-        const rawVal = parseFloat(inp.value) || 0;
-        if (inp.classList.contains('row-unit')) {
-          span.innerText = rawVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+      const sourcePaper = document.getElementById('quotationPaper');
+      const appMain = document.getElementById('appMainContainer');
+      const prevScrollX = window.scrollX || window.pageXOffset || 0;
+      const prevScrollY = window.scrollY || window.pageYOffset || 0;
+
+      // คัดลอกกระดาษ A4 และดึงค่าตัวเลขล่าสุดจาก input มาแสดงเป็นข้อความปกติ
+      const clonedPaper = sourcePaper.cloneNode(true);
+      clonedPaper.id = 'quotationPaperPdfClone';
+      clonedPaper.classList.remove('scale-paper', 'shadow-xl');
+      clonedPaper.style.transform = 'none';
+      clonedPaper.style.margin = '0';
+      clonedPaper.style.boxShadow = 'none';
+
+      const origInputs = sourcePaper.querySelectorAll('input.editable-cell');
+      const cloneInputs = clonedPaper.querySelectorAll('input.editable-cell');
+      origInputs.forEach((origInp, idx) => {
+        const targetInp = cloneInputs[idx];
+        if (!targetInp) return;
+        const textBox = document.createElement('div');
+        textBox.className = origInp.className + ' pdf-temp-span';
+        const rawVal = parseFloat(origInp.value) || 0;
+        if (origInp.classList.contains('row-unit')) {
+          textBox.innerText = rawVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
         } else {
-          span.innerText = inp.value;
+          textBox.innerText = origInp.value;
         }
-        inp.style.display = 'none';
-        inp.parentNode.insertBefore(span, inp);
-        tempSpans.push({ inp, span });
+        targetInp.parentNode.replaceChild(textBox, targetInp);
       });
 
-      return function restorePaperAfterCapture() {
-        tempSpans.forEach(({ inp, span }) => {
-          inp.style.display = '';
-          span.remove();
-        });
-        wrapper.classList.remove('pdf-capture-mode');
-        scalePaperToFit();
-      };
-    }
+      // สร้างกล่องชั่วคราวขนาด A4 เป๊ะ (794x1122px) ที่มุมซ้ายบนสุดของหน้าจอ
+      const captureHost = document.createElement('div');
+      captureHost.style.position = 'absolute';
+      captureHost.style.top = '0px';
+      captureHost.style.left = '0px';
+      captureHost.style.width = '794px';
+      captureHost.style.height = '1122px';
+      captureHost.style.background = '#ffffff';
+      captureHost.style.zIndex = '99999';
+      captureHost.style.overflow = 'hidden';
+      captureHost.appendChild(clonedPaper);
 
-    function getPdfBlobAndFilename() {
-      const element = document.getElementById('quotationPaper');
-      const name = document.getElementById('custName').value || 'Customer';
-      const docType = document.getElementById('docTitleEN').innerText;
-      const filename = `${docType}_HYM_${name}.pdf`;
-      
+      // เลื่อนหน้าจอไปบนสุดและซ่อนหน้าหลักชั่วคราวไม่ให้พิกัดของ html2canvas เพี้ยน
+      window.scrollTo(0, 0);
+      if (appMain) appMain.style.visibility = 'hidden';
+      document.body.appendChild(captureHost);
+
+      // รอให้เบราว์เซอร์วาด DOM และฟอนต์ให้สมบูรณ์
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
       const opt = {
         margin:       0,
         filename:     filename,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { 
-          scale: 2, 
-          useCORS: true, 
-          letterRendering: false,
+        html2canvas:  {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
           scrollX: 0,
           scrollY: 0,
+          x: 0,
+          y: 0,
           width: 794,
           height: 1122,
-          windowWidth: 1024
+          windowWidth: 794,
+          windowHeight: 1122
         },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
         pagebreak:    { mode: 'avoid-all' }
       };
-      
-      return { element, opt, filename };
+
+      const cleanup = () => {
+        if (captureHost.parentNode) captureHost.parentNode.removeChild(captureHost);
+        if (appMain) appMain.style.visibility = '';
+        window.scrollTo(prevScrollX, prevScrollY);
+      };
+
+      return { clonedPaper, opt, cleanup };
+    }
+
+    function getPdfFilename() {
+      const name = (document.getElementById('custName').value || 'Customer').trim();
+      const docType = document.getElementById('docTitleEN').innerText.trim();
+      return `${docType}_HYM_${name}.pdf`;
     }
 
     async function exportQuotationPDF() {
-      if (document.fonts && document.fonts.ready) {
-        await document.fonts.ready;
-      }
-      const { element, opt } = getPdfBlobAndFilename();
-      const restore = preparePaperForPdfCapture();
+      const filename = getPdfFilename();
+      const { clonedPaper, opt, cleanup } = await renderPaperToPdfWorker(filename);
       try {
-        await html2pdf().set(opt).from(element).save();
+        await html2pdf().set(opt).from(clonedPaper).save();
       } finally {
-        restore();
+        cleanup();
       }
     }
     
     async function shareDocument(type) {
-      if (document.fonts && document.fonts.ready) {
-        await document.fonts.ready;
-      }
-      const { element, opt, filename } = getPdfBlobAndFilename();
+      const filename = getPdfFilename();
       const d = runEngine();
       const shareText = `📋 *${d.docTitle} บจก.หาดใหญ่ ไมโครไพล์*\n📄 เลขที่: ${d.docNo}\n👤 นามลูกค้า: ${d.custName}\n📍 สถานที่: ${d.custAddr}\n🏗️ งาน: ${d.itemDesc} ${d.itemDesc2 ? 'และ ' + d.itemDesc2 : ''} (รวม ${d.qty + d.qty2} ต้น)\n💰 ยอดสุทธิ: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\nสอบถามเพิ่มเติม โทร. 080-4549659`;
 
-      const restore = preparePaperForPdfCapture();
+      const { clonedPaper, opt, cleanup } = await renderPaperToPdfWorker(filename);
 
       try {
-        const worker = html2pdf().set(opt).from(element);
-        const pdfBlob = await worker.outputPdf('blob');
-        const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
+        const pdfBlob = await html2pdf().set(opt).from(clonedPaper).outputPdf('blob');
+        cleanup();
 
-        restore();
+        const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
 
         if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
           await navigator.share({
@@ -2647,9 +2672,12 @@
             text: shareText
           });
         } else {
-          const restoreSave = preparePaperForPdfCapture();
-          await html2pdf().set(opt).from(element).save();
-          restoreSave();
+          const fallback = await renderPaperToPdfWorker(filename);
+          try {
+            await html2pdf().set(fallback.opt).from(fallback.clonedPaper).save();
+          } finally {
+            fallback.cleanup();
+          }
           if (type === 'line') {
             window.open(`https://line.me/R/msg/text/?text=${encodeURIComponent(shareText)}`, '_blank');
           } else {
@@ -2659,7 +2687,7 @@
           alert('อุปกรณ์บันทึกไฟล์ PDF ลงเครื่องเรียบร้อยแล้ว ท่านสามารถกดแนบไฟล์ PDF ส่งในห้องแชทได้ทันทีครับ');
         }
       } catch (err) {
-        restore();
+        cleanup();
         await exportQuotationPDF();
         if (type === 'line') {
           window.open(`https://line.me/R/msg/text/?text=${encodeURIComponent(shareText)}`, '_blank');
