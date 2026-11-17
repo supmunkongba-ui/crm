@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ระบบคำนวณต้นทุนและเอกสาร - หาดใหญ่ไมโครไพล์</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ใช้ jsPDF ร่วมกับ modern-screenshot เพื่อเรนเดอร์ฟอนต์ไทยบน Notebook ได้ 100% ไม่เพี้ยน -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.4.39/dist/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <style>
@@ -13,11 +16,6 @@
         
         * {
             font-family: 'Sarabun', 'Tahoma', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-            letter-spacing: 0px !important;
-            word-spacing: 0px !important;
-            font-kerning: none !important;
-            font-variant-ligatures: none !important;
-            font-feature-settings: "liga" 0, "clig" 0, "kern" 0 !important;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -28,6 +26,75 @@
         }
         input[type=number] {
             -moz-appearance: textfield;
+        }
+
+        /* ดีไซน์เมนู 2 แถว พร้อมลูกเล่นสวยงาม */
+        .nav-card-btn {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            padding: 0.65rem 0.5rem;
+            border-radius: 0.9rem;
+            font-weight: 700;
+            font-size: 12px;
+            color: #475569;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            user-select: none;
+        }
+        .nav-card-btn:hover {
+            transform: translateY(-2px);
+            background: #fff7ed;
+            border-color: #fdba74;
+            color: #ea580c;
+            box-shadow: 0 6px 14px -3px rgba(234, 88, 12, 0.14);
+        }
+        .nav-card-btn:active {
+            transform: translateY(0px) scale(0.98);
+        }
+        .nav-card-btn.active {
+            background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+            color: #ffffff !important;
+            border-color: #c2410c;
+            box-shadow: 0 8px 18px -4px rgba(234, 88, 12, 0.45);
+            transform: translateY(-1px);
+        }
+        .nav-card-btn .nav-icon-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+            font-size: 13px;
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+        .nav-card-btn:hover .nav-icon-box {
+            transform: scale(1.12) rotate(-4deg);
+        }
+        .nav-card-btn.active .nav-icon-box {
+            background: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+        }
+        .nav-badge-pill {
+            padding: 0.1rem 0.45rem;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 800;
+            background: #e2e8f0;
+            color: #334155;
+            transition: all 0.2s;
+        }
+        .nav-card-btn.active .nav-badge-pill {
+            background: #ffffff;
+            color: #ea580c;
         }
 
         /* ล็อกขนาดกระดาษ A4 ให้ตายตัว 100% */
@@ -42,21 +109,9 @@
             background: #ffffff;
             color: #1e293b;
             box-sizing: border-box;
-            line-height: 1.5;
+            line-height: 1.45;
             position: relative;
             overflow: hidden !important;
-        }
-
-        /* คลาสพิเศษตอนกำลังวาดลง Canvas เพื่อป้องกันสระและวรรณยุกต์ไทยกระโดดบน Notebook */
-        .pdf-rendering-active,
-        .pdf-rendering-active * {
-            font-family: 'Tahoma', 'Sarabun', sans-serif !important;
-            letter-spacing: normal !important;
-            word-spacing: normal !important;
-            font-kerning: auto !important;
-            font-variant-ligatures: none !important;
-            font-feature-settings: normal !important;
-            text-rendering: auto !important;
         }
 
         .paper-wrapper {
@@ -92,46 +147,74 @@
             border-color: #cbd5e1;
             background: #f8fafc;
         }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
         nav { position: relative; z-index: 50; }
 
-        /* จัดการพิมพ์ให้อยู่ในหน้าเดียวกันทั้งหมดแบบเป๊ะๆ 100% */
+        /* บังคับพิมพ์ / บันทึก PDF ให้อยู่ใน 1 หน้ากระดาษ A4 พอดี ไม่ให้มีหน้าว่างแผ่นที่ 2 */
         @media print {
-            @page { size: 210mm 297mm; margin: 0mm; }
-            body, html { margin: 0; padding: 0; background: #fff; width: 100%; height: 100%; }
-            body * { visibility: hidden; }
-            #tabQuote, #tabQuote * { visibility: visible; }
-            #quotationControls, nav, header { display: none !important; }
-            #tabQuote { position: absolute; left: 0; top: 0; width: 210mm; margin: 0; padding: 0; }
-            
-            .paper-wrapper, #paperStage { 
-                overflow: visible !important; 
-                background: transparent !important; 
-                padding: 0 !important; 
-                border: none !important; 
-                width: 210mm !important;
-                height: 297mm !important;
-                margin: 0 !important;
+            @page {
+                size: A4 portrait;
+                margin: 0mm !important;
             }
-            .scale-paper { transform: none !important; box-shadow: none !important; }
-            .paper-a4-fixed { 
-                box-shadow: none !important; 
-                margin: 0 !important; 
+            html, body {
                 width: 210mm !important;
-                height: 297mm !important;
-                min-width: 210mm !important;
-                min-height: 297mm !important;
-                max-width: 210mm !important;
-                max-height: 297mm !important;
+                height: 296mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                overflow: hidden !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            /* ซ่อนทุกส่วนที่ไม่ใช่หน้าเอกสารด้วย display:none เพื่อไม่ให้กินพื้นที่ความสูง */
+            header, nav, #tabCost, #tabDashboard, #tabArchive, #tabGallery, #tabCustomers, #tabProducts, #tabEmployees, #quotationControls, #modalPreview, #modalSignature, #modalBackup, #pdfLoadingOverlay {
+                display: none !important;
+            }
+            #appMainContainer {
+                max-width: none !important;
+                width: 210mm !important;
+                height: 296mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #tabQuote {
+                display: block !important;
+                position: relative !important;
+                width: 210mm !important;
+                height: 296mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+            .paper-wrapper, #paperStage {
+                overflow: hidden !important;
+                background: transparent !important;
+                padding: 0 !important;
+                border: none !important;
+                width: 794px !important;
+                height: 1120px !important;
+                margin: 0 auto !important;
+            }
+            .scale-paper {
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            .paper-a4-fixed {
+                box-shadow: none !important;
+                margin: 0 !important;
+                width: 794px !important;
+                height: 1120px !important;
+                min-height: 1120px !important;
+                max-height: 1120px !important;
                 page-break-inside: avoid !important;
                 page-break-after: avoid !important;
                 page-break-before: avoid !important;
+                break-inside: avoid !important;
             }
-            tr, td, th, table, div.grid { page-break-inside: avoid !important; }
-            .no-print-element { display: none !important; }
-            .editable-cell { border: none !important; background: transparent !important; }
+            .editable-cell {
+                border: none !important;
+                background: transparent !important;
+            }
         }
     </style>
 </head>
@@ -140,13 +223,13 @@
     <!-- หน้าจอ Loading ตอนกำลังสร้าง PDF -->
     <div id="pdfLoadingOverlay" class="fixed inset-0 bg-slate-900/85 z-[100000] hidden flex-col items-center justify-center text-white p-4">
         <div class="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-        <p class="font-bold text-sm">กำลังสร้างไฟล์ PDF ความละเอียดสูง...</p>
-        <p class="text-xs text-slate-300 mt-1">กรุณารอสักครู่ (ประมาณ 1-3 วินาที)</p>
+        <p class="font-bold text-sm">กำลังสร้างไฟล์ PDF ความละเอียดสูง (1 หน้า A4)...</p>
+        <p class="text-xs text-slate-300 mt-1">กรุณารอสักครู่ (ประมาณ 1-2 วินาที)</p>
     </div>
 
     <div id="appMainContainer" class="max-w-4xl mx-auto space-y-4">
         <!-- ส่วนหัวโปรแกรม -->
-        <header class="no-print bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-row items-center justify-between gap-4 sm:gap-6 overflow-hidden">
+        <header class="no-print bg-white p-4 sm:p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-row items-center justify-between gap-4 sm:gap-6 overflow-hidden">
             <div class="flex flex-row items-center gap-4 sm:gap-6 min-w-0 flex-1">
                 <div class="h-16 sm:h-20 w-auto flex items-center justify-center p-1 shadow shrink-0 rounded-2xl bg-white border border-slate-100 relative">
                     <img src="A0117C09-C98C-43EC-BBD2-DA96A41B05D4.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" alt="โลโก้ หาดใหญ่ ไมโครไพล์" class="h-full w-auto object-contain rounded-lg relative z-10 bg-white">
@@ -172,35 +255,52 @@
             </div>
         </header>
 
-        <!-- เมนู Tabs -->
-        <nav class="no-print bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200 flex overflow-x-auto whitespace-nowrap scrollbar-hide gap-1.5 snap-x relative z-50">
-            <button id="navCost" onclick="showTab('cost')" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition flex-shrink-0">
-                ⚙️ 1. ข้อมูล
-            </button>
-            <button id="navQuote" onclick="showTab('quote')" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex-shrink-0">
-                📄 2. เอกสาร
-            </button>
-            <button id="navDashboard" onclick="showTab('dashboard')" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex-shrink-0">
-                📊 3. ภาพรวม
-            </button>
-            <button id="navArchive" onclick="showTab('archive')" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex-shrink-0">
-                📋 4. ประวัติ (<span id="archiveCount">0</span>)
-            </button>
-            <button id="navGallery" onclick="showTab('gallery')" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex-shrink-0">
-                📸 5. ภาพหน้างาน
-            </button>
-            <button id="navCustomers" onclick="showTab('customers')" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex-shrink-0">
-                👥 6. ลูกค้า
-            </button>
-            <button id="navProducts" onclick="showTab('products')" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex-shrink-0">
-                📦 7. สินค้า
-            </button>
-            <button id="navEmployees" onclick="showTab('employees')" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex-shrink-0">
-                👷 8. พนักงาน (<span id="empCountBadge">0</span>)
-            </button>
-            <a href="https://www.hatyaimicropile.com/เอกสารรับประกัน" target="_blank" rel="noopener noreferrer" class="snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-orange-600 bg-orange-50 border border-orange-200 hover:bg-orange-100 transition flex-shrink-0 flex items-center gap-1">
-                🛡️ 9. เอกสารรับประกัน
-            </a>
+        <!-- เมนูหลัก 2 แถว แสดงครบทุกปุ่ม พร้อมลูกเล่นสวยงาม -->
+        <nav class="no-print bg-white p-2.5 sm:p-3 rounded-3xl shadow-sm border border-slate-200 space-y-2 relative z-50">
+            <!-- แถวที่ 1 (5 เมนูหลัก) -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                <button id="navCost" onclick="showTab('cost')" class="nav-card-btn active">
+                    <span class="nav-icon-box">⚙️</span>
+                    <span class="truncate">1. ข้อมูลต้นทุน</span>
+                </button>
+                <button id="navQuote" onclick="showTab('quote')" class="nav-card-btn">
+                    <span class="nav-icon-box">📄</span>
+                    <span class="truncate">2. ออกเอกสาร</span>
+                </button>
+                <button id="navDashboard" onclick="showTab('dashboard')" class="nav-card-btn">
+                    <span class="nav-icon-box">📊</span>
+                    <span class="truncate">3. ภาพรวม</span>
+                </button>
+                <button id="navArchive" onclick="showTab('archive')" class="nav-card-btn">
+                    <span class="nav-icon-box">📋</span>
+                    <span class="truncate">4. ประวัติ</span>
+                    <span id="archiveCount" class="nav-badge-pill">0</span>
+                </button>
+                <button id="navGallery" onclick="showTab('gallery')" class="nav-card-btn col-span-2 sm:col-span-1">
+                    <span class="nav-icon-box">📸</span>
+                    <span class="truncate">5. ภาพหน้างาน</span>
+                </button>
+            </div>
+            <!-- แถวที่ 2 (4 เมนูฐานข้อมูล & รับประกัน) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 border-t border-slate-100">
+                <button id="navCustomers" onclick="showTab('customers')" class="nav-card-btn">
+                    <span class="nav-icon-box">👥</span>
+                    <span class="truncate">6. ฐานข้อมูลลูกค้า</span>
+                </button>
+                <button id="navProducts" onclick="showTab('products')" class="nav-card-btn">
+                    <span class="nav-icon-box">📦</span>
+                    <span class="truncate">7. สเปกเสาเข็ม</span>
+                </button>
+                <button id="navEmployees" onclick="showTab('employees')" class="nav-card-btn">
+                    <span class="nav-icon-box">👷</span>
+                    <span class="truncate">8. พนักงาน</span>
+                    <span id="empCountBadge" class="nav-badge-pill">0</span>
+                </button>
+                <a href="https://www.hatyaimicropile.com/เอกสารรับประกัน" target="_blank" rel="noopener noreferrer" class="nav-card-btn !bg-gradient-to-r !from-amber-50 !to-orange-50 !border-orange-200 !text-orange-700 hover:!from-orange-100 hover:!to-amber-100">
+                    <span class="nav-icon-box !bg-orange-500 !text-white">🛡️</span>
+                    <span class="truncate">9. เอกสารรับประกัน ↗</span>
+                </a>
+            </div>
         </nav>
 
         <!-- ตัวเลือกความยาวเฉลี่ย -->
@@ -535,7 +635,7 @@
                             </div>
                         </div>
 
-                        <!-- ตารางรายการ (ตัด whitespace-pre-wrap ออกเพื่อไม่ให้ html2canvas วาดสระไทยเพี้ยน) -->
+                        <!-- ตารางรายการ -->
                         <div class="mb-2 rounded-3xl border-[0.5px] border-slate-300 bg-white p-2 shadow-sm flex-1">
                             <table class="w-full text-[13px] text-left border-none" style="border-spacing: 0;" id="invoiceTable">
                                 <thead class="bg-slate-50/80 text-slate-700">
@@ -1185,11 +1285,11 @@
                 const tabEl = document.getElementById('tab' + t);
                 const navEl = document.getElementById('nav' + t);
                 if(tabEl) tabEl.classList.add('hidden');
-                if(navEl) navEl.className = 'snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl text-slate-600 hover:text-slate-900 transition flex-shrink-0';
+                if(navEl) navEl.classList.remove('active');
             });
             const targetKey = tabName.charAt(0).toUpperCase() + tabName.slice(1);
             document.getElementById('tab' + targetKey).classList.remove('hidden');
-            document.getElementById('nav' + targetKey).className = 'snap-start py-2.5 px-4 text-[11px] sm:text-sm font-bold rounded-xl bg-orange-600 text-white shadow transition flex-shrink-0';
+            document.getElementById('nav' + targetKey).classList.add('active');
             
             if (tabName === 'cost') { renderQuickEmployeeButtons(); runEngine(); }
             if (tabName === 'quote') {
@@ -1524,20 +1624,20 @@
             const specSelect = document.getElementById('costSizeSpec');
             const specText = specSelect.options[specSelect.selectedIndex]?.text || '';
             const subDetail = document.getElementById('costSubDetail').value || '';
-            const fullItemDesc = `${catText} ${specText} ${subDetail}`.trim();
+            const fullItemDesc = `${catText} ${specText} ${subDetail}`.replace(/\s+/g, ' ').trim();
 
-            document.getElementById('docViewItemName').innerText = fullItemDesc || '-';
+            document.getElementById('docViewItemName').textContent = fullItemDesc || '-';
             document.getElementById('docViewItemQty').value = qty;
             document.getElementById('docViewItemUnitRaw').value = sellUnit;
 
             const specSelect2 = document.getElementById('costSizeSpec2');
             const specText2 = specSelect2.options[specSelect2.selectedIndex]?.text || '';
             const subDetail2 = document.getElementById('costSubDetail2').value || '';
-            const fullItemDesc2 = `${catText} ${specText2} ${subDetail2}`.trim();
+            const fullItemDesc2 = `${catText} ${specText2} ${subDetail2}`.replace(/\s+/g, ' ').trim();
 
             if(qty2 > 0 && specSelect2.value !== "") {
                 document.getElementById('rowItem2').style.display = '';
-                document.getElementById('docViewItemName2').innerText = fullItemDesc2;
+                document.getElementById('docViewItemName2').textContent = fullItemDesc2;
                 document.getElementById('docViewItemQty2').value = qty2;
                 document.getElementById('docViewItemUnitRaw2').value = sellUnit2;
             } else {
@@ -2534,7 +2634,7 @@
             reader.readAsText(input.files[0]);
         }
 
-        // ================= ระบบสร้าง PDF ตรงผ่าน html2canvas + jsPDF (แก้สระลอย + แก้หน้าขาว) =================
+        // ================= ระบบสร้าง PDF ด้วย modern-screenshot (SVG ForeignObject) แก้ปัญหาตัวอักษรไทยเพี้ยนบน Notebook 100% =================
         function sanitizeImageForCanvas(imgEl) {
             if (!imgEl || imgEl.style.display === 'none' || imgEl.classList.contains('hidden')) return;
             const src = imgEl.getAttribute('src') || '';
@@ -2589,10 +2689,10 @@
             const origStageH = stage.style.height;
             const origWrapperOverflow = wrapper.style.overflow;
 
-            // 1. ตรวจสอบรูปภาพในกระดาษไม่ให้ทำให้ Canvas พัง
+            // 1. ตรวจสอบรูปภาพในกระดาษไม่ให้ติด CORS
             paper.querySelectorAll('img').forEach(sanitizeImageForCanvas);
 
-            // 2. แปลงช่อง input และช่อง contenteditable ทุกตัวให้เป็น div ข้อความธรรมดา (Normalized NFC) เพื่อป้องกันสระไทยเพี้ยน
+            // 2. แปลงช่อง input และช่อง contenteditable ให้เป็น div ข้อความธรรมดาชั่วคราว
             const tempReplacements = [];
             paper.querySelectorAll('input.editable-cell').forEach(inp => {
                 const span = document.createElement('div');
@@ -2608,11 +2708,7 @@
 
             paper.querySelectorAll('[contenteditable="true"]').forEach(ce => {
                 const span = document.createElement('div');
-                span.className = ce.className.replace('editable-cell', '').replace('whitespace-pre-wrap', '');
-                span.style.whiteSpace = 'normal';
-                span.style.letterSpacing = '0px';
-                span.style.wordSpacing = '0px';
-                span.style.fontKerning = 'none';
+                span.className = ce.className.replace('editable-cell', '');
                 const cleanText = (ce.innerText || ce.textContent || '').normalize('NFC').replace(/\s+/g, ' ').trim();
                 span.textContent = cleanText;
                 ce.style.display = 'none';
@@ -2620,53 +2716,52 @@
                 tempReplacements.push({ orig: ce, temp: span });
             });
 
-            // 3. เปิดคลาสทำความสะอาดฟอนต์สำหรับ PDF และปลดการย่อส่วนกระดาษให้เป็นขนาด A4 จริง
-            paper.classList.add('pdf-rendering-active');
+            // 3. ปลดการย่อส่วนกระดาษให้เป็นขนาด A4 จริง (794x1122px)
             paper.style.transform = 'none';
             stage.style.width = '794px';
             stage.style.height = '1122px';
             wrapper.style.overflow = 'visible';
             window.scrollTo(0, 0);
 
-            await new Promise(r => setTimeout(r, 200));
+            await new Promise(r => setTimeout(r, 180));
 
             try {
-                const h2c = window.html2canvas || (window.html2pdf && window.html2pdf.html2canvas);
                 const jsPDFConstructor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+                let imgData = null;
 
-                if (h2c && jsPDFConstructor) {
+                // ใช้ modernScreenshot (SVG ForeignObject) เป็นหลัก เพราะใช้เอนจินเบราว์เซอร์เรนเดอร์สระไทยบน Notebook ได้ตรง 100%
+                if (window.modernScreenshot && window.modernScreenshot.domToJpeg) {
+                    imgData = await window.modernScreenshot.domToJpeg(paper, {
+                        scale: 2,
+                        quality: 0.98,
+                        backgroundColor: '#ffffff',
+                        width: 794,
+                        height: 1122
+                    });
+                } else {
+                    const h2c = window.html2canvas || (window.html2pdf && window.html2pdf.html2canvas);
                     const canvas = await h2c(paper, {
                         scale: 2,
                         useCORS: true,
                         allowTaint: false,
                         backgroundColor: '#ffffff',
                         logging: false,
-                        letterRendering: false,
                         width: 794,
                         height: 1122
                     });
-
-                    const imgData = canvas.toDataURL('image/jpeg', 0.98);
-                    const pdf = new jsPDFConstructor({
-                        orientation: 'portrait',
-                        unit: 'mm',
-                        format: 'a4',
-                        compress: true
-                    });
-                    pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-                    return pdf;
-                } else {
-                    const worker = html2pdf().set({
-                        margin: 0,
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true, allowTaint: false, letterRendering: false, backgroundColor: '#ffffff', width: 794, height: 1122 },
-                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                    }).from(paper);
-                    return await worker.toPdf().get('pdf');
+                    imgData = canvas.toDataURL('image/jpeg', 0.98);
                 }
+
+                const pdf = new jsPDFConstructor({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4',
+                    compress: true
+                });
+                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                return pdf;
             } finally {
                 // คืนค่า DOM และ Scale กระดาษกลับสู่สภาพเดิม
-                paper.classList.remove('pdf-rendering-active');
                 tempReplacements.forEach(({ orig, temp }) => {
                     orig.style.display = '';
                     if (temp.parentNode) temp.parentNode.removeChild(temp);
