@@ -12,9 +12,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
         
         * {
-            font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-            letter-spacing: normal !important;
-            font-kerning: normal;
+            font-family: 'Sarabun', 'Tahoma', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+            letter-spacing: 0px !important;
+            word-spacing: 0px !important;
+            font-kerning: none !important;
+            font-variant-ligatures: none !important;
+            font-feature-settings: "liga" 0, "clig" 0, "kern" 0 !important;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -39,9 +42,22 @@
             background: #ffffff;
             color: #1e293b;
             box-sizing: border-box;
-            line-height: 1.45;
+            line-height: 1.5;
             position: relative;
             overflow: hidden !important;
+        }
+
+        /* คลาสพิเศษตอนกำลังวาดลง Canvas เพื่อป้องกันสระและวรรณยุกต์ไทยกระโดด */
+        .pdf-rendering-active,
+        .pdf-rendering-active * {
+            font-family: 'Tahoma', 'Sarabun', sans-serif !important;
+            letter-spacing: 0px !important;
+            word-spacing: 0px !important;
+            font-kerning: none !important;
+            font-variant-ligatures: none !important;
+            font-feature-settings: "liga" 0, "clig" 0, "kern" 0 !important;
+            text-rendering: geometricPrecision !important;
+            white-space: normal !important;
         }
 
         .paper-wrapper {
@@ -80,12 +96,6 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-        #quotationPaper, #quotationPaper * {
-            letter-spacing: normal !important;
-            word-spacing: normal !important;
-            font-feature-settings: "liga" 1, "clig" 1;
-        }
-
         nav { position: relative; z-index: 50; }
 
         @media print {
@@ -115,7 +125,7 @@
             tr, td, th, table, div.grid { page-break-inside: avoid !important; }
             .no-print-element { display: none !important; }
             .editable-cell { border: none !important; background: transparent !important; }
-            textarea.editable-cell { overflow: visible !important; white-space: pre-wrap; }
+            textarea.editable-cell { overflow: visible !important; white-space: normal; }
         }
     </style>
 </head>
@@ -519,7 +529,7 @@
                             </div>
                         </div>
 
-                        <!-- ตารางรายการ -->
+                        <!-- ตารางรายการ (ตัด whitespace-pre-wrap ออกเพื่อไม่ให้ html2canvas วาดสระไทยเพี้ยน) -->
                         <div class="mb-2 rounded-3xl border-[0.5px] border-slate-300 bg-white p-2 shadow-sm flex-1">
                             <table class="w-full text-[13px] text-left border-none" style="border-spacing: 0;" id="invoiceTable">
                                 <thead class="bg-slate-50/80 text-slate-700">
@@ -535,7 +545,7 @@
                                     <tr class="item-row" id="rowItem1">
                                         <td class="py-2 px-2 text-center text-slate-400 align-top item-index">1</td>
                                         <td class="py-2 px-2 align-top">
-                                            <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" id="docViewItemName" contenteditable="true" oninput="recalcTable()">-</div>
+                                            <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words leading-relaxed" id="docViewItemName" contenteditable="true" oninput="recalcTable()">-</div>
                                         </td>
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" id="docViewItemQty" value="0" readonly oninput="recalcTable()"></td>
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewItemUnitRaw" value="0" readonly oninput="recalcTable()"></td>
@@ -544,7 +554,7 @@
                                     <tr class="item-row" id="rowItem2" style="display:none;">
                                         <td class="py-2 px-2 text-center text-slate-400 align-top item-index">2</td>
                                         <td class="py-2 px-2 align-top">
-                                            <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" id="docViewItemName2" contenteditable="true" oninput="recalcTable()">-</div>
+                                            <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words leading-relaxed" id="docViewItemName2" contenteditable="true" oninput="recalcTable()">-</div>
                                         </td>
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" id="docViewItemQty2" value="0" readonly oninput="recalcTable()"></td>
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewItemUnitRaw2" value="0" readonly oninput="recalcTable()"></td>
@@ -553,7 +563,7 @@
                                     <tr class="item-row" id="rowTrans">
                                         <td class="py-2 px-2 text-center text-slate-400 align-top item-index">3</td>
                                         <td class="py-2 px-2 align-top">
-                                            <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าย้ายเครื่องจักรและอุปกรณ์</div>
+                                            <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words leading-relaxed" contenteditable="true" oninput="recalcTable()">ค่าย้ายเครื่องจักรและอุปกรณ์</div>
                                         </td>
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewTransUnitRaw" value="0" oninput="recalcTable()"></td>
@@ -562,7 +572,7 @@
                                     <tr class="item-row" id="rowSafety" style="display:none;">
                                         <td class="py-2 px-2 text-center text-slate-400 align-top item-index">4</td>
                                         <td class="py-2 px-2 align-top">
-                                            <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าเซฟตี้ (Safety)</div>
+                                            <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words leading-relaxed" contenteditable="true" oninput="recalcTable()">ค่าเซฟตี้ (Safety)</div>
                                         </td>
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewSafetyUnitRaw" oninput="recalcTable()"></td>
@@ -571,7 +581,7 @@
                                     <tr class="item-row" id="rowOutArea" style="display:none;">
                                         <td class="py-2 px-2 text-center text-slate-400 align-top item-index">5</td>
                                         <td class="py-2 px-2 align-top">
-                                            <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ค่าดำเนินการนอกพื้นที่</div>
+                                            <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words leading-relaxed" contenteditable="true" oninput="recalcTable()">ค่าดำเนินการนอกพื้นที่</div>
                                         </td>
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewOutAreaUnitRaw" oninput="recalcTable()"></td>
@@ -1242,7 +1252,7 @@
             newRow.innerHTML = `
                 <td class="py-2 px-2 text-center text-slate-400 align-top item-index"></td>
                 <td class="py-2 px-2 align-top">
-                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">ชื่อรายการ...</div>
+                    <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words leading-relaxed" contenteditable="true" oninput="recalcTable()">ชื่อรายการ...</div>
                 </td>
                 <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="1" oninput="recalcTable()"></td>
                 <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" value="0" oninput="recalcTable()"></td>
@@ -1508,20 +1518,20 @@
             const specSelect = document.getElementById('costSizeSpec');
             const specText = specSelect.options[specSelect.selectedIndex]?.text || '';
             const subDetail = document.getElementById('costSubDetail').value || '';
-            const fullItemDesc = `${catText} ${specText} ${subDetail}`.trim();
+            const fullItemDesc = `${catText} ${specText} ${subDetail}`.replace(/\s+/g, ' ').trim();
 
-            document.getElementById('docViewItemName').innerText = fullItemDesc || '-';
+            document.getElementById('docViewItemName').textContent = fullItemDesc || '-';
             document.getElementById('docViewItemQty').value = qty;
             document.getElementById('docViewItemUnitRaw').value = sellUnit;
 
             const specSelect2 = document.getElementById('costSizeSpec2');
             const specText2 = specSelect2.options[specSelect2.selectedIndex]?.text || '';
             const subDetail2 = document.getElementById('costSubDetail2').value || '';
-            const fullItemDesc2 = `${catText} ${specText2} ${subDetail2}`.trim();
+            const fullItemDesc2 = `${catText} ${specText2} ${subDetail2}`.replace(/\s+/g, ' ').trim();
 
             if(qty2 > 0 && specSelect2.value !== "") {
                 document.getElementById('rowItem2').style.display = '';
-                document.getElementById('docViewItemName2').innerText = fullItemDesc2;
+                document.getElementById('docViewItemName2').textContent = fullItemDesc2;
                 document.getElementById('docViewItemQty2').value = qty2;
                 document.getElementById('docViewItemUnitRaw2').value = sellUnit2;
             } else {
@@ -1913,7 +1923,7 @@
                         tr.innerHTML = `
                             <td class="py-2 px-2 text-center text-slate-400 align-top item-index"></td>
                             <td class="py-2 px-2 align-top">
-                                <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words whitespace-pre-wrap leading-snug" contenteditable="true" oninput="recalcTable()">${trData.name}</div>
+                                <div class="editable-cell font-bold text-slate-800 text-[14px] row-name w-full break-words leading-relaxed" contenteditable="true" oninput="recalcTable()">${trData.name}</div>
                             </td>
                             <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-center font-bold text-slate-900 text-[14px] row-qty" value="${trData.qty}" oninput="recalcTable()"></td>
                             <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" value="${trData.unit}" oninput="recalcTable()"></td>
@@ -2518,11 +2528,11 @@
             reader.readAsText(input.files[0]);
         }
 
-        // ================= ระบบสร้าง PDF ตรงผ่าน html2canvas + jsPDF (ไม่ผ่าน html2pdf wrapper ที่บั๊กหน้าขาว) =================
+        // ================= ระบบสร้าง PDF ตรงผ่าน html2canvas + jsPDF (แก้สระลอย + แก้หน้าขาว) =================
         function sanitizeImageForCanvas(imgEl) {
             if (!imgEl || imgEl.style.display === 'none' || imgEl.classList.contains('hidden')) return;
             const src = imgEl.getAttribute('src') || '';
-            if (src.startsWith('data:')) return; // รูป Base64 ปลอดภัยอยู่แล้ว
+            if (src.startsWith('data:')) return;
 
             if (!imgEl.complete || imgEl.naturalWidth === 0) {
                 imgEl.style.display = 'none';
@@ -2533,7 +2543,6 @@
                 return;
             }
 
-            // ทดสอบวาดลง Canvas ย่อยว่าติด Tainted Canvas (CORS / Local File) หรือไม่
             try {
                 const testCanvas = document.createElement('canvas');
                 testCanvas.width = imgEl.naturalWidth || 100;
@@ -2541,9 +2550,8 @@
                 const ctx = testCanvas.getContext('2d');
                 ctx.drawImage(imgEl, 0, 0);
                 const dataUrl = testCanvas.toDataURL('image/png');
-                imgEl.src = dataUrl; // แปลงเป็น Base64 สำเร็จ
+                imgEl.src = dataUrl;
             } catch (err) {
-                // หากติด SecurityError บนมือถือ ให้สลับไปแสดงป้ายโลโก้สำรองแทน เพื่อไม่ให้ PDF กลายเป็นหน้าขาว
                 imgEl.style.display = 'none';
                 if (imgEl.nextElementSibling) {
                     imgEl.nextElementSibling.style.display = 'flex';
@@ -2570,7 +2578,6 @@
             const prevScrollX = window.scrollX || window.pageXOffset || 0;
             const prevScrollY = window.scrollY || window.pageYOffset || 0;
 
-            // เก็บค่า Style เดิมก่อนปลด Scale ชั่วคราว
             const origTransform = paper.style.transform;
             const origStageW = stage.style.width;
             const origStageH = stage.style.height;
@@ -2579,28 +2586,43 @@
             // 1. ตรวจสอบรูปภาพในกระดาษไม่ให้ทำให้ Canvas พัง
             paper.querySelectorAll('img').forEach(sanitizeImageForCanvas);
 
-            // 2. แปลงช่อง input ในตารางให้เป็น div ข้อความชั่วคราวเพื่อให้ html2canvas วาดตัวเลขได้ครบ
+            // 2. แปลงช่อง input และช่อง contenteditable ทุกตัวให้เป็น div ข้อความธรรมดา (Normalized NFC) เพื่อป้องกันสระไทยเพี้ยน
             const tempReplacements = [];
             paper.querySelectorAll('input.editable-cell').forEach(inp => {
                 const span = document.createElement('div');
-                span.className = inp.className;
+                span.className = inp.className.replace('editable-cell', '');
                 const rawVal = parseFloat(inp.value) || 0;
-                span.innerText = inp.classList.contains('row-unit')
+                span.textContent = inp.classList.contains('row-unit')
                     ? rawVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
                     : inp.value;
                 inp.style.display = 'none';
                 inp.parentNode.insertBefore(span, inp);
-                tempReplacements.push({ inp, span });
+                tempReplacements.push({ orig: inp, temp: span });
             });
 
-            // 3. ปลดการย่อส่วนกระดาษให้เป็นขนาด A4 จริง (794x1122px)
+            paper.querySelectorAll('[contenteditable="true"]').forEach(ce => {
+                const span = document.createElement('div');
+                span.className = ce.className.replace('editable-cell', '').replace('whitespace-pre-wrap', '');
+                span.style.whiteSpace = 'normal';
+                span.style.letterSpacing = '0px';
+                span.style.wordSpacing = '0px';
+                span.style.fontKerning = 'none';
+                const cleanText = (ce.innerText || ce.textContent || '').normalize('NFC').replace(/\s+/g, ' ').trim();
+                span.textContent = cleanText;
+                ce.style.display = 'none';
+                ce.parentNode.insertBefore(span, ce);
+                tempReplacements.push({ orig: ce, temp: span });
+            });
+
+            // 3. เปิดคลาสทำความสะอาดฟอนต์สำหรับ PDF และปลดการย่อส่วนกระดาษให้เป็นขนาด A4 จริง
+            paper.classList.add('pdf-rendering-active');
             paper.style.transform = 'none';
             stage.style.width = '794px';
             stage.style.height = '1122px';
             wrapper.style.overflow = 'visible';
             window.scrollTo(0, 0);
 
-            await new Promise(r => setTimeout(r, 150));
+            await new Promise(r => setTimeout(r, 200));
 
             try {
                 const h2c = window.html2canvas || (window.html2pdf && window.html2pdf.html2canvas);
@@ -2613,6 +2635,7 @@
                         allowTaint: false,
                         backgroundColor: '#ffffff',
                         logging: false,
+                        letterRendering: false,
                         width: 794,
                         height: 1122
                     });
@@ -2627,20 +2650,20 @@
                     pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
                     return pdf;
                 } else {
-                    // Fallback กรณีพิเศษ
                     const worker = html2pdf().set({
                         margin: 0,
                         image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', width: 794, height: 1122 },
+                        html2canvas: { scale: 2, useCORS: true, allowTaint: false, letterRendering: false, backgroundColor: '#ffffff', width: 794, height: 1122 },
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     }).from(paper);
                     return await worker.toPdf().get('pdf');
                 }
             } finally {
-                // คืนค่า input และ Scale กระดาษกลับสู่สภาพเดิม
-                tempReplacements.forEach(({ inp, span }) => {
-                    inp.style.display = '';
-                    if (span.parentNode) span.parentNode.removeChild(span);
+                // คืนค่า DOM และ Scale กระดาษกลับสู่สภาพเดิม
+                paper.classList.remove('pdf-rendering-active');
+                tempReplacements.forEach(({ orig, temp }) => {
+                    orig.style.display = '';
+                    if (temp.parentNode) temp.parentNode.removeChild(temp);
                 });
                 paper.style.transform = origTransform;
                 stage.style.width = origStageW;
