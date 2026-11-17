@@ -18,7 +18,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ซ่อนลูกศรขึ้น-ลงของ input number บน Notebook ที่ทำให้ตัวเลขเบี้ยว */
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -45,7 +44,6 @@
             overflow: hidden !important;
         }
 
-        /* กรอบนอกรองรับทั้งหน้าจอมือถือและ Notebook โดยไม่ตัดขอบซ้าย */
         .paper-wrapper {
             width: 100%;
             background: rgba(203, 213, 225, 0.3);
@@ -58,7 +56,6 @@
             overflow-y: hidden;
         }
 
-        /* กล่องคุมสัดส่วนการย่อขยายให้อยู่กึ่งกลางเสมอ */
         #paperStage {
             margin: 0 auto;
             position: relative;
@@ -125,7 +122,7 @@
 <body class="bg-slate-100 text-slate-800 p-2 sm:p-5 relative">
 
     <!-- หน้าจอ Loading ตอนกำลังสร้าง PDF -->
-    <div id="pdfLoadingOverlay" class="fixed inset-0 bg-slate-900/80 z-[100000] hidden flex-col items-center justify-center text-white p-4">
+    <div id="pdfLoadingOverlay" class="fixed inset-0 bg-slate-900/85 z-[100000] hidden flex-col items-center justify-center text-white p-4">
         <div class="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-3"></div>
         <p class="font-bold text-sm">กำลังสร้างไฟล์ PDF ความละเอียดสูง...</p>
         <p class="text-xs text-slate-300 mt-1">กรุณารอสักครู่ (ประมาณ 1-3 วินาที)</p>
@@ -149,7 +146,6 @@
                     <p class="text-orange-600 font-bold mt-1 truncate">โทร. 080-4549659, 089-653-6312</p>
                 </div>
             </div>
-            <!-- ปุ่มลัดสำรองข้อมูล & เคลียร์ฟอร์ม -->
             <div class="flex flex-col gap-1.5 shrink-0">
                 <button onclick="resetNewDocumentForm()" class="text-[11px] bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 font-bold px-3 py-1.5 rounded-xl transition shadow-sm">
                     ✨ เริ่มใบงานใหม่
@@ -199,12 +195,10 @@
             <option value="6.00 ม.">
         </datalist>
 
-        <!-- ดาต้าลิสต์รายชื่อพนักงานสำหรับ Auto-complete -->
         <datalist id="employeeListOptions"></datalist>
 
         <!-- ================= แท็บ 1: กรอกข้อมูลและคำนวณต้นทุน ================= -->
         <main id="tabCost" class="space-y-4">
-            <!-- เลือกประเภทเอกสาร & สถานะงาน -->
             <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200 shadow-sm grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
                 <div class="sm:col-span-2 flex flex-col sm:flex-row gap-2 sm:items-center">
                     <label class="block text-sm font-extrabold text-blue-900 whitespace-nowrap">📑 ประเภทเอกสาร:</label>
@@ -247,7 +241,6 @@
                         <label class="block font-semibold text-slate-700 mb-1">ที่อยู่หน้างาน / สถานที่ติดตั้ง *</label>
                         <input type="text" id="custAddress" placeholder="เช่น 211/2 ม.6 ต.นาทวี อ.นาทวี จ.สงขลา 90160" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
                     </div>
-                    <!-- ข้อมูลติดต่อ -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:col-span-2 pt-3 border-t border-slate-100 mt-1">
                         <div><label class="block font-semibold text-slate-700 mb-1">เบอร์มือถือ</label><input type="text" id="custMobile" placeholder="08X-XXX-XXXX" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none"></div>
                         <div><label class="block font-semibold text-slate-700 mb-1">เบอร์สำนักงาน (ต่อ)</label><input type="text" id="custOfficePhone" placeholder="02-XXX-XXXX ต่อ XX" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none"></div>
@@ -270,7 +263,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <!-- Item 1 -->
                     <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
                         <div class="font-bold text-slate-800 border-b pb-1">รายการที่ 1 (หลัก)</div>
                         <div>
@@ -289,7 +281,6 @@
                         </div>
                     </div>
 
-                    <!-- Item 2 -->
                     <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
                         <div class="font-bold text-slate-800 border-b pb-1">รายการที่ 2 (สำรอง/ถ้ามี)</div>
                         <div>
@@ -346,7 +337,6 @@
                     <div><label class="block font-semibold text-amber-900 mb-1">ค่าใช้จ่ายอื่นๆ (บ.)</label><input type="number" id="unitCostOther" placeholder="0" value="0" oninput="runEngine()" class="w-full border rounded-xl p-2 bg-white text-right font-medium"></div>
                 </div>
 
-                <!-- ส่วนจัดการค่าแรงพนักงาน (เชื่อมกับฐานข้อมูลพนักงาน) -->
                 <div class="pb-3 border-b border-amber-200">
                     <div class="flex flex-wrap justify-between items-center gap-2 mb-2 mt-1">
                         <label class="block font-semibold text-amber-900 text-xs">👷 รายชื่อพนักงาน และ ค่าแรงที่คิดในงานนี้</label>
@@ -356,7 +346,6 @@
                         </div>
                     </div>
 
-                    <!-- แถบปุ่มลัดดึงพนักงานจากฐานข้อมูล -->
                     <div id="quickEmployeeButtons" class="flex flex-wrap gap-1.5 mb-2.5"></div>
 
                     <div id="workersContainer" class="space-y-2">
@@ -391,7 +380,6 @@
                     <div><label class="block text-xs font-semibold text-red-700 mb-1">ส่วนลดพิเศษท้ายบิล (บ.)</label><input type="number" id="costDiscount" value="0" placeholder="0" oninput="runEngine()" class="w-full border border-red-200 rounded-xl p-2 text-sm font-bold text-right text-red-600 bg-white outline-none"></div>
                 </div>
 
-                <!-- ตัวเลือกหัก ณ ที่จ่าย 3% -->
                 <div class="pt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
                     <label class="flex items-center gap-2 cursor-pointer font-bold text-amber-950 bg-white px-3 py-2 rounded-xl border border-amber-200">
                         <input type="checkbox" id="enableWht3" onchange="runEngine()" class="w-4 h-4 accent-orange-600">
@@ -438,7 +426,6 @@
                 <input type="hidden" id="docTypeSelectorQuote">
                 <input type="hidden" id="docTypeSelector">
                 
-                <!-- แถบจัดการเพิ่ม/ลบรายการอิสระ -->
                 <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
                     <span class="text-xs font-bold text-slate-600">🛠️ จัดการตารางรายการ:</span>
                     <div class="flex flex-wrap gap-2">
@@ -467,15 +454,13 @@
                 </div>
             </div>
 
-            <!-- Wrapper บังคับไม่ให้กระดาษหดตัว และย่อส่วนให้พอดีจอทั้งมือถือและ Notebook -->
+            <!-- Wrapper กระดาษ A4 -->
             <div id="paperWrapper" class="paper-wrapper">
                 <div id="paperStage">
-                    <!-- กระดาษ A4 -->
                     <div id="quotationPaper" class="paper-a4-fixed p-8 sm:p-10 shadow-xl flex flex-col scale-paper">
                         
-                        <!-- HEADER: โลโก้ซ้าย ป้ายเอกสารและเลขที่อยู่ขวาบน -->
+                        <!-- HEADER -->
                         <div class="flex flex-row items-start justify-between pb-3 mb-3 border-b border-slate-200 w-full gap-4">
-                            <!-- ซ้าย: โลโก้และข้อมูลบริษัท -->
                             <div class="flex flex-row items-center gap-4 flex-1">
                                 <div class="h-20 w-auto flex items-center justify-center p-1 rounded-2xl bg-white border border-slate-100 relative shrink-0">
                                     <img src="A0117C09-C98C-43EC-BBD2-DA96A41B05D4.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" alt="โลโก้ หาดใหญ่ ไมโครไพล์" class="h-full w-auto object-contain rounded-lg relative z-10 bg-white">
@@ -492,7 +477,6 @@
                                 </div>
                             </div>
 
-                            <!-- ขวา: ป้ายเอกสาร และ เลขที่/วันที่ -->
                             <div class="flex flex-col items-end gap-2 shrink-0">
                                 <div class="bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 text-orange-800 px-6 py-1.5 rounded-2xl shadow-sm flex flex-col items-center justify-center w-full">
                                     <h2 class="text-xl font-extrabold" id="docTitleTH">ใบเสนอราคา</h2>
@@ -548,7 +532,6 @@
                                     </tr>
                                 </thead>
                                 <tbody class="border-none" id="invoiceTbody">
-                                    <!-- แถวที่ 1 (หลัก) -->
                                     <tr class="item-row" id="rowItem1">
                                         <td class="py-2 px-2 text-center text-slate-400 align-top item-index">1</td>
                                         <td class="py-2 px-2 align-top">
@@ -558,7 +541,6 @@
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewItemUnitRaw" value="0" readonly oninput="recalcTable()"></td>
                                         <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total" id="docViewItemTotal">0.00</td>
                                     </tr>
-                                    <!-- แถวที่ 2 (รายการเสริม/ถ้ามี) -->
                                     <tr class="item-row" id="rowItem2" style="display:none;">
                                         <td class="py-2 px-2 text-center text-slate-400 align-top item-index">2</td>
                                         <td class="py-2 px-2 align-top">
@@ -568,7 +550,6 @@
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewItemUnitRaw2" value="0" readonly oninput="recalcTable()"></td>
                                         <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total" id="docViewItemTotal2">0.00</td>
                                     </tr>
-                                    <!-- แถวค่าย้าย -->
                                     <tr class="item-row" id="rowTrans">
                                         <td class="py-2 px-2 text-center text-slate-400 align-top item-index">3</td>
                                         <td class="py-2 px-2 align-top">
@@ -578,7 +559,6 @@
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewTransUnitRaw" value="0" oninput="recalcTable()"></td>
                                         <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
                                     </tr>
-                                    <!-- แถวค่าเซฟตี้ -->
                                     <tr class="item-row" id="rowSafety" style="display:none;">
                                         <td class="py-2 px-2 text-center text-slate-400 align-top item-index">4</td>
                                         <td class="py-2 px-2 align-top">
@@ -588,7 +568,6 @@
                                         <td class="py-2 px-2 align-top"><input type="number" class="editable-cell text-right font-mono text-[14px] row-unit" id="docViewSafetyUnitRaw" oninput="recalcTable()"></td>
                                         <td class="py-2 px-2 text-right font-mono font-bold text-slate-900 align-top text-[14px] row-total">0.00</td>
                                     </tr>
-                                    <!-- แถวค่าดำเนินการนอกพื้นที่ -->
                                     <tr class="item-row" id="rowOutArea" style="display:none;">
                                         <td class="py-2 px-2 text-center text-slate-400 align-top item-index">5</td>
                                         <td class="py-2 px-2 align-top">
@@ -648,7 +627,6 @@
                                     <span class="text-[11px] font-black text-slate-900">ยอดสุทธิรวมทั้งสิ้น</span>
                                     <span class="text-[15px] font-mono font-extrabold text-blue-700" id="docViewGrandTotal">0.00</span>
                                 </div>
-                                <!-- แถวแสดงภาษีหัก ณ ที่จ่าย 3% (ถ้าติ๊กเลือก) -->
                                 <div id="docViewWhtBlock" style="display:none;" class="mt-1.5 pt-1.5 border-t border-dashed border-slate-300 text-[10px] space-y-0.5">
                                     <div class="flex justify-between text-slate-500">
                                         <span>หัก ณ ที่จ่าย 3% (ก่อน VAT)</span>
@@ -664,7 +642,6 @@
 
                         <!-- ช่องลงนาม -->
                         <div class="grid grid-cols-3 gap-6 pt-2 border-t border-slate-200 text-xs text-center shrink-0 mt-2">
-                            <!-- ผู้เสนอราคา -->
                             <div class="flex flex-col items-center">
                                 <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
                                     <img id="imgSignSales" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" onerror="this.classList.add('hidden'); document.getElementById('placeholderSignSales').classList.remove('hidden');" class="max-h-10 max-w-full object-contain">
@@ -675,7 +652,6 @@
                                 <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
                             </div>
 
-                            <!-- ผู้รับจ้าง -->
                             <div class="flex flex-col items-center">
                                 <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
                                     <img id="imgSignIssuer" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" onerror="this.classList.add('hidden'); document.getElementById('placeholderSignIssuer').classList.remove('hidden');" class="max-h-10 max-w-full object-contain">
@@ -687,7 +663,6 @@
                                 <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
                             </div>
 
-                            <!-- ผู้ว่าจ้าง (ลูกค้าเซ็น) -->
                             <div class="flex flex-col items-center">
                                 <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
                                     <img id="imgSignCustomer" class="max-h-10 max-w-full hidden object-contain">
@@ -705,7 +680,7 @@
             </div>
         </section>
 
-        <!-- ================= แท็บ 3: แดชบอร์ด (สรุปงาน) ================= -->
+        <!-- ================= แท็บ 3: แดชบอร์ด ================= -->
         <section id="tabDashboard" class="hidden no-print space-y-4">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-2 text-xs">
                 <div class="flex items-center gap-2">
@@ -762,7 +737,6 @@
                     <h2 class="text-sm font-bold text-slate-800">ประวัติการออกเอกสาร</h2>
                     <button onclick="clearAllArchiveData()" class="text-xs text-red-500 hover:underline font-bold">ล้างประวัติทั้งหมด</button>
                 </div>
-                <!-- ค้นหาและกรองประวัติ -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
                     <input type="text" id="archiveSearchInput" oninput="renderArchiveList()" placeholder="🔍 ค้นหาชื่อลูกค้า, เลขที่เอกสาร, สถานที่..." class="sm:col-span-2 border rounded-xl p-2 bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500">
                     <select id="archiveStatusFilter" onchange="renderArchiveList()" class="border rounded-xl p-2 bg-slate-50 font-bold text-slate-700 outline-none">
@@ -778,7 +752,7 @@
             </div>
         </section>
 
-        <!-- ================= แท็บ 5: ภาพหน้างาน (Gallery) ================= -->
+        <!-- ================= แท็บ 5: ภาพหน้างาน ================= -->
         <section id="tabGallery" class="hidden no-print space-y-4">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
                 <h2 class="text-sm font-bold text-slate-800 border-b pb-2">➕ อัปโหลด/ถ่าย ภาพหน้างาน</h2>
@@ -887,7 +861,7 @@
             </div>
         </section>
 
-        <!-- ================= แท็บ 8: ประวัติและฐานข้อมูลพนักงาน ================= -->
+        <!-- ================= แท็บ 8: พนักงาน ================= -->
         <section id="tabEmployees" class="hidden no-print space-y-4">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
                 <div class="flex justify-between items-center border-b pb-2">
@@ -923,7 +897,6 @@
                 </div>
             </div>
 
-            <!-- รายชื่อพนักงานและสถิติการออกงาน -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
                 <div class="flex flex-wrap justify-between items-center gap-2">
                     <h2 class="text-sm font-bold text-slate-800">📋 รายชื่อพนักงานในระบบ & สรุปประวัติการออกงาน</h2>
@@ -991,7 +964,7 @@
         </div>
     </div>
 
-    <!-- Modal สำรองและกู้คืนข้อมูล (Backup & Restore) -->
+    <!-- Modal สำรองและกู้คืนข้อมูล -->
     <div id="modalBackup" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-3">
         <div class="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b pb-2">
@@ -1017,7 +990,6 @@
     </div>
 
     <script>
-        // สคริปต์ปรับย่อขนาดกระดาษอัตโนมัติให้พอดีทั้งหน้าจอมือถือและ Notebook โดยไม่ตัดขอบซ้าย
         function scalePaperToFit() {
             const wrapper = document.getElementById('paperWrapper');
             const stage = document.getElementById('paperStage');
@@ -1039,7 +1011,6 @@
         }
         window.addEventListener('resize', scalePaperToFit);
 
-        // ข้อมูลสินค้าพื้นฐาน
         const DEFAULT_PRODUCTS = {
             "เสาเข็มไมโครไพล์ ไอ (I-Micropile)": [
                 { id: "p1", name: 'ขนาด I-18 (รับน้ำหนักปลอดภัย 10-15 ตัน)', price: 7500, cost: 3400, condition: 'ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม.' },
@@ -2341,7 +2312,6 @@
             }
         }
 
-        // ================= ระบบจัดการฐานข้อมูลและประวัติพนักงาน (แท็บ 8) =================
         function updateEmployeeBadgeAndDatalist() {
             const employees = JSON.parse(localStorage.getItem('hym_employees') || '[]');
             const badge = document.getElementById('empCountBadge');
@@ -2498,7 +2468,6 @@
             document.getElementById('dbEmpNote').value = '';
         }
 
-        // ================= ระบบสำรองและกู้คืนข้อมูล (Backup & Restore JSON) =================
         function openBackupModal() { document.getElementById('modalBackup').classList.remove('hidden'); }
         function closeBackupModal() { document.getElementById('modalBackup').classList.add('hidden'); }
 
@@ -2549,8 +2518,41 @@
             reader.readAsText(input.files[0]);
         }
 
-        // ================= ระบบสร้าง PDF ใหม่ (แก้ปัญหาหน้าขาวบนมือถือ 100%) =================
-        async function renderPaperToPdfWorker(filename) {
+        // ================= ระบบสร้าง PDF ตรงผ่าน html2canvas + jsPDF (ไม่ผ่าน html2pdf wrapper ที่บั๊กหน้าขาว) =================
+        function sanitizeImageForCanvas(imgEl) {
+            if (!imgEl || imgEl.style.display === 'none' || imgEl.classList.contains('hidden')) return;
+            const src = imgEl.getAttribute('src') || '';
+            if (src.startsWith('data:')) return; // รูป Base64 ปลอดภัยอยู่แล้ว
+
+            if (!imgEl.complete || imgEl.naturalWidth === 0) {
+                imgEl.style.display = 'none';
+                if (imgEl.nextElementSibling) {
+                    imgEl.nextElementSibling.style.display = 'flex';
+                    imgEl.nextElementSibling.classList.remove('hidden');
+                }
+                return;
+            }
+
+            // ทดสอบวาดลง Canvas ย่อยว่าติด Tainted Canvas (CORS / Local File) หรือไม่
+            try {
+                const testCanvas = document.createElement('canvas');
+                testCanvas.width = imgEl.naturalWidth || 100;
+                testCanvas.height = imgEl.naturalHeight || 100;
+                const ctx = testCanvas.getContext('2d');
+                ctx.drawImage(imgEl, 0, 0);
+                const dataUrl = testCanvas.toDataURL('image/png');
+                imgEl.src = dataUrl; // แปลงเป็น Base64 สำเร็จ
+            } catch (err) {
+                // หากติด SecurityError บนมือถือ ให้สลับไปแสดงป้ายโลโก้สำรองแทน เพื่อไม่ให้ PDF กลายเป็นหน้าขาว
+                imgEl.style.display = 'none';
+                if (imgEl.nextElementSibling) {
+                    imgEl.nextElementSibling.style.display = 'flex';
+                    imgEl.nextElementSibling.classList.remove('hidden');
+                }
+            }
+        }
+
+        async function generatePdfObject() {
             const loadingOverlay = document.getElementById('pdfLoadingOverlay');
             if (loadingOverlay) {
                 loadingOverlay.classList.remove('hidden');
@@ -2562,99 +2564,95 @@
             }
             runEngine();
 
-            const sourcePaper = document.getElementById('quotationPaper');
+            const paper = document.getElementById('quotationPaper');
+            const stage = document.getElementById('paperStage');
+            const wrapper = document.getElementById('paperWrapper');
             const prevScrollX = window.scrollX || window.pageXOffset || 0;
             const prevScrollY = window.scrollY || window.pageYOffset || 0;
 
-            // คัดลอกกระดาษ A4 และดึงค่าตัวเลขล่าสุดจาก input มาแสดงเป็นข้อความปกติ
-            const clonedPaper = sourcePaper.cloneNode(true);
-            clonedPaper.id = 'quotationPaperPdfClone';
-            clonedPaper.classList.remove('scale-paper', 'shadow-xl');
-            clonedPaper.style.transform = 'none';
-            clonedPaper.style.margin = '0';
-            clonedPaper.style.boxShadow = 'none';
-            clonedPaper.style.background = '#ffffff';
+            // เก็บค่า Style เดิมก่อนปลด Scale ชั่วคราว
+            const origTransform = paper.style.transform;
+            const origStageW = stage.style.width;
+            const origStageH = stage.style.height;
+            const origWrapperOverflow = wrapper.style.overflow;
 
-            // แปลง input ทุกตัวในตารางให้เป็น div ข้อความธรรมดาเพื่อป้องกันตัวเลขหายใน html2canvas
-            const origInputs = sourcePaper.querySelectorAll('input.editable-cell');
-            const cloneInputs = clonedPaper.querySelectorAll('input.editable-cell');
-            origInputs.forEach((origInp, idx) => {
-                const targetInp = cloneInputs[idx];
-                if (!targetInp) return;
-                const textBox = document.createElement('div');
-                textBox.className = origInp.className + ' pdf-temp-span';
-                const rawVal = parseFloat(origInp.value) || 0;
-                if (origInp.classList.contains('row-unit')) {
-                    textBox.innerText = rawVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-                } else {
-                    textBox.innerText = origInp.value;
-                }
-                targetInp.parentNode.replaceChild(textBox, targetInp);
+            // 1. ตรวจสอบรูปภาพในกระดาษไม่ให้ทำให้ Canvas พัง
+            paper.querySelectorAll('img').forEach(sanitizeImageForCanvas);
+
+            // 2. แปลงช่อง input ในตารางให้เป็น div ข้อความชั่วคราวเพื่อให้ html2canvas วาดตัวเลขได้ครบ
+            const tempReplacements = [];
+            paper.querySelectorAll('input.editable-cell').forEach(inp => {
+                const span = document.createElement('div');
+                span.className = inp.className;
+                const rawVal = parseFloat(inp.value) || 0;
+                span.innerText = inp.classList.contains('row-unit')
+                    ? rawVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+                    : inp.value;
+                inp.style.display = 'none';
+                inp.parentNode.insertBefore(span, inp);
+                tempReplacements.push({ inp, span });
             });
 
-            // ตรวจสอบรูปภาพใน Clone: ถ้ารูปไหนโหลดไม่สำเร็จหรือไม่มีไฟล์ ให้สลับเป็นป้ายสำรองทันที เพื่อไม่ให้ html2canvas ล้มเหลวเป็นหน้าขาว
-            const origImgs = sourcePaper.querySelectorAll('img');
-            const cloneImgs = clonedPaper.querySelectorAll('img');
-            cloneImgs.forEach((cImg, idx) => {
-                const oImg = origImgs[idx];
-                if (!oImg || !oImg.complete || oImg.naturalWidth === 0 || oImg.style.display === 'none' || oImg.classList.contains('hidden')) {
-                    cImg.style.display = 'none';
-                    cImg.removeAttribute('src');
-                    if (cImg.nextElementSibling) {
-                        cImg.nextElementSibling.style.display = 'flex';
-                        cImg.nextElementSibling.classList.remove('hidden');
-                    }
-                }
-            });
-
-            // วางกล่องกระดาษขนาด 794x1122px ไว้ใต้หน้าต่าง Loading ที่พิกัดซ้ายบนสุด
-            const captureHost = document.createElement('div');
-            captureHost.style.position = 'fixed';
-            captureHost.style.top = '0px';
-            captureHost.style.left = '0px';
-            captureHost.style.width = '794px';
-            captureHost.style.height = '1122px';
-            captureHost.style.background = '#ffffff';
-            captureHost.style.zIndex = '99990';
-            captureHost.style.overflow = 'hidden';
-            captureHost.style.pointerEvents = 'none';
-            captureHost.appendChild(clonedPaper);
-
+            // 3. ปลดการย่อส่วนกระดาษให้เป็นขนาด A4 จริง (794x1122px)
+            paper.style.transform = 'none';
+            stage.style.width = '794px';
+            stage.style.height = '1122px';
+            wrapper.style.overflow = 'visible';
             window.scrollTo(0, 0);
-            document.body.appendChild(captureHost);
 
-            // รอให้เบราว์เซอร์วาด DOM ของตัวโคลนให้เสร็จสมบูรณ์
-            await new Promise(resolve => setTimeout(resolve, 250));
+            await new Promise(r => setTimeout(r, 150));
 
-            const opt = {
-                margin: 0,
-                filename: filename,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 2,
-                    useCORS: false,
-                    allowTaint: true,
-                    logging: false,
-                    backgroundColor: '#ffffff',
-                    scrollX: 0,
-                    scrollY: 0,
-                    width: 794,
-                    height: 1122
-                },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-                pagebreak: { mode: 'avoid-all' }
-            };
+            try {
+                const h2c = window.html2canvas || (window.html2pdf && window.html2pdf.html2canvas);
+                const jsPDFConstructor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
 
-            const cleanup = () => {
-                if (captureHost.parentNode) captureHost.parentNode.removeChild(captureHost);
+                if (h2c && jsPDFConstructor) {
+                    const canvas = await h2c(paper, {
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: false,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        width: 794,
+                        height: 1122
+                    });
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                    const pdf = new jsPDFConstructor({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4',
+                        compress: true
+                    });
+                    pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                    return pdf;
+                } else {
+                    // Fallback กรณีพิเศษ
+                    const worker = html2pdf().set({
+                        margin: 0,
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', width: 794, height: 1122 },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    }).from(paper);
+                    return await worker.toPdf().get('pdf');
+                }
+            } finally {
+                // คืนค่า input และ Scale กระดาษกลับสู่สภาพเดิม
+                tempReplacements.forEach(({ inp, span }) => {
+                    inp.style.display = '';
+                    if (span.parentNode) span.parentNode.removeChild(span);
+                });
+                paper.style.transform = origTransform;
+                stage.style.width = origStageW;
+                stage.style.height = origStageH;
+                wrapper.style.overflow = origWrapperOverflow;
+                window.scrollTo(prevScrollX, prevScrollY);
+
                 if (loadingOverlay) {
                     loadingOverlay.classList.add('hidden');
                     loadingOverlay.classList.remove('flex');
                 }
-                window.scrollTo(prevScrollX, prevScrollY);
-            };
-
-            return { clonedPaper, opt, cleanup };
+            }
         }
 
         function getPdfFilename() {
@@ -2665,14 +2663,12 @@
 
         async function exportQuotationPDF() {
             const filename = getPdfFilename();
-            const { clonedPaper, opt, cleanup } = await renderPaperToPdfWorker(filename);
             try {
-                await html2pdf().set(opt).from(clonedPaper).save();
+                const pdf = await generatePdfObject();
+                pdf.save(filename);
             } catch (err) {
                 console.error('PDF Export Error:', err);
-                alert('เกิดข้อผิดพลาดในการสร้าง PDF กรุณาลองกดปุ่ม "พิมพ์ / บันทึก PDF" แทนครับ');
-            } finally {
-                cleanup();
+                alert('เกิดข้อผิดพลาดในการสร้าง PDF กรุณากดปุ่ม "พิมพ์ / บันทึก PDF" ข้างๆ แทนครับ');
             }
         }
 
@@ -2681,11 +2677,11 @@
             const d = runEngine();
             const shareText = `📋 *${d.docTitle} บจก.หาดใหญ่ ไมโครไพล์*\n📄 เลขที่: ${d.docNo}\n👤 นามลูกค้า: ${d.custName}\n📍 สถานที่: ${d.custAddr}\n🏗️ งาน: ${d.itemDesc} ${d.itemDesc2 ? 'และ ' + d.itemDesc2 : ''} (รวม ${d.qty + d.qty2} ต้น)\n💰 ยอดสุทธิ: ${d.grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท\n\nสอบถามเพิ่มเติม โทร. 080-4549659`;
 
-            const { clonedPaper, opt, cleanup } = await renderPaperToPdfWorker(filename);
             try {
-                const pdfBlob = await html2pdf().set(opt).from(clonedPaper).outputPdf('blob');
-                cleanup();
+                const pdf = await generatePdfObject();
+                const pdfBlob = pdf.output('blob');
                 const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
+
                 if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
                     await navigator.share({
                         files: [pdfFile],
@@ -2693,23 +2689,17 @@
                         text: shareText
                     });
                 } else {
-                    const fallback = await renderPaperToPdfWorker(filename);
-                    try {
-                        await html2pdf().set(fallback.opt).from(fallback.clonedPaper).save();
-                    } finally {
-                        fallback.cleanup();
-                    }
+                    pdf.save(filename);
                     if (type === 'line') {
                         window.open(`https://line.me/R/msg/text/?text=${encodeURIComponent(shareText)}`, '_blank');
                     } else {
                         const emailTarget = document.getElementById('custEmail').value || '';
                         window.location.href = `mailto:${emailTarget}?subject=${encodeURIComponent(`${d.docTitle} บจก.หาดใหญ่ ไมโครไพล์ เลขที่ ${d.docNo}`)}&body=${encodeURIComponent(shareText)}`;
                     }
-                    alert('อุปกรณ์บันทึกไฟล์ PDF ลงเครื่องเรียบร้อยแล้ว ท่านสามารถกดแนบไฟล์ PDF ส่งในห้องแชทได้ทันทีครับ');
+                    alert('บันทึกไฟล์ PDF ลงเครื่องเรียบร้อยแล้ว ท่านสามารถกดแนบไฟล์ PDF ส่งในแชทได้ทันทีครับ');
                 }
             } catch (err) {
-                cleanup();
-                await exportQuotationPDF();
+                console.error('Share Error:', err);
                 if (type === 'line') {
                     window.open(`https://line.me/R/msg/text/?text=${encodeURIComponent(shareText)}`, '_blank');
                 } else {
