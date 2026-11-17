@@ -47,17 +47,16 @@
             overflow: hidden !important;
         }
 
-        /* คลาสพิเศษตอนกำลังวาดลง Canvas เพื่อป้องกันสระและวรรณยุกต์ไทยกระโดด */
+        /* คลาสพิเศษตอนกำลังวาดลง Canvas เพื่อป้องกันสระและวรรณยุกต์ไทยกระโดดบน Notebook */
         .pdf-rendering-active,
         .pdf-rendering-active * {
             font-family: 'Tahoma', 'Sarabun', sans-serif !important;
-            letter-spacing: 0px !important;
-            word-spacing: 0px !important;
-            font-kerning: none !important;
+            letter-spacing: normal !important;
+            word-spacing: normal !important;
+            font-kerning: auto !important;
             font-variant-ligatures: none !important;
-            font-feature-settings: "liga" 0, "clig" 0, "kern" 0 !important;
-            text-rendering: geometricPrecision !important;
-            white-space: normal !important;
+            font-feature-settings: normal !important;
+            text-rendering: auto !important;
         }
 
         .paper-wrapper {
@@ -98,26 +97,34 @@
 
         nav { position: relative; z-index: 50; }
 
+        /* จัดการพิมพ์ให้อยู่ในหน้าเดียวกันทั้งหมดแบบเป๊ะๆ 100% */
         @media print {
+            @page { size: 210mm 297mm; margin: 0mm; }
+            body, html { margin: 0; padding: 0; background: #fff; width: 100%; height: 100%; }
             body * { visibility: hidden; }
             #tabQuote, #tabQuote * { visibility: visible; }
             #quotationControls, nav, header { display: none !important; }
-            #tabQuote { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
+            #tabQuote { position: absolute; left: 0; top: 0; width: 210mm; margin: 0; padding: 0; }
+            
             .paper-wrapper, #paperStage { 
                 overflow: visible !important; 
                 background: transparent !important; 
                 padding: 0 !important; 
                 border: none !important; 
-                width: 794px !important;
-                height: 1122px !important;
+                width: 210mm !important;
+                height: 297mm !important;
                 margin: 0 !important;
             }
-            .scale-paper { transform: none !important; }
+            .scale-paper { transform: none !important; box-shadow: none !important; }
             .paper-a4-fixed { 
                 box-shadow: none !important; 
-                margin: 0; 
-                width: 794px !important;
-                height: 1122px !important;
+                margin: 0 !important; 
+                width: 210mm !important;
+                height: 297mm !important;
+                min-width: 210mm !important;
+                min-height: 297mm !important;
+                max-width: 210mm !important;
+                max-height: 297mm !important;
                 page-break-inside: avoid !important;
                 page-break-after: avoid !important;
                 page-break-before: avoid !important;
@@ -125,7 +132,6 @@
             tr, td, th, table, div.grid { page-break-inside: avoid !important; }
             .no-print-element { display: none !important; }
             .editable-cell { border: none !important; background: transparent !important; }
-            textarea.editable-cell { overflow: visible !important; white-space: normal; }
         }
     </style>
 </head>
@@ -1518,20 +1524,20 @@
             const specSelect = document.getElementById('costSizeSpec');
             const specText = specSelect.options[specSelect.selectedIndex]?.text || '';
             const subDetail = document.getElementById('costSubDetail').value || '';
-            const fullItemDesc = `${catText} ${specText} ${subDetail}`.replace(/\s+/g, ' ').trim();
+            const fullItemDesc = `${catText} ${specText} ${subDetail}`.trim();
 
-            document.getElementById('docViewItemName').textContent = fullItemDesc || '-';
+            document.getElementById('docViewItemName').innerText = fullItemDesc || '-';
             document.getElementById('docViewItemQty').value = qty;
             document.getElementById('docViewItemUnitRaw').value = sellUnit;
 
             const specSelect2 = document.getElementById('costSizeSpec2');
             const specText2 = specSelect2.options[specSelect2.selectedIndex]?.text || '';
             const subDetail2 = document.getElementById('costSubDetail2').value || '';
-            const fullItemDesc2 = `${catText} ${specText2} ${subDetail2}`.replace(/\s+/g, ' ').trim();
+            const fullItemDesc2 = `${catText} ${specText2} ${subDetail2}`.trim();
 
             if(qty2 > 0 && specSelect2.value !== "") {
                 document.getElementById('rowItem2').style.display = '';
-                document.getElementById('docViewItemName2').textContent = fullItemDesc2;
+                document.getElementById('docViewItemName2').innerText = fullItemDesc2;
                 document.getElementById('docViewItemQty2').value = qty2;
                 document.getElementById('docViewItemUnitRaw2').value = sellUnit2;
             } else {
