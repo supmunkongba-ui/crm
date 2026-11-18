@@ -353,7 +353,7 @@
                     </div>
                     <button type="button" onclick="clearClonedQuoteContext()" class="text-[11px] bg-white hover:bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg border font-bold">✕ ยกเลิกการอ้างอิง</button>
                 </div>
-                <p class="text-[11px] text-amber-900">💡 หน้าใบแจ้งหนี้ / ใบเสร็จ / ใบกำกับภาษี จะไม่ดึงรายการอัตโนมัติ เพื่อให้คุณเพิ่มและพิมพ์รายการเองได้อย่างอิสระ หรือกดปุ่มด้านล่างเพื่อดึงยอดงวดที่ต้องการ:</p>
+                <p class="text-[11px] text-amber-900">💡 หน้าใบแจ้งหนี้ / ใบเสร็จ / ใบกำกับภาษี จะไม่ดึงรายการอัตโนมัติ และไม่แสดงเงื่อนไขแบ่งชำระท้ายบิล (เนื่องจากชำระรอบแรกก่อนทำงานไปแล้ว) สามารถกดดึงยอดงวดที่ 2 (หักลบจากงวดแรก) หรือพิมพ์รายการเองได้ทันที:</p>
                 <div class="flex flex-wrap gap-1.5 pt-1">
                     <button type="button" onclick="applyBillingInstallment('BLANK')" class="text-xs bg-slate-800 hover:bg-slate-900 text-white font-bold px-3 py-1.5 rounded-xl shadow-sm transition">
                         ✏️ หน้าว่างเพิ่มรายการเอง (ค่าเริ่มต้น)
@@ -362,7 +362,7 @@
                         💰 ดึงยอดงวดที่ 1 (<span id="btnInst1Label">60%</span>)
                     </button>
                     <button type="button" onclick="applyBillingInstallment(2)" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-xl shadow-sm transition">
-                        🏗️ ดึงยอดงวดที่ 2 (<span id="btnInst2Label">40%</span>)
+                        🏗️ ดึงยอดงวดที่ 2 หักลบงวดแรก (<span id="btnInst2Label">40%</span>)
                     </button>
                     <button type="button" id="btnInst3Wrap" onclick="applyBillingInstallment(3)" class="hidden text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 rounded-xl shadow-sm transition">
                         ✅ ดึงยอดงวดที่ 3 (<span id="btnInst3Label">0%</span>)
@@ -449,10 +449,10 @@
                         </div>
                     </div>
                     
-                    <!-- การแบ่งงวดชำระเงิน (รองรับ 60/40 หรือ 50/50 หลังงานเสร็จ และแก้ไขชื่อแต่ละงวดได้) -->
+                    <!-- การแบ่งงวดชำระเงิน (แสดงเฉพาะในใบเสนอราคา และใช้คำนวณยอดงวดเมื่อออกใบแจ้งหนี้) -->
                     <div class="sm:col-span-2 mt-2 pt-3 border-t text-xs space-y-2.5">
                         <div class="flex flex-wrap items-center justify-between gap-2">
-                            <span class="font-extrabold text-slate-800">💳 รูปแบบการแบ่งงวดชำระเงิน (แสดงในใบเสนอราคา / ใบแจ้งหนี้ / ใบเสร็จ):</span>
+                            <span class="font-extrabold text-slate-800">💳 รูปแบบการแบ่งงวดชำระเงิน (แสดงในใบเสนอราคา):</span>
                             <div class="flex flex-wrap gap-1.5">
                                 <button type="button" onclick="setInstallmentPreset(60, 40, 0, 'ก่อนเริ่มงาน', 'หลังงานเสร็จสิ้น', 'งานเสร็จสิ้น')" class="px-2.5 py-1 rounded-lg bg-orange-100 hover:bg-orange-200 text-orange-800 font-bold border border-orange-300 transition">
                                     ⚡ 60% ก่อน / 40% หลังงานเสร็จ
@@ -628,7 +628,7 @@
                         <span id="quoteHelperRefBadge" class="hidden text-[11px] font-bold text-orange-700 bg-white px-2 py-0.5 rounded-lg border border-orange-200"></span>
                     </div>
                     <div class="flex flex-wrap items-center gap-1.5">
-                        <span class="text-[11px] font-bold text-slate-600">แบ่งงวดชำระ:</span>
+                        <span class="text-[11px] font-bold text-slate-600">สัดส่วนงวด:</span>
                         <button type="button" onclick="setInstallmentPreset(60, 40, 0, 'ก่อนเริ่มงาน', 'หลังงานเสร็จสิ้น', 'งานเสร็จสิ้น')" class="text-[11px] bg-orange-100 hover:bg-orange-200 text-orange-800 border border-orange-300 font-bold py-1 px-2.5 rounded-lg transition">
                             60% ก่อน / 40% หลัง
                         </button>
@@ -643,7 +643,7 @@
                             💰 ใส่ข้อความงวดที่ 1 (<span class="helper-inst1-pct">60%</span>)
                         </button>
                         <button type="button" onclick="applyBillingInstallment(2)" class="text-[11px] bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-2.5 rounded-lg shadow-sm transition">
-                            🏗️ ใส่ข้อความงวดที่ 2 (<span class="helper-inst2-pct">40%</span>)
+                            🏗️ ใส่ข้อความงวดที่ 2 หักลบงวดแรก (<span class="helper-inst2-pct">40%</span>)
                         </button>
                         <button type="button" onclick="applyBillingInstallment(3)" class="helper-inst3-btn hidden text-[11px] bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1 px-2.5 rounded-lg shadow-sm transition">
                             ✅ ใส่ข้อความงวดที่ 3 (<span class="helper-inst3-pct">0%</span>)
@@ -797,6 +797,7 @@
                         <!-- สรุปยอดและเงื่อนไข -->
                         <div class="flex flex-row justify-between items-start gap-4 mb-2 mt-auto shrink-0">
                             <div class="w-[60%] space-y-1">
+                                <!-- กล่องเงื่อนไขการแบ่งชำระเงิน (แสดงเฉพาะใบเสนอราคา ซ่อนในใบแจ้งหนี้/ใบเสร็จ/ใบกำกับภาษี) -->
                                 <div class="bg-slate-50/50 border-[0.5px] border-slate-300 p-2 rounded-3xl" id="docViewConditionBlock">
                                     <div class="text-[12px] font-bold text-slate-800 mb-1 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> เงื่อนไขการแบ่งชำระเงิน</div>
                                     <div class="space-y-1 text-[11px]">
@@ -1384,8 +1385,9 @@
                 const pct = mode === 1 ? p1 : (mode === 2 ? p2 : p3);
                 const lbl = mode === 1 ? l1 : (mode === 2 ? l2 : l3);
                 const instAmount = parseFloat((baseAmountBeforeVat * (pct / 100)).toFixed(2));
+                const deductNote = mode === 2 ? ` — หักชำระงวดที่ 1 (${p1}%) แล้ว` : '';
 
-                document.getElementById('docViewItemName').innerText = `ค่าบริการ${mainWorkSummary} — งวดที่ ${mode} (${lbl} ${pct}%)${refSuffix}`;
+                document.getElementById('docViewItemName').innerText = `ค่าบริการ${mainWorkSummary} — งวดที่ ${mode} (${lbl} ${pct}%${deductNote})${refSuffix}`;
                 document.getElementById('docViewItemQty').value = 1;
                 document.getElementById('docViewItemUnitRaw').value = instAmount > 0 ? instAmount : '';
             }
@@ -1679,7 +1681,6 @@
             document.getElementById('docViewGrandTotal').innerText = grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
             document.getElementById('docViewThaiBaht').innerText = `(${arabicToThaiBaht(grandTotal)})`;
 
-            // แสดงยอดรวมแยกงวดชำระ (เช่น งวดแรก 60% ก่อนเริ่มงาน / งวดสอง 40% หลังงานเสร็จ หรือ 50/50) ในทุกประเภทเอกสาร
             const depPct = parseFloat(document.getElementById('depositPct').value) || 0;
             const inst2Pct = parseFloat(document.getElementById('install2Pct').value) || 0;
             const compPct = parseFloat(document.getElementById('completePct').value) || 0;
@@ -1710,6 +1711,7 @@
             const labelSales = document.getElementById('labelSignSales');
             const labelIssuer = document.getElementById('labelSignIssuer');
             const labelCust = document.getElementById('labelSignCustomer');
+            const condBlock = document.getElementById('docViewConditionBlock');
 
             const today = new Date();
             const y = (today.getFullYear() + 543).toString().slice(-2);
@@ -1742,6 +1744,16 @@
                 titleTH.innerText = 'ใบกำกับภาษี / ใบเสร็จรับเงิน'; titleEN.innerText = 'Tax Invoice / Receipt';
                 labelSales.innerText = 'ผู้รับเงิน'; labelIssuer.innerText = 'ผู้มีอำนาจลงนาม'; labelCust.innerText = 'ผู้จ่ายเงิน';
                 vatRow.classList.remove('hidden');
+            }
+
+            // แสดงกล่อง "เงื่อนไขการแบ่งชำระเงิน" เฉพาะใบเสนอราคาเท่านั้น
+            // ซ่อนใน ใบแจ้งหนี้ / ใบเสร็จรับเงิน / ใบกำกับภาษี เพราะรอบแรกชำระก่อนทำงานไปแล้ว
+            if (condBlock) {
+                if (type === 'QT_VAT' || type === 'QT_NOVAT') {
+                    condBlock.style.display = 'block';
+                } else {
+                    condBlock.style.display = 'none';
+                }
             }
 
             if (isEditingOldDoc || !isDocNoManuallyEdited) {
@@ -1819,6 +1831,12 @@
 
             const type = document.getElementById('docTypeSelector').value;
             const manualDocMode = isManualEntryDocType(type) || isCustomTableOverride;
+
+            // ย้ำการแสดง/ซ่อนกล่องเงื่อนไขแบ่งชำระตามประเภทเอกสาร
+            const condBlock = document.getElementById('docViewConditionBlock');
+            if (condBlock) {
+                condBlock.style.display = (type === 'QT_VAT' || type === 'QT_NOVAT') ? 'block' : 'none';
+            }
 
             const qty = parseFloat(document.getElementById('costQty').value) || 0;
             const qty2 = parseFloat(document.getElementById('costQty2').value) || 0;
@@ -2194,7 +2212,8 @@
                     totalQty = d.tableRows.reduce((sum, row) => sum + (parseFloat(row.qty) || 0), 0);
                 }
                 const workerNames = (d.workerDetails || []).map(w => w.name).filter(Boolean).join(', ');
-                const splitBadge = (d.depPct || d.inst2Pct) ? `<span class="text-[10px] bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-bold">งวดชำระ: ${d.depPct||0}% / ${d.inst2Pct||0}%${d.compPct>0 ? ' / '+d.compPct+'%' : ''}</span>` : '';
+                const isQuote = d.docNo && (d.docNo.startsWith('HYM') || d.docNo.startsWith('QT') || (d.docTitle || '').includes('ใบเสนอราคา'));
+                const splitBadge = (isQuote && (d.depPct || d.inst2Pct)) ? `<span class="text-[10px] bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-bold">งวดชำระ: ${d.depPct||0}% / ${d.inst2Pct||0}%${d.compPct>0 ? ' / '+d.compPct+'%' : ''}</span>` : '';
 
                 return `
                 <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-2 shadow-sm">
@@ -2327,7 +2346,7 @@
 
                     typeSelector.value = 'INV';
                     isCustomTableOverride = false;
-                    syncDocType('back'); // จะเปิดตารางว่างสำหรับกรอกเพิ่มรายการเองอัตโนมัติ
+                    syncDocType('back'); // เปิดตารางว่างสำหรับกรอกเพิ่มรายการเอง และซ่อนกล่องเงื่อนไขแบ่งชำระ
                     updateBillingHelperBadges();
                     showTab('quote');
                 } else {
