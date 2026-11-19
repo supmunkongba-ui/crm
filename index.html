@@ -1,3 +1,7 @@
+ลบข้อความเดิมในส่วน เงื่อนไขหน้างาน / หมายเหตุ (ทั้ง 4 บรรทัดที่ไฮไลต์สีแดง) ออกจากเอกสารทุกประเภทแล้ว พร้อมปรับให้เป็นช่องว่างสำหรับคลิกพิมพ์เพิ่มข้อมูลเองได้อิสระ โดยมีรายละเอียดการปรับแก้ดังนี้:
+ * ลบข้อความอัตโนมัติในส่วนเงื่อนไขหน้างาน / หมายเหตุ ออกจากเอกสารทุกประเภท (ใบเสนอราคา, ใบแจ้งหนี้/ใบวางบิล, ใบเสร็จรับเงิน, ใบกำกับภาษี) และยกเลิกการดึงเงื่อนไขเสาเข็มมาแสดงอัตโนมัติ
+ * แยกช่องพิมพ์หมายเหตุให้เป็นช่องว่างสำหรับกรอกเอง (contenteditable) รองรับการขึ้นบรรทัดใหม่ พร้อมข้อความแนะนำจางๆ บนหน้าจอซึ่งจะ ไม่ติดไปตอนพิมพ์หรือโหลด PDF
+ * บันทึกและดึงหมายเหตุที่พิมพ์เองได้ครบ เมื่อกดบันทึกประวัติและเปิดกลับมาแก้ไข รวมถึงล้างช่องให้ว่างอัตโนมัติเมื่อเริ่มใบงานใหม่ หรือกดออกใบแจ้งหนี้/บิลต่อ
 <!DOCTYPE html>
 <html lang="th" translate="no" class="notranslate">
 <head>
@@ -220,6 +224,9 @@
             .editable-cell {
                 border: none !important;
                 background: transparent !important;
+            }
+            .editable-cell:empty::before {
+                content: '' !important;
             }
         }
     </style>
@@ -491,8 +498,8 @@
                         </div>
 
                         <div class="mt-1">
-                            <label class="block font-semibold text-slate-700 mb-1">เงื่อนไขเสาเข็ม (แสดงใต้บิล)</label>
-                            <input type="text" id="excessCondition" value="ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม." oninput="runEngine()" class="w-full border rounded-xl p-2 bg-slate-50 text-red-600 font-medium">
+                            <label class="block font-semibold text-slate-700 mb-1">บันทึกเงื่อนไขเสาเข็ม (สำหรับอ้างอิงภายใน — บนเอกสารให้พิมพ์เพิ่มเอง)</label>
+                            <input type="text" id="excessCondition" value="ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม." oninput="runEngine()" class="w-full border rounded-xl p-2 bg-slate-50 text-slate-600 font-medium">
                         </div>
                     </div>
                 </div>
@@ -817,13 +824,8 @@
                                 </div>
                                 <div class="px-2 pt-0.5">
                                     <div class="text-[11px] font-bold text-slate-800 mb-0.5 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span> เงื่อนไขหน้างาน / หมายเหตุ</div>
-                                    <div class="text-[10px] text-slate-500 space-y-0.5 leading-snug pl-3 border-l-2 border-slate-200 editable-cell px-1" contenteditable="true" id="docViewNotesContainer">
-                                        <p>- พื้นที่หน้างานต้องปรับให้พร้อมทำงาน และลำเลียงวัสดุเข้าได้</p>
-                                        <p>- หลังจากชำระมัดจำ 5-7 วัน ทีมงานเตรียมเข้าพื้นที่หน้างาน</p>
-                                        <p>- ผู้ว่าจ้างจัดเตรียมกระแสไฟฟ้าและน้ำประปาไว้ให้พร้อมใช้งาน</p>
-                                        <p class="text-red-600 font-bold mt-0.5 break-words whitespace-normal" id="docViewExcessCondition">- ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม.</p>
-                                        <p class="text-blue-800 font-bold mt-0.5 break-words whitespace-normal" id="docViewBankLine" style="display:none;"></p>
-                                    </div>
+                                    <div class="text-[10px] text-slate-600 leading-snug pl-3 border-l-2 border-slate-200 editable-cell px-1.5 py-1 min-h-[44px] whitespace-pre-wrap break-words" contenteditable="true" id="docViewNotesContainer" data-placeholder="คลิกเพื่อพิมพ์เงื่อนไขหน้างาน / หมายเหตุเพิ่มเติม..."></div>
+                                    <p class="text-[10px] text-blue-800 font-bold mt-1 pl-3 break-words whitespace-normal" id="docViewBankLine" style="display:none;"></p>
                                 </div>
                                 <div class="bg-blue-50/40 p-2 rounded-2xl border-[0.5px] border-blue-200 flex flex-row items-center gap-2 text-[12px] mt-1">
                                     <span class="font-bold text-slate-600 whitespace-nowrap">ตัวอักษร:</span>
@@ -1066,7 +1068,7 @@
                         <input type="number" id="dbProdPrice" placeholder="7500" class="w-full border rounded-xl p-2 bg-slate-50">
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block font-semibold text-slate-700 mb-1">เงื่อนไขข้อตกลง (แสดงในเอกสาร)</label>
+                        <label class="block font-semibold text-slate-700 mb-1">เงื่อนไขข้อตกลง (สำหรับอ้างอิงภายใน)</label>
                         <input type="text" id="dbProdCondition" placeholder="เช่น ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม." class="w-full border rounded-xl p-2 bg-slate-50 text-red-600 font-medium">
                     </div>
                 </div>
@@ -1445,6 +1447,7 @@
             document.getElementById('costDiscount').value = 0;
             document.getElementById('enableWht3').checked = false;
             document.getElementById('projectStatus').value = 'รออนุมัติ';
+            document.getElementById('docViewNotesContainer').innerHTML = '';
             document.querySelectorAll('.item-row.dynamic-row').forEach(el => el.remove());
             const todayInit = new Date();
             document.getElementById('docViewDate').innerText = `${todayInit.getDate()}/${todayInit.getMonth() + 1}/${(todayInit.getFullYear() + 543).toString().slice(-2)}`;
@@ -1904,11 +1907,13 @@
             const bankInfo = document.getElementById('bankAccountInfo').value.trim();
             const showBank = document.getElementById('showBankOnDoc').checked;
             const bankLineEl = document.getElementById('docViewBankLine');
-            if (showBank && bankInfo) {
-                bankLineEl.style.display = 'block';
-                bankLineEl.innerText = `- ชำระเงินโอนเข้าบัญชี: ${bankInfo}`;
-            } else {
-                bankLineEl.style.display = 'none';
+            if (bankLineEl) {
+                if (showBank && bankInfo) {
+                    bankLineEl.style.display = 'block';
+                    bankLineEl.innerText = `- ชำระเงินโอนเข้าบัญชี: ${bankInfo}`;
+                } else {
+                    bankLineEl.style.display = 'none';
+                }
             }
 
             const catSelect = document.getElementById('costCategory');
@@ -1991,8 +1996,6 @@
             document.getElementById('docViewCompText').innerText = compLabel;
             document.getElementById('docViewCompPct').innerText = `${compPct}%`;
             document.getElementById('docViewCompRow').style.display = compPct > 0 ? 'flex' : 'none';
-
-            document.getElementById('docViewExcessCondition').innerText = `- ${document.getElementById('excessCondition').value || 'ราคานี้เหมาต้น ถ้าความยาวเกินคิดเพิ่ม 1,000 บาท/ม.'}`;
 
             updateRowIndices();
             recalcTable();
@@ -2324,7 +2327,7 @@
                 document.getElementById('depositLabel').value = d.depLabel || 'ก่อนเริ่มงาน';
                 document.getElementById('install2Label').value = d.inst2Label || 'หลังงานเสร็จสิ้น';
                 document.getElementById('completeLabel').value = d.compLabel || 'งานเสร็จสิ้น';
-                document.getElementById('excessCondition').value = d.excessCondition;
+                document.getElementById('excessCondition').value = d.excessCondition || '';
 
                 const typeSelector = document.getElementById('docTypeSelector');
                 document.querySelectorAll('.item-row.dynamic-row').forEach(el => el.remove());
@@ -2335,6 +2338,7 @@
                     isDocNoManuallyEdited = false;
                     currentRandomID = Math.floor(100 + Math.random() * 900);
                     clonedSourceQuote = JSON.parse(JSON.stringify(d));
+                    document.getElementById('docViewNotesContainer').innerHTML = '';
 
                     document.getElementById('clonedInvoiceBanner').classList.remove('hidden');
                     document.getElementById('sourceQuoteNoDisplay').innerText = d.docNo || '-';
@@ -2358,6 +2362,7 @@
                     isDocNoManuallyEdited = false;
                     document.getElementById('docViewNo').innerText = d.docNo;
                     document.getElementById('docViewDate').innerText = doc.date;
+                    document.getElementById('docViewNotesContainer').innerHTML = d.notesHtml || '';
                     syncSignDates();
 
                     if(d.docNo.startsWith('HYM') || d.docNo.startsWith('QT') || d.docTitle.includes('ใบเสนอราคา')) {
