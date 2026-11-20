@@ -330,7 +330,7 @@
                     <select id="docTypeSelectorFront" onchange="syncDocType('front')" class="w-full border-2 border-blue-400 rounded-xl p-2.5 text-sm font-bold bg-white text-blue-700 outline-none focus:ring-2 focus:ring-blue-300">
                         <option value="QT_VAT">ใบเสนอราคา (รวม VAT)</option>
                         <option value="QT_NOVAT">ใบเสนอราคา (ไม่รวม VAT)</option>
-                        <option value="INV">ใบแจ้งหนี้ / ใบวางบิล (กรอกรายการเอง)</option>
+                        <option value="INV">ใบแจ้งหนี้ / ใบวางบิล (กรอกรายการเอง / แก้ไข VAT ได้)</option>
                         <option value="REC">ใบเสร็จรับเงิน (ไม่มี VAT - กรอกรายการเอง)</option>
                         <option value="TAX">ใบกำกับภาษี / ใบเสร็จรับเงิน (รวม VAT - กรอกรายการเอง)</option>
                     </select>
@@ -609,7 +609,7 @@
                         <select id="docTypeSelector" onchange="syncDocType('back')" class="w-full border-2 border-blue-300 rounded-xl p-1.5 text-xs font-bold bg-blue-50 text-blue-800 outline-none">
                             <option value="QT_VAT">ใบเสนอราคา (รวม VAT)</option>
                             <option value="QT_NOVAT">ใบเสนอราคา (ไม่รวม VAT)</option>
-                            <option value="INV">ใบแจ้งหนี้ / ใบวางบิล (กรอกรายการเอง)</option>
+                            <option value="INV">ใบแจ้งหนี้ / ใบวางบิล (กรอกรายการเอง / แก้ไข VAT ได้)</option>
                             <option value="REC">ใบเสร็จรับเงิน (ไม่มี VAT - กรอกรายการเอง)</option>
                             <option value="TAX">ใบกำกับภาษี / ใบเสร็จรับเงิน (รวม VAT - กรอกรายการเอง)</option>
                         </select>
@@ -622,6 +622,29 @@
                             🗑️ ลบรายการล่าสุด
                         </button>
                     </div>
+                </div>
+
+                <!-- แถบจัดการ VAT สำหรับ ใบแจ้งหนี้ / ใบวางบิล (เพิ่ม / ลบ / แก้ไข % / แก้ไขยอดเอง) -->
+                <div id="invVatControls" class="hidden bg-blue-50 border border-blue-300 rounded-xl p-2.5 space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs font-extrabold text-blue-950">🧮 จัดการภาษีมูลค่าเพิ่ม (VAT) ใบแจ้งหนี้/ใบวางบิล:</span>
+                            <button type="button" id="btnToggleInvVat" onclick="toggleInvVat()" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 border border-red-300 font-bold px-3 py-1 rounded-lg transition">
+                                🗑️ ลบ VAT ออก
+                            </button>
+                        </div>
+                        <div id="invVatEditGroup" class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <span class="font-bold text-slate-700">อัตรา VAT:</span>
+                            <input type="number" id="invVatRateInput" value="7" step="any" min="0" oninput="onInvVatRateChange()" class="w-16 border-2 border-blue-300 rounded-lg px-2 py-1 bg-white text-center font-bold text-blue-800 outline-none focus:ring-2 focus:ring-blue-400">
+                            <span class="font-bold text-slate-700">%</span>
+                            <button type="button" id="btnResetInvVatAuto" onclick="resetInvVatAuto()" class="hidden text-[11px] bg-orange-100 hover:bg-orange-200 text-orange-800 border border-orange-300 font-bold px-2.5 py-1 rounded-lg transition">
+                                🔄 คำนวณตาม % อัตโนมัติ
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-blue-800" id="invVatHintText">
+                        💡 สามารถกด <b>ลบ VAT / เพิ่ม VAT</b>, ปรับตัวเลข <b>%</b> หรือคลิกแก้ไข <b>ข้อความและยอดเงิน VAT</b> ในช่องสรุปยอดบนกระดาษได้โดยตรง
+                    </p>
                 </div>
 
                 <!-- แถบเครื่องมือออกใบแจ้งหนี้ / ใบกำกับภาษี / สลับงวด 60/40 หรือ 50/50 -->
@@ -730,7 +753,7 @@
                                 <div class="flex items-center gap-4">
                                     <span class="font-mono text-slate-900 font-bold editable-cell px-1 w-auto min-w-[140px]" id="docViewCustTax" contenteditable="true">-</span>
                                     <label class="flex items-center space-x-1"><input type="checkbox" checked disabled class="accent-slate-400 w-3 h-3"> <span class="text-slate-500 text-[11px]">สำนักงานใหญ่</span></label>
-                                    <label class="flex items-center space-x-1"><input type="checkbox" disabled class="w-3 h-3"> <span class="text-slate-400 text-[11px]">สาขา..........</span></label>
+                                    <label class="flex items-center space-x-1"><input type="checkbox" disabled class="w-3 h-3"> <span class="text-slate-500 text-[11px]">สาขา..........</span></label>
                                 </div>
                             </div>
                         </div>
@@ -839,9 +862,13 @@
                                         <span class="font-semibold">หักส่วนลด</span>
                                         <span class="font-mono font-bold" id="docViewDiscount">0.00</span>
                                     </div>
-                                    <div class="flex justify-between items-center text-slate-600" id="docViewVatRow">
-                                        <span class="font-semibold">ภาษีมูลค่าเพิ่ม (7%)</span>
-                                        <span class="font-mono font-bold text-slate-900" id="docViewVat">0.00</span>
+                                    <div class="flex justify-between items-center gap-1 text-slate-600" id="docViewVatRow">
+                                        <span class="font-semibold" id="docViewVatLabel" oninput="onInvVatLabelEdit()">ภาษีมูลค่าเพิ่ม (7%)</span>
+                                        <div class="flex items-center justify-end gap-1 shrink-0">
+                                            <span class="font-mono font-bold text-slate-900" id="docViewVat">0.00</span>
+                                            <input type="number" step="any" id="docViewVatInput" class="hidden editable-cell vat-amount-input px-1 text-right font-mono font-bold text-slate-900 !w-[92px]" value="0.00" oninput="onManualVatAmountInput()" title="คลิกเพื่อแก้ไขยอด VAT โดยตรง">
+                                            <button type="button" id="btnRemoveVatInline" onclick="toggleInvVat(false)" class="hidden no-print-in-paper text-red-400 hover:text-red-600 text-[11px] font-bold px-1 rounded" title="ลบ VAT ออก">✕</button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="mt-2 pt-2 border-t-[1.5px] border-slate-200 flex justify-between items-end">
@@ -1269,8 +1296,126 @@
         // โหมดตารางแก้ไขเองอิสระ (สำหรับ ใบแจ้งหนี้ / ใบกำกับภาษี / ใบเสร็จรับเงิน)
         let isCustomTableOverride = false;
 
+        // สถานะจัดการ VAT สำหรับ ใบแจ้งหนี้ / ใบวางบิล (INV)
+        let invVatEnabled = true;
+        let invVatRate = 7;
+        let invVatManual = false;
+        let invVatManualAmount = 0;
+        let invVatLabelCustom = false;
+
         function isManualEntryDocType(type) {
             return ['INV', 'REC', 'TAX'].includes(type);
+        }
+
+        // ================= ฟังก์ชันจัดการ เพิ่ม / ลบ / แก้ไข VAT ในใบแจ้งหนี้/ใบวางบิล =================
+        function updateInvVatUI() {
+            const type = document.getElementById('docTypeSelector').value;
+            const controls = document.getElementById('invVatControls');
+            const vatRow = document.getElementById('docViewVatRow');
+            const vatLabel = document.getElementById('docViewVatLabel');
+            const vatSpan = document.getElementById('docViewVat');
+            const vatInput = document.getElementById('docViewVatInput');
+            const btnRemoveInline = document.getElementById('btnRemoveVatInline');
+            const btnToggle = document.getElementById('btnToggleInvVat');
+            const editGroup = document.getElementById('invVatEditGroup');
+            const btnResetAuto = document.getElementById('btnResetInvVatAuto');
+            const rateInput = document.getElementById('invVatRateInput');
+
+            if (type === 'INV') {
+                controls.classList.remove('hidden');
+                if (rateInput && document.activeElement !== rateInput) {
+                    rateInput.value = invVatRate;
+                }
+
+                if (invVatEnabled) {
+                    vatRow.classList.remove('hidden');
+                    vatLabel.setAttribute('contenteditable', 'true');
+                    vatLabel.classList.add('editable-cell', 'px-1', '!w-auto', 'min-w-[120px]');
+                    if (!invVatLabelCustom) {
+                        vatLabel.innerText = `ภาษีมูลค่าเพิ่ม (${invVatRate}%)`;
+                    }
+                    vatSpan.classList.add('hidden');
+                    vatInput.classList.remove('hidden');
+                    btnRemoveInline.classList.remove('hidden');
+
+                    btnToggle.innerText = '🗑️ ลบ VAT ออก';
+                    btnToggle.className = 'text-xs bg-red-100 hover:bg-red-200 text-red-700 border border-red-300 font-bold px-3 py-1 rounded-lg transition';
+                    editGroup.classList.remove('hidden');
+                    btnResetAuto.classList.toggle('hidden', !invVatManual);
+                } else {
+                    vatRow.classList.add('hidden');
+                    vatLabel.removeAttribute('contenteditable');
+                    vatLabel.classList.remove('editable-cell', 'px-1', '!w-auto', 'min-w-[120px]');
+                    vatSpan.classList.remove('hidden');
+                    vatInput.classList.add('hidden');
+                    btnRemoveInline.classList.add('hidden');
+
+                    btnToggle.innerText = '➕ เพิ่ม VAT';
+                    btnToggle.className = 'text-xs bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-700 font-bold px-3 py-1 rounded-lg shadow-sm transition';
+                    editGroup.classList.add('hidden');
+                }
+            } else {
+                controls.classList.add('hidden');
+                vatLabel.removeAttribute('contenteditable');
+                vatLabel.classList.remove('editable-cell', 'px-1', '!w-auto', 'min-w-[120px]');
+                vatLabel.innerText = 'ภาษีมูลค่าเพิ่ม (7%)';
+                vatSpan.classList.remove('hidden');
+                vatInput.classList.add('hidden');
+                btnRemoveInline.classList.add('hidden');
+
+                if (type === 'REC' || type === 'QT_NOVAT') {
+                    vatRow.classList.add('hidden');
+                } else {
+                    vatRow.classList.remove('hidden');
+                }
+            }
+        }
+
+        function toggleInvVat(forceState) {
+            if (typeof forceState === 'boolean') {
+                invVatEnabled = forceState;
+            } else {
+                invVatEnabled = !invVatEnabled;
+            }
+            if (invVatEnabled && !invVatLabelCustom) {
+                document.getElementById('docViewVatLabel').innerText = `ภาษีมูลค่าเพิ่ม (${invVatRate}%)`;
+            }
+            updateInvVatUI();
+            recalcTable();
+        }
+
+        function onInvVatRateChange() {
+            const val = parseFloat(document.getElementById('invVatRateInput').value);
+            invVatRate = isNaN(val) ? 0 : Math.max(0, val);
+            invVatManual = false;
+            if (!invVatLabelCustom) {
+                document.getElementById('docViewVatLabel').innerText = `ภาษีมูลค่าเพิ่ม (${invVatRate}%)`;
+            }
+            updateInvVatUI();
+            recalcTable();
+        }
+
+        function onManualVatAmountInput() {
+            const val = parseFloat(document.getElementById('docViewVatInput').value);
+            invVatManual = true;
+            invVatManualAmount = isNaN(val) ? 0 : val;
+            const btnResetAuto = document.getElementById('btnResetInvVatAuto');
+            if (btnResetAuto) btnResetAuto.classList.remove('hidden');
+            recalcTable();
+        }
+
+        function onInvVatLabelEdit() {
+            if (document.getElementById('docTypeSelector').value === 'INV') {
+                invVatLabelCustom = true;
+            }
+        }
+
+        function resetInvVatAuto() {
+            invVatManual = false;
+            invVatLabelCustom = false;
+            document.getElementById('docViewVatLabel').innerText = `ภาษีมูลค่าเพิ่ม (${invVatRate}%)`;
+            updateInvVatUI();
+            recalcTable();
         }
 
         function setInstallmentPreset(p1, p2, p3, l1, l2, l3) {
@@ -1426,6 +1571,13 @@
             isDocNoManuallyEdited = false;
             clonedSourceQuote = null;
             isCustomTableOverride = false;
+            invVatEnabled = true;
+            invVatRate = 7;
+            invVatManual = false;
+            invVatManualAmount = 0;
+            invVatLabelCustom = false;
+            document.getElementById('invVatRateInput').value = 7;
+            document.getElementById('docViewVatLabel').innerText = 'ภาษีมูลค่าเพิ่ม (7%)';
             document.getElementById('clonedInvoiceBanner').classList.add('hidden');
             document.getElementById('quoteHelperRefBadge').classList.add('hidden');
             currentRandomID = Math.floor(100 + Math.random() * 900);
@@ -1644,6 +1796,19 @@
             });
         }
 
+        function computeVatForCurrentDoc(afterDiscount) {
+            const type = document.getElementById('docTypeSelector').value;
+            if (type === 'REC' || type === 'QT_NOVAT') {
+                return 0;
+            }
+            if (type === 'INV') {
+                if (!invVatEnabled) return 0;
+                if (invVatManual) return invVatManualAmount;
+                return parseFloat((afterDiscount * (invVatRate / 100)).toFixed(2));
+            }
+            return afterDiscount * 0.07;
+        }
+
         function recalcTable() {
             const rows = document.querySelectorAll('.item-row');
             let rawSubtotal = 0;
@@ -1669,14 +1834,17 @@
             }
 
             const type = document.getElementById('docTypeSelector').value;
-            let vat7 = 0;
-            if(type !== 'REC' && type !== 'QT_NOVAT') {
-                vat7 = afterDiscount * 0.07;
-            }
-            const grandTotal = afterDiscount + vat7;
+            const vatAmount = computeVatForCurrentDoc(afterDiscount);
+            const grandTotal = afterDiscount + vatAmount;
 
             document.getElementById('docViewSubTotal').innerText = rawSubtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
-            document.getElementById('docViewVat').innerText = vat7.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('docViewVat').innerText = vatAmount.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+            const vatInput = document.getElementById('docViewVatInput');
+            if (vatInput && type === 'INV' && invVatEnabled && !invVatManual && document.activeElement !== vatInput) {
+                vatInput.value = vatAmount.toFixed(2);
+            }
+
             document.getElementById('docViewGrandTotal').innerText = grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
             document.getElementById('docViewThaiBaht').innerText = `(${arabicToThaiBaht(grandTotal)})`;
 
@@ -1706,7 +1874,6 @@
             const titleTH = document.getElementById('docTitleTH');
             const titleEN = document.getElementById('docTitleEN');
             const docNo = document.getElementById('docViewNo');
-            const vatRow = document.getElementById('docViewVatRow');
             const labelSales = document.getElementById('labelSignSales');
             const labelIssuer = document.getElementById('labelSignIssuer');
             const labelCust = document.getElementById('labelSignCustomer');
@@ -1726,27 +1893,21 @@
             if (type === 'QT_VAT') {
                 titleTH.innerText = 'ใบเสนอราคา'; titleEN.innerText = 'Quotation';
                 labelSales.innerText = 'ผู้เสนอราคา'; labelIssuer.innerText = 'ผู้รับจ้าง'; labelCust.innerText = 'ผู้ว่าจ้าง';
-                vatRow.classList.remove('hidden');
             } else if (type === 'QT_NOVAT') {
                 titleTH.innerText = 'ใบเสนอราคา'; titleEN.innerText = 'Quotation';
                 labelSales.innerText = 'ผู้เสนอราคา'; labelIssuer.innerText = 'ผู้รับจ้าง'; labelCust.innerText = 'ผู้ว่าจ้าง';
-                vatRow.classList.add('hidden');
             } else if (type === 'INV') {
                 titleTH.innerText = 'ใบแจ้งหนี้ / ใบวางบิล'; titleEN.innerText = 'Invoice / Billing Note';
                 labelSales.innerText = 'ผู้วางบิล'; labelIssuer.innerText = 'ผู้รับจ้าง'; labelCust.innerText = 'ผู้รับวางบิล';
-                vatRow.classList.remove('hidden');
             } else if (type === 'REC') {
                 titleTH.innerText = 'ใบเสร็จรับเงิน'; titleEN.innerText = 'Receipt';
                 labelSales.innerText = 'ผู้รับเงิน'; labelIssuer.innerText = 'ผู้มีอำนาจลงนาม'; labelCust.innerText = 'ผู้จ่ายเงิน';
-                vatRow.classList.add('hidden');
             } else if (type === 'TAX') {
                 titleTH.innerText = 'ใบกำกับภาษี / ใบเสร็จรับเงิน'; titleEN.innerText = 'Tax Invoice / Receipt';
                 labelSales.innerText = 'ผู้รับเงิน'; labelIssuer.innerText = 'ผู้มีอำนาจลงนาม'; labelCust.innerText = 'ผู้จ่ายเงิน';
-                vatRow.classList.remove('hidden');
             }
 
             // แสดงกล่อง "เงื่อนไขการแบ่งชำระเงิน" เฉพาะใบเสนอราคาเท่านั้น
-            // ซ่อนใน ใบแจ้งหนี้ / ใบเสร็จรับเงิน / ใบกำกับภาษี เพราะรอบแรกชำระก่อนทำงานไปแล้ว
             if (condBlock) {
                 if (type === 'QT_VAT' || type === 'QT_NOVAT') {
                     condBlock.style.display = 'block';
@@ -1754,6 +1915,9 @@
                     condBlock.style.display = 'none';
                 }
             }
+
+            // อัปเดตแถบและช่องแก้ไข VAT
+            updateInvVatUI();
 
             if (isEditingOldDoc || !isDocNoManuallyEdited) {
                 docNo.innerText = displayDocNo;
@@ -1997,7 +2161,6 @@
             recalcTable();
             syncSignDates();
 
-            let finalVat = 0;
             let tableSubtotal = 0;
             document.querySelectorAll('.item-row').forEach(row => {
                 if(row.style.display !== 'none') {
@@ -2005,7 +2168,7 @@
                 }
             });
             const netBeforeVat = Math.max(0, tableSubtotal - discount);
-            if(type !== 'REC' && type !== 'QT_NOVAT') finalVat = netBeforeVat * 0.07;
+            const finalVat = computeVatForCurrentDoc(netBeforeVat);
 
             const visibleTableItems = [];
             document.querySelectorAll('.item-row').forEach(row => {
@@ -2042,6 +2205,12 @@
                 excessCondition: document.getElementById('excessCondition').value,
                 isCustomTableOverride: manualDocMode,
                 visibleTableItems: visibleTableItems,
+                invVatEnabled: invVatEnabled,
+                invVatRate: invVatRate,
+                invVatManual: invVatManual,
+                invVatManualAmount: invVatManualAmount,
+                invVatLabelCustom: invVatLabelCustom,
+                invVatLabel: document.getElementById('docViewVatLabel').innerText.trim(),
                 subTotal: netBeforeVat, rawSubTotal: tableSubtotal, vat: finalVat, grandTotal: netBeforeVat + finalVat,
                 docNo: document.getElementById('docViewNo').innerText.trim(),
                 docDate: document.getElementById('docViewDate').innerText.trim(),
@@ -2336,6 +2505,14 @@
                     clonedSourceQuote = JSON.parse(JSON.stringify(d));
                     document.getElementById('docViewNotesContainer').innerHTML = '';
 
+                    // ตั้งค่า VAT เริ่มต้นของใบแจ้งหนี้ให้สอดคล้องกับใบเสนอราคาต้นทาง (ถ้าต้นทางไม่มี VAT ให้ปิด VAT ไว้ก่อน แต่เปิดเพิ่มเองได้)
+                    invVatEnabled = (d.vat === undefined || d.vat > 0);
+                    invVatRate = 7;
+                    invVatManual = false;
+                    invVatManualAmount = 0;
+                    invVatLabelCustom = false;
+                    document.getElementById('invVatRateInput').value = 7;
+
                     document.getElementById('clonedInvoiceBanner').classList.remove('hidden');
                     document.getElementById('sourceQuoteNoDisplay').innerText = d.docNo || '-';
                     document.getElementById('sourceQuoteTotalDisplay').innerText = (d.grandTotal || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 });
@@ -2360,6 +2537,20 @@
                     document.getElementById('docViewDate').innerText = doc.date;
                     document.getElementById('docViewNotesContainer').innerHTML = d.notesHtml || '';
                     syncSignDates();
+
+                    // กู้คืนสถานะ VAT ของใบแจ้งหนี้
+                    invVatEnabled = d.invVatEnabled !== undefined ? d.invVatEnabled : true;
+                    invVatRate = d.invVatRate !== undefined ? d.invVatRate : 7;
+                    invVatManual = !!d.invVatManual;
+                    invVatManualAmount = d.invVatManualAmount || 0;
+                    invVatLabelCustom = !!d.invVatLabelCustom;
+                    document.getElementById('invVatRateInput').value = invVatRate;
+                    if (d.invVatLabel) {
+                        document.getElementById('docViewVatLabel').innerText = d.invVatLabel;
+                    }
+                    if (invVatManual) {
+                        document.getElementById('docViewVatInput').value = invVatManualAmount.toFixed(2);
+                    }
 
                     if(d.docNo.startsWith('HYM') || d.docNo.startsWith('QT') || d.docTitle.includes('ใบเสนอราคา')) {
                         if(d.vat === 0) typeSelector.value = 'QT_NOVAT';
@@ -3044,28 +3235,36 @@
             // 1. ตรวจสอบรูปภาพในกระดาษไม่ให้ติด CORS
             paper.querySelectorAll('img').forEach(sanitizeImageForCanvas);
 
-            // 2. ซ่อนปุ่มลบรายแถวชั่วคราวขณะเรนเดอร์ PDF
+            // 2. ซ่อนปุ่มลบรายแถวและปุ่มลบ VAT ชั่วคราวขณะเรนเดอร์ PDF
             const hiddenButtons = [];
             paper.querySelectorAll('.no-print-in-paper').forEach(btn => {
-                btn.style.display = 'none';
-                hiddenButtons.push(btn);
+                if (!btn.classList.contains('hidden')) {
+                    btn.style.display = 'none';
+                    hiddenButtons.push(btn);
+                }
             });
 
             // 3. แปลงช่อง input และช่อง contenteditable ให้เป็น div ข้อความธรรมดาชั่วคราว
             const tempReplacements = [];
             paper.querySelectorAll('input.editable-cell').forEach(inp => {
+                if (inp.classList.contains('hidden')) return;
                 const span = document.createElement('div');
                 span.className = inp.className.replace('editable-cell', '');
                 const rawVal = parseFloat(inp.value) || 0;
-                span.textContent = inp.classList.contains('row-unit')
-                    ? rawVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
-                    : inp.value;
+                if (inp.classList.contains('vat-amount-input')) {
+                    span.textContent = rawVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                } else if (inp.classList.contains('row-unit')) {
+                    span.textContent = rawVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+                } else {
+                    span.textContent = inp.value;
+                }
                 inp.style.display = 'none';
                 inp.parentNode.insertBefore(span, inp);
                 tempReplacements.push({ orig: inp, temp: span });
             });
 
             paper.querySelectorAll('[contenteditable="true"]').forEach(ce => {
+                if (ce.classList.contains('hidden')) return;
                 const span = document.createElement('div');
                 span.className = ce.className.replace('editable-cell', '');
                 if (ce.id === 'docViewNotesContainer') {
@@ -3208,4 +3407,3 @@
     </script>
 </body>
 </html>
-
