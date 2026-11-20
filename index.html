@@ -578,7 +578,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">ชื่อผู้เสนอราคา (เซลล์)</label>
-                        <input type="text" id="salesName" placeholder="เช่น คุณศรายุทธ เมรุลัตร์" oninput="runEngine()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
+                        <input type="text" id="salesName" placeholder="เช่น คุณศรายุทธ เมรุลัตร์" oninput="onSalesNameFormInput()" class="w-full border rounded-xl p-2.5 bg-slate-50 outline-none">
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์พนักงาน</label>
@@ -678,9 +678,18 @@
                 </div>
 
                 <div class="grid grid-cols-3 gap-2">
-                    <button onclick="openSignatureModal('sales')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ ฝั่งซ้าย</button>
-                    <button onclick="openSignatureModal('issuer')" class="bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ ตรงกลาง</button>
-                    <button onclick="openSignatureModal('customer')" class="bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ ฝั่งขวา</button>
+                    <div class="flex gap-1">
+                        <button onclick="openSignatureModal('sales')" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ เซ็นฝั่งซ้าย</button>
+                        <button onclick="clearSignature('sales')" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold px-2.5 rounded-xl text-xs transition" title="ลบลายเซ็นฝั่งซ้าย">🗑️</button>
+                    </div>
+                    <div class="flex gap-1">
+                        <button onclick="openSignatureModal('issuer')" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ เซ็นตรงกลาง</button>
+                        <button onclick="clearSignature('issuer')" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold px-2.5 rounded-xl text-xs transition" title="ลบลายเซ็นตรงกลาง">🗑️</button>
+                    </div>
+                    <div class="flex gap-1">
+                        <button onclick="openSignatureModal('customer')" class="flex-1 bg-blue-800 hover:bg-blue-900 text-white font-medium py-2.5 rounded-xl text-xs shadow transition">✍️ เซ็นฝั่งขวา</button>
+                        <button onclick="clearSignature('customer')" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold px-2.5 rounded-xl text-xs transition" title="ลบลายเซ็นฝั่งขวา">🗑️</button>
+                    </div>
                 </div>
                 <div class="grid grid-cols-3 gap-2">
                     <button onclick="saveQuotationToArchive()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">💾 บันทึกประวัติ</button>
@@ -888,38 +897,62 @@
                             </div>
                         </div>
 
-                        <!-- ช่องลงนาม -->
+                        <!-- ช่องลงนาม (แก้ไข ลบ เพิ่มข้อความ และลบลายเซ็นได้ทุกช่อง) -->
                         <div class="grid grid-cols-3 gap-6 pt-2 border-t border-slate-200 text-xs text-center shrink-0 mt-2">
+                            <!-- ฝั่งซ้าย: ผู้เสนอราคา / ผู้วางบิล / ผู้รับเงิน -->
                             <div class="flex flex-col items-center">
-                                <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
-                                    <img id="imgSignSales" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" onerror="this.classList.add('hidden'); document.getElementById('placeholderSignSales').classList.remove('hidden');" class="max-h-10 max-w-full object-contain">
-                                    <span id="placeholderSignSales" class="text-slate-300 italic absolute bottom-0.5 text-[9px] hidden">(ลายเซ็น)</span>
+                                <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative group">
+                                    <img id="imgSignSales" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" onclick="openSignatureModal('sales')" title="คลิกเพื่อเซ็นชื่อใหม่" onerror="this.classList.add('hidden'); document.getElementById('placeholderSignSales').classList.remove('hidden');" class="max-h-10 max-w-full object-contain cursor-pointer">
+                                    <span id="placeholderSignSales" onclick="openSignatureModal('sales')" class="text-slate-300 hover:text-orange-500 italic absolute bottom-0.5 text-[9px] hidden cursor-pointer">(คลิกเพื่อลงลายเซ็น)</span>
+                                    <button type="button" onclick="clearSignature('sales')" class="no-print-in-paper absolute top-0 right-0 text-[10px] bg-red-50 hover:bg-red-100 text-red-500 rounded px-1 opacity-70 hover:opacity-100 transition" title="ลบลายเซ็น">✕</button>
                                 </div>
-                                <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignSales">ผู้เสนอราคา</span></div>
-                                <div class="text-slate-700 mb-0.5 font-medium text-[10px]" id="docViewSignSalesName">(คุณศรายุทธ เมรุลัตร์)</div>
-                                <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
+                                <div class="text-slate-500 mb-0.5 text-[10px] flex items-center justify-center gap-1 w-full">
+                                    <span>ลงชื่อ</span>
+                                    <span class="font-bold text-slate-700 editable-cell !w-auto min-w-[50px] px-1 text-center" id="labelSignSales" contenteditable="true" data-placeholder="ตำแหน่ง...">ผู้เสนอราคา</span>
+                                </div>
+                                <div class="text-slate-700 mb-0.5 font-medium text-[10px] editable-cell px-1 text-center min-h-[16px]" id="docViewSignSalesName" contenteditable="true" oninput="isSignSalesNameManuallyEdited = true" data-placeholder="(คลิกพิมพ์ชื่อ...)">(คุณศรายุทธ เมรุลัตร์)</div>
+                                <div class="text-slate-500 mt-0.5 text-[9px] flex items-center justify-center gap-1">
+                                    <span>วันที่</span>
+                                    <span class="sign-date-display editable-cell !w-auto min-w-[60px] px-1 text-center" contenteditable="true">....... / ....... / .......</span>
+                                </div>
                             </div>
 
+                            <!-- ตรงกลาง: ผู้รับจ้าง / ผู้มีอำนาจลงนาม -->
                             <div class="flex flex-col items-center">
-                                <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
-                                    <img id="imgSignIssuer" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" onerror="this.classList.add('hidden'); document.getElementById('placeholderSignIssuer').classList.remove('hidden');" class="max-h-10 max-w-full object-contain">
-                                    <span id="placeholderSignIssuer" class="text-slate-300 italic absolute bottom-0.5 text-[9px] hidden">(ลายเซ็น)</span>
+                                <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative group">
+                                    <img id="imgSignIssuer" src="F55C3FCF-3818-4BB8-8CA9-A1E278D73597.png" onclick="openSignatureModal('issuer')" title="คลิกเพื่อเซ็นชื่อใหม่" onerror="this.classList.add('hidden'); document.getElementById('placeholderSignIssuer').classList.remove('hidden');" class="max-h-10 max-w-full object-contain cursor-pointer">
+                                    <span id="placeholderSignIssuer" onclick="openSignatureModal('issuer')" class="text-slate-300 hover:text-orange-500 italic absolute bottom-0.5 text-[9px] hidden cursor-pointer">(คลิกเพื่อลงลายเซ็น)</span>
+                                    <button type="button" onclick="clearSignature('issuer')" class="no-print-in-paper absolute top-0 right-0 text-[10px] bg-red-50 hover:bg-red-100 text-red-500 rounded px-1 opacity-70 hover:opacity-100 transition" title="ลบลายเซ็น">✕</button>
                                 </div>
-                                <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignIssuer">ผู้รับจ้าง</span></div>
-                                <div class="text-slate-700 mb-0.5 font-medium text-[10px]">(คุณศรายุทธ เมรุลัตร์)</div>
-                                <div class="text-slate-800 font-bold mb-0.5 text-[9px]">บจก.หาดใหญ่ ไมโครไพล์</div>
-                                <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
+                                <div class="text-slate-500 mb-0.5 text-[10px] flex items-center justify-center gap-1 w-full">
+                                    <span>ลงชื่อ</span>
+                                    <span class="font-bold text-slate-700 editable-cell !w-auto min-w-[50px] px-1 text-center" id="labelSignIssuer" contenteditable="true" data-placeholder="ตำแหน่ง...">ผู้รับจ้าง</span>
+                                </div>
+                                <div class="text-slate-700 mb-0.5 font-medium text-[10px] editable-cell px-1 text-center min-h-[16px]" id="docViewSignIssuerName" contenteditable="true" data-placeholder="(คลิกพิมพ์ชื่อ...)">(คุณศรายุทธ เมรุลัตร์)</div>
+                                <div class="text-slate-800 font-bold mb-0.5 text-[9px] editable-cell px-1 text-center min-h-[14px]" id="docViewSignIssuerCompany" contenteditable="true" data-placeholder="ชื่อบริษัท/ตำแหน่ง...">บจก.หาดใหญ่ ไมโครไพล์</div>
+                                <div class="text-slate-500 mt-0.5 text-[9px] flex items-center justify-center gap-1">
+                                    <span>วันที่</span>
+                                    <span class="sign-date-display editable-cell !w-auto min-w-[60px] px-1 text-center" contenteditable="true">....... / ....... / .......</span>
+                                </div>
                             </div>
 
+                            <!-- ฝั่งขวา: ผู้ว่าจ้าง / ผู้รับวางบิล / ผู้จ่ายเงิน (ว่างไว้ให้ลงชื่อเองได้) -->
                             <div class="flex flex-col items-center">
-                                <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative">
-                                    <img id="imgSignCustomer" class="max-h-10 max-w-full hidden object-contain">
-                                    <span id="placeholderSignCustomer" class="text-slate-300 italic absolute bottom-0.5 text-[9px]">(ลายเซ็น)</span>
+                                <div class="flex items-end justify-center h-12 w-full border-b border-dashed border-slate-300 pb-0.5 mb-1 relative group">
+                                    <img id="imgSignCustomer" onclick="openSignatureModal('customer')" title="คลิกเพื่อเซ็นชื่อใหม่" class="max-h-10 max-w-full hidden object-contain cursor-pointer">
+                                    <span id="placeholderSignCustomer" onclick="openSignatureModal('customer')" class="text-slate-300 hover:text-orange-500 italic absolute bottom-0.5 text-[9px] cursor-pointer">(คลิกเพื่อลงลายเซ็น)</span>
+                                    <button type="button" onclick="clearSignature('customer')" class="no-print-in-paper absolute top-0 right-0 text-[10px] bg-red-50 hover:bg-red-100 text-red-500 rounded px-1 opacity-70 hover:opacity-100 transition" title="ลบลายเซ็น">✕</button>
                                 </div>
-                                <div class="text-slate-500 mb-0.5 text-[10px]">ลงชื่อ <span class="font-bold text-slate-700" id="labelSignCustomer">ผู้ว่าจ้าง</span></div>
-                                <div class="text-slate-700 mb-0.5 font-medium text-[10px]" id="docViewSignCustName">(........................................)</div>
+                                <div class="text-slate-500 mb-0.5 text-[10px] flex items-center justify-center gap-1 w-full">
+                                    <span>ลงชื่อ</span>
+                                    <span class="font-bold text-slate-700 editable-cell !w-auto min-w-[50px] px-1 text-center" id="labelSignCustomer" contenteditable="true" data-placeholder="ตำแหน่ง...">ผู้ว่าจ้าง</span>
+                                </div>
+                                <div class="text-slate-700 mb-0.5 font-medium text-[10px] editable-cell px-1 text-center min-h-[16px]" id="docViewSignCustName" contenteditable="true" data-placeholder="(........................................)">(........................................)</div>
                                 <div class="text-slate-800 font-bold mb-0.5 text-[9px] opacity-0">.</div>
-                                <div class="text-slate-500 mt-0.5 text-[9px]">วันที่ <span class="sign-date-display">....... / ....... / .......</span></div>
+                                <div class="text-slate-500 mt-0.5 text-[9px] flex items-center justify-center gap-1">
+                                    <span>วันที่</span>
+                                    <span class="sign-date-display editable-cell !w-auto min-w-[60px] px-1 text-center" contenteditable="true">....... / ....... / .......</span>
+                                </div>
                             </div>
                         </div>
 
@@ -1203,10 +1236,13 @@
                 <canvas id="padCanvas" width="340" height="200" class="bg-white rounded shadow-sm"></canvas>
             </div>
             <div class="flex justify-between gap-2 pt-3">
-                <button onclick="clearPad()" class="px-5 py-2.5 border-2 border-slate-200 rounded-xl text-xs text-slate-600 font-bold bg-white hover:bg-slate-50">ล้างเส้นใหม่</button>
+                <div class="flex gap-1.5">
+                    <button onclick="clearPad()" class="px-3 py-2.5 border-2 border-slate-200 rounded-xl text-xs text-slate-600 font-bold bg-white hover:bg-slate-50">ล้างเส้น</button>
+                    <button onclick="removeCurrentModalSignature()" class="px-3 py-2.5 border-2 border-red-200 rounded-xl text-xs text-red-600 font-bold bg-red-50 hover:bg-red-100">🗑️ ลบลายเซ็น</button>
+                </div>
                 <div class="flex gap-2">
-                    <button onclick="closeSignatureModal()" class="px-5 py-2.5 border-2 border-slate-200 rounded-xl text-xs text-slate-600 font-bold bg-white hover:bg-slate-50">ยกเลิก</button>
-                    <button onclick="savePadSignature()" class="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow">✔ บันทึก</button>
+                    <button onclick="closeSignatureModal()" class="px-4 py-2.5 border-2 border-slate-200 rounded-xl text-xs text-slate-600 font-bold bg-white hover:bg-slate-50">ยกเลิก</button>
+                    <button onclick="savePadSignature()" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow">✔ บันทึก</button>
                 </div>
             </div>
         </div>
@@ -1290,6 +1326,7 @@
         let isEditingOldDoc = false;
         let editingDocNo = '';
         let isDocNoManuallyEdited = false;
+        let isSignSalesNameManuallyEdited = false;
 
         // เก็บข้อมูลอ้างอิงจากใบเสนอราคา
         let clonedSourceQuote = null;
@@ -1305,6 +1342,11 @@
 
         function isManualEntryDocType(type) {
             return ['INV', 'REC', 'TAX'].includes(type);
+        }
+
+        function onSalesNameFormInput() {
+            isSignSalesNameManuallyEdited = false;
+            runEngine();
         }
 
         // ================= ฟังก์ชันจัดการ เพิ่ม / ลบ / แก้ไข VAT ในใบแจ้งหนี้/ใบวางบิล =================
@@ -1559,6 +1601,7 @@
                 bankAccountInfo: document.getElementById('bankAccountInfo').value.trim()
             };
             localStorage.setItem('hym_my_profile', JSON.stringify(profile));
+            isSignSalesNameManuallyEdited = false;
             document.getElementById('docViewSignSalesName').innerText = `(${profile.salesName || 'คุณศรายุทธ เมรุลัตร์'})`;
             runEngine();
             alert('บันทึกข้อมูลผู้เสนอราคาและเลขบัญชีเริ่มต้นแล้ว');
@@ -1569,6 +1612,7 @@
             isEditingOldDoc = false;
             editingDocNo = '';
             isDocNoManuallyEdited = false;
+            isSignSalesNameManuallyEdited = false;
             clonedSourceQuote = null;
             isCustomTableOverride = false;
             invVatEnabled = true;
@@ -1596,6 +1640,10 @@
             document.getElementById('enableWht3').checked = false;
             document.getElementById('projectStatus').value = 'รออนุมัติ';
             document.getElementById('docViewNotesContainer').innerHTML = '';
+            document.getElementById('docViewSignIssuerName').innerText = '(คุณศรายุทธ เมรุลัตร์)';
+            document.getElementById('docViewSignIssuerCompany').innerText = 'บจก.หาดใหญ่ ไมโครไพล์';
+            document.getElementById('docViewSignCustName').innerText = '(........................................)';
+            clearSignature('customer');
             document.querySelectorAll('.item-row.dynamic-row').forEach(el => el.remove());
             const todayInit = new Date();
             document.getElementById('docViewDate').innerText = `${todayInit.getDate()}/${todayInit.getMonth() + 1}/${(todayInit.getFullYear() + 543).toString().slice(-2)}`;
@@ -2050,7 +2098,7 @@
             const lineId = document.getElementById('custLine').value.trim();
 
             document.getElementById('docViewCustName').innerText = custName;
-            document.getElementById('docViewSignCustName').innerText = `(${custName})`;
+            // ไม่ใส่ชื่อลูกค้าลงในช่องลงนามผู้รับวางบิล/ผู้ว่าจ้าง เพื่อให้ผู้ใช้ลงชื่อหรือพิมพ์ชื่อเองได้
             document.getElementById('docViewCustTax').innerText = document.getElementById('custTaxId').value || '-';
             document.getElementById('docViewCustAddr').innerText = document.getElementById('custAddress').value || '-';
 
@@ -2062,7 +2110,9 @@
             document.getElementById('docViewCustContact').innerText = contacts.length > 0 ? contacts.join(' | ') : '-';
             
             const salesName = document.getElementById('salesName').value || 'คุณศรายุทธ เมรุลัตร์';
-            document.getElementById('docViewSignSalesName').innerText = `(${salesName})`;
+            if (!isSignSalesNameManuallyEdited) {
+                document.getElementById('docViewSignSalesName').innerText = `(${salesName})`;
+            }
 
             const bankInfo = document.getElementById('bankAccountInfo').value.trim();
             const showBank = document.getElementById('showBankOnDoc').checked;
@@ -2211,6 +2261,13 @@
                 invVatManualAmount: invVatManualAmount,
                 invVatLabelCustom: invVatLabelCustom,
                 invVatLabel: document.getElementById('docViewVatLabel').innerText.trim(),
+                signSalesLabel: document.getElementById('labelSignSales').innerText.trim(),
+                signSalesName: document.getElementById('docViewSignSalesName').innerText.trim(),
+                signIssuerLabel: document.getElementById('labelSignIssuer').innerText.trim(),
+                signIssuerName: document.getElementById('docViewSignIssuerName').innerText.trim(),
+                signIssuerCompany: document.getElementById('docViewSignIssuerCompany').innerText.trim(),
+                signCustomerLabel: document.getElementById('labelSignCustomer').innerText.trim(),
+                signCustomerName: document.getElementById('docViewSignCustName').innerText.trim(),
                 subTotal: netBeforeVat, rawSubTotal: tableSubtotal, vat: finalVat, grandTotal: netBeforeVat + finalVat,
                 docNo: document.getElementById('docViewNo').innerText.trim(),
                 docDate: document.getElementById('docViewDate').innerText.trim(),
@@ -2286,13 +2343,35 @@
         }
         function closeSignatureModal() { document.getElementById('modalSignature').classList.add('hidden'); }
         function clearPad() { if (sigPad) sigPad.clear(); }
+
+        function clearSignature(role) {
+            const elId = role === 'sales' ? 'imgSignSales' : role === 'issuer' ? 'imgSignIssuer' : 'imgSignCustomer';
+            const plId = role === 'sales' ? 'placeholderSignSales' : role === 'issuer' ? 'placeholderSignIssuer' : 'placeholderSignCustomer';
+            const imgEl = document.getElementById(elId);
+            const plEl = document.getElementById(plId);
+            if (imgEl) {
+                imgEl.removeAttribute('src');
+                imgEl.classList.add('hidden');
+            }
+            if (plEl) {
+                plEl.classList.remove('hidden');
+            }
+        }
+
+        function removeCurrentModalSignature() {
+            clearSignature(currentSignRole);
+            closeSignatureModal();
+        }
+
         function savePadSignature() {
             if (sigPad.isEmpty()) return alert('กรุณาเซ็นชื่อในกรอบก่อนกดบันทึกครับ');
             const dataUrl = sigPad.toDataURL('image/png');
             const el = currentSignRole === 'sales' ? 'imgSignSales' : currentSignRole === 'issuer' ? 'imgSignIssuer' : 'imgSignCustomer';
             const pl = currentSignRole === 'sales' ? 'placeholderSignSales' : currentSignRole === 'issuer' ? 'placeholderSignIssuer' : 'placeholderSignCustomer';
-            document.getElementById(el).src = dataUrl;
-            document.getElementById(el).classList.remove('hidden');
+            const imgEl = document.getElementById(el);
+            imgEl.src = dataUrl;
+            imgEl.style.display = '';
+            imgEl.classList.remove('hidden');
             document.getElementById(pl).classList.add('hidden');
             closeSignatureModal();
         }
@@ -2501,9 +2580,11 @@
                     isEditingOldDoc = false;
                     editingDocNo = '';
                     isDocNoManuallyEdited = false;
+                    isSignSalesNameManuallyEdited = false;
                     currentRandomID = Math.floor(100 + Math.random() * 900);
                     clonedSourceQuote = JSON.parse(JSON.stringify(d));
                     document.getElementById('docViewNotesContainer').innerHTML = '';
+                    document.getElementById('docViewSignCustName').innerText = '(........................................)';
 
                     // ตั้งค่า VAT เริ่มต้นของใบแจ้งหนี้ให้สอดคล้องกับใบเสนอราคาต้นทาง (ถ้าต้นทางไม่มี VAT ให้ปิด VAT ไว้ก่อน แต่เปิดเพิ่มเองได้)
                     invVatEnabled = (d.vat === undefined || d.vat > 0);
@@ -2580,6 +2661,18 @@
                             });
                         }
                     }
+
+                    // กู้คืนข้อความช่องลงนามที่แก้ไขไว้
+                    if (d.signSalesLabel !== undefined) document.getElementById('labelSignSales').innerText = d.signSalesLabel;
+                    if (d.signSalesName !== undefined) {
+                        document.getElementById('docViewSignSalesName').innerText = d.signSalesName;
+                        isSignSalesNameManuallyEdited = true;
+                    }
+                    if (d.signIssuerLabel !== undefined) document.getElementById('labelSignIssuer').innerText = d.signIssuerLabel;
+                    if (d.signIssuerName !== undefined) document.getElementById('docViewSignIssuerName').innerText = d.signIssuerName;
+                    if (d.signIssuerCompany !== undefined) document.getElementById('docViewSignIssuerCompany').innerText = d.signIssuerCompany;
+                    if (d.signCustomerLabel !== undefined) document.getElementById('labelSignCustomer').innerText = d.signCustomerLabel;
+                    if (d.signCustomerName !== undefined) document.getElementById('docViewSignCustName').innerText = d.signCustomerName;
 
                     updateRowIndices();
                     recalcTable();
@@ -3181,6 +3274,7 @@
         function sanitizeImageForCanvas(imgEl) {
             if (!imgEl || imgEl.style.display === 'none' || imgEl.classList.contains('hidden')) return;
             const src = imgEl.getAttribute('src') || '';
+            if (!src) return;
             if (src.startsWith('data:')) return;
 
             if (!imgEl.complete || imgEl.naturalWidth === 0) {
@@ -3235,7 +3329,7 @@
             // 1. ตรวจสอบรูปภาพในกระดาษไม่ให้ติด CORS
             paper.querySelectorAll('img').forEach(sanitizeImageForCanvas);
 
-            // 2. ซ่อนปุ่มลบรายแถวและปุ่มลบ VAT ชั่วคราวขณะเรนเดอร์ PDF
+            // 2. ซ่อนปุ่มลบรายแถว ปุ่มลบ VAT และปุ่มลบลายเซ็นชั่วคราวขณะเรนเดอร์ PDF
             const hiddenButtons = [];
             paper.querySelectorAll('.no-print-in-paper').forEach(btn => {
                 if (!btn.classList.contains('hidden')) {
@@ -3244,7 +3338,7 @@
                 }
             });
 
-            // 3. แปลงช่อง input และช่อง contenteditable ให้เป็น div ข้อความธรรมดาชั่วคราว
+            // 3. แปลงช่อง input และช่อง contenteditable ให้เป็นข้อความธรรมดาชั่วคราว
             const tempReplacements = [];
             paper.querySelectorAll('input.editable-cell').forEach(inp => {
                 if (inp.classList.contains('hidden')) return;
@@ -3265,7 +3359,8 @@
 
             paper.querySelectorAll('[contenteditable="true"]').forEach(ce => {
                 if (ce.classList.contains('hidden')) return;
-                const span = document.createElement('div');
+                const tagName = ce.tagName.toLowerCase() === 'span' ? 'span' : 'div';
+                const span = document.createElement(tagName);
                 span.className = ce.className.replace('editable-cell', '');
                 if (ce.id === 'docViewNotesContainer') {
                     span.innerHTML = ce.innerHTML;
